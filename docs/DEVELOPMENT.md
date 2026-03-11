@@ -1,0 +1,239 @@
+# DEVELOPMENT - Sentivis AIOps
+
+## Propósito
+
+Descrever como o desenvolvimento deve ser conduzido neste projeto seguindo DOC2.5.
+
+## Princípios
+
+- Uma sprint ativa por vez
+- Tracking obrigatório
+- Mudança mínima necessária
+- Plano antes de execução
+- Sem estruturas paralelas fora do modelo canônico
+
+## Fluxo Geral
+
+### 1. Ler Contexto
+
+Antes de qualquer trabalho:
+
+- `README.md` - Visão geral
+- `rules/WORKSPACE_RULES.md` - Regras locais
+- `Dev_Tracking.md` - Índice de sprints
+- `Dev_Tracking_S0.md` - Sprint ativa
+- `tests/bugs_log.md` - Log de bugs
+
+### 2. Planejar
+
+- Resumir entendimento
+- Propor plano
+- Aguardar aprovação explícita do PO
+
+### 3. Executar
+
+- Atualizar backlog em tabela `Status | Estória`
+- Registrar decisões como `[D-SX-YY]`
+- Referenciar bugs e testes em `tests/bugs_log.md`
+
+### 4. Atualizar Rastreabilidade
+
+- Manter `Dev_Tracking_S0.md` coerente
+- Atualizar `Dev_Tracking.md` quando necessário
+- Sincronizar docs canônicos se a realidade mudou
+
+## Como Trabalhar com Mock Telemetry
+
+### Criar Script de Mock
+
+1. Criar arquivo em `scripts/mock-telemetry.js`
+
+```javascript
+// scripts/mock-telemetry.js
+const TB_URL = process.env.TB_URL || 'http://95.217.16.195:8080';
+const DEVICE_TOKEN = process.env.DEVICE_TOKEN;
+
+function generateSoilData() {
+  return {
+    ts: Date.now(),
+    values: {
+      soil_moisture: (Math.random() * 30 + 30).toFixed(2), // 30-60%
+      soil_temperature: (Math.random() * 10 + 18).toFixed(2) // 18-28°C
+    }
+  };
+}
+
+function generateClimateData() {
+  return {
+    ts: Date.now(),
+    values: {
+      air_temperature: (Math.random() * 10 + 20).toFixed(2), // 20-30°C
+      air_humidity: (Math.random() * 40 + 40).toFixed(2),   // 40-80%
+      luminosity: Math.floor(Math.random() * 500 + 500),       // 500-1000 lux
+      rainfall: (Math.random() * 2).toFixed(2)                // 0-2 mm
+    }
+  };
+}
+
+async function sendTelemetry(data) {
+  const response = await fetch(`${TB_URL}/api/v1/${DEVICE_TOKEN}/telemetry`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  return response.json();
+}
+
+// Loop a cada 60 segundos
+setInterval(async () => {
+  const soilData = generateSoilData();
+  const climateData = generateClimateData();
+  
+  console.log('Sending soil data:', soilData);
+  console.log('Sending climate data:', climateData);
+  
+  await sendTelemetry(soilData);
+  await sendTelemetry(climateData);
+}, 60000);
+```
+
+### Executar Mock
+
+```bash
+# Definir variável de ambiente
+export DEVICE_TOKEN="<device_access_token>"
+export TB_URL="http://95.217.16.195:8080"
+
+# Executar
+node scripts/mock-telemetry.js
+```
+
+## Como Testar APIs
+
+### Usando cURL
+
+```bash
+# 1. Autenticar (obter token JWT)
+curl -X POST http://95.217.16.195:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"scaixeta@gmail.com","password":"<senha>"}'
+
+# 2. Consultar dispositivos
+curl -X GET http://95.217.16.195:8080/api/devices \
+  -H "X-Authorization: Bearer <jwt_token>"
+
+# 3. Enviar telemetria (com access token do device)
+curl -X POST http://95.217.16.195:8080/api/v1/<device_token>/telemetry \
+  -H "Content-Type: application/json" \
+  -d '{"ts":1646925123000,"values":{"temperature":25.5,"humidity":60.0}}'
+```
+
+### Usando VS Code REST Client
+
+Criar arquivo `.http`:
+
+```http
+# authentication.http
+@host = http://95.217.16.195:8080
+@username = scaixeta@gmail.com
+@password = <senha>
+
+### Login
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "password": "{{password}}"
+}
+
+### Get Devices
+GET {{host}}/api/devices
+X-Authorization: Bearer <jwt_token>
+```
+
+## Como Validar Payloads
+
+### Estrutura Obrigatória
+
+```json
+{
+  "ts": 1646925123000,
+  "values": {
+    "key": value
+  }
+}
+```
+
+- `ts`: Unix timestamp em milissegundos (opcional)
+- `values`: Objeto com pares key-value
+
+### Keys Válidas
+
+| Key | Tipo | Descrição |
+|-----|------|----------|
+| soil_moisture | double | Umidade do solo (%) |
+| soil_temperature | double | Temperatura do solo (°C) |
+| air_temperature | double | Temperatura do ar (°C) |
+| air_humidity | double | Umidade relativa (%) |
+| luminosity | double | Luminosidade (lux) |
+| rainfall | double | Precipitação (mm) |
+
+## Políticas de Leitura vs Alteração
+
+### Leitura Permitida
+
+- `git status`
+- `git log`
+- `git show`
+- Leitura de arquivos
+
+### Alteração Exige Gate
+
+- `git add`
+- `git commit`
+- `git push`
+- Criação/remoção de arquivos
+- Instalação de dependências
+
+## Tests e Bugs
+
+- Log centralizado em `tests/bugs_log.md`
+- `Timestamp UTC` nas tabelas de tracking
+- `Dev_Tracking_S0.md` recebe resumo e referências cruzadas
+
+## VS Code como Workstation
+
+### Extensões Recomendadas
+
+| Extensão | Propósito |
+|----------|-----------|
+| REST Client | Testar APIs |
+| Thunder Client | Alternativa ao Postman |
+| GitLens | Visualização Git |
+| ESLint | Linting |
+| Prettier | Formatação |
+
+### Tarefas Úteis
+
+```json
+// .vscode/tasks.json
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Mock Telemetry",
+      "type": "shell",
+      "command": "node scripts/mock-telemetry.js",
+      "problemMatcher": []
+    }
+  ]
+}
+```
+
+## Próximos Passos
+
+1. Executar mock telemetry
+2. Validar dados no ThingsBoard
+3. Criar dashboard
+4. Registrar evidência em `tests/bugs_log.md`
