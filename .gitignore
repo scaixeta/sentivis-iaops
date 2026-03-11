@@ -25,3 +25,11 @@ __pycache__/
 dist/
 build/
 *.egg-info/
+
+# Cindy Infrastructure (versionar)
+!.agent/
+!.agents/
+!.brand/
+!.cline/
+!.clinerules/
+!.codex/

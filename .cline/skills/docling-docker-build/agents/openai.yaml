@@ -1,0 +1,4 @@
+interface:
+  display_name: "Docling Docker Build"
+  short_description: "Build e troubleshooting Docker do Docling"
+  default_prompt: "Diagnosticar e estabilizar o build Docker do Docling com foco em torch, proxy/SSL e cache do HuggingFace."
