@@ -23,7 +23,18 @@ Nenhum bug registrado até o momento.
 
 ### 5. Testes Registrados
 
-Nenhum teste registrado até o momento.
+- `TEST-S0-01` – Validação pós-importação seletiva do KB ThingsBoard CE
+  - Escopo: confirmar presença e contagem importada em `api/`, `user-guide/` e `tutorials`
+  - Resultado: aprovado (`25` api, `239` user-guide, `5` tutorials; total `269`)
+  - Evidências: `third_party/thingsboard-ce/SOURCES.md`, `knowledge/thingsboard/ce/manifests/import_manifest.md`, `knowledge/thingsboard/ce/manifests/mapping_table.csv`
+- `TEST-S0-02` – Validação da política de recuperação low-token
+  - Escopo: confirmar ordem oficial `topic_index -> runbook -> docs locais -> upstream`
+  - Resultado: aprovado
+  - Evidências: `knowledge/thingsboard/ce/manifests/reading_priority.md`, `knowledge/thingsboard/ce/manifests/topic_index.md`, `docs/ARCHITECTURE.md`, `docs/DEVELOPMENT.md`
+- `TEST-S0-03` – Validação do cenário de atendimento “estação offline no talhão”
+  - Escopo: confirmar que a resposta operacional gerada foi convertida em documentação oficial e runbook reutilizável
+  - Resultado: aprovado
+  - Evidências: `knowledge/thingsboard/ce/runbooks/station-offline-triage.md`, `knowledge/thingsboard/ce/manifests/topic_index.md`, `docs/OPERATIONS.md`, `Dev_Tracking_S0.md`
 
 ---
 
@@ -32,7 +43,9 @@ Nenhum teste registrado até o momento.
 Event | Start | Finish | Status
 ---|---|---|---
 BUG-S0-01 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
-TEST-S0-01 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
+TEST-S0-01 | THU03122026110000PMST | THU03122026111253PMFN | Passed
+TEST-S0-02 | FRI03132026120429AMST | FRI03132026120429AMFN | Passed
+TEST-S0-03 | FRI03132026121156AMST | FRI03132026121156AMFN | Passed
 
 ## 7. Ressalvas Técnicas
 

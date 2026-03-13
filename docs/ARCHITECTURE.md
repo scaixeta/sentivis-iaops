@@ -173,6 +173,55 @@ Content-Type: application/json
 | OTA Updates | Básico | Completo |
 | Rule Engine | Standard | Enterprise |
 
+## Camada de Conhecimento Externo
+
+### Visão Geral
+
+O projeto mantém uma camada local de conhecimento ThingsBoard CE para leitura hierárquica de baixo consumo de tokens.
+
+| Camada | Local | Descrição |
+|--------|-------|-----------|
+| **Upstream (pending)** | `third_party/thingsboard-ce/upstream/` | Área reservada para futura ingestão oficial |
+| **Origem** | `third_party/thingsboard-ce/SOURCES.md` | Estado da fonte e rastreabilidade |
+| **Knowledge Layer local** | `knowledge/thingsboard/ce/` | Navegação curta + runbooks + referência curada futura |
+
+### Estrutura de Conhecimento
+
+```
+knowledge/thingsboard/ce/
+├── manifests/           # Metadados, índice de tópicos e ordem de leitura
+│   ├── import_manifest.md
+│   ├── mapping_table.csv
+│   └── exclusions.md
+│   ├── topic_index.md
+│   └── reading_priority.md
+├── runbooks/            # Guias operacionais curtos (primeira leitura)
+├── reference/           # Camada de suporte (futura população)
+├── api/                 # Referência API (futura população)
+├── user-guide/          # Guias curados (futura população)
+└── tutorials/           # Tutoriais curados (futura população)
+```
+
+### Políticas de Importação
+
+- **MVP-1**: fundação local concluída.
+- **Estado atual**: importação seletiva CE concluída a partir do upstream oficial.
+- **Rastreabilidade**: manifestos e `SOURCES.md` atualizados com contagem e source path.
+- **Escopo atual**: apenas `reference`, `user-guide` e `tutorials` em markdown.
+
+### Política de Recuperação
+
+- **Objetivo**: minimizar consumo de tokens sem perder precisão operacional.
+- **Ordem padrão**: `topic_index.md` -> runbook -> documentação curada local -> upstream oficial.
+- **Fallback obrigatório**: quando a IA não souber o que executar, pesquisar primeiro no KB local.
+- **Expansão progressiva**: ler somente a próxima camada se a anterior não resolver a tarefa.
+
+### Script de Sincronização
+
+| Script | Local | Propósito |
+|--------|-------|-----------|
+| `sync_thingsboard_ce.ps1` | `scripts/sync/thingsboard/` | Executar importação seletiva CE a partir de clone local |
+
 ## Próximas Fases
 
 1. **Fase 2**: Integração com ESP32 real
@@ -184,3 +233,5 @@ Content-Type: application/json
 - `DEVELOPMENT.md` - Fluxo de desenvolvimento
 - `OPERATIONS.md` - Operação e manutenção
 - `Dev_Tracking_S0.md` - Backlog da sprint
+- `scripts/sync/thingsboard/README.md` - Documentação do sync
+- `knowledge/thingsboard/ce/manifests/` - Metadados de importação

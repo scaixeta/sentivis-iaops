@@ -124,6 +124,31 @@ No `.vscode/settings.json`:
 }
 ```
 
+## ThingsBoard Knowledge Layer (Opcional)
+
+### Para que serve
+
+Se você precisar preparar a base local de sincronização da documentação ThingsBoard CE:
+
+1. Clone o repositório `thingsboard.github.io` localmente
+2. Execute o script de sincronização:
+
+```powershell
+# No diretório do projeto
+.\scripts\sync\thingsboard\sync_thingsboard_ce.ps1 -SourcePath "C:\caminho\para\thingsboard.github.io"
+```
+
+### Pré-requisitos
+
+- Clone local de `thingsboard.github.io`
+- PowerShell 5.1+
+
+### Notas
+
+- Este fluxo é opcional e não é pré-requisito para operar o projeto.
+- O script de sync seletivo requer clone local materializado de `thingsboard.github.io`.
+- A importação atual cobre apenas markdown CE das trilhas `reference`, `user-guide` e `tutorials`.
+
 ## Próximos Passos
 
 1. Validar acesso ao ThingsBoard (UI)

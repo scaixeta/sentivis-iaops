@@ -76,6 +76,42 @@ curl -X GET http://95.217.16.195:8080/api/devices \
 2. Selecionar device
 3. Aba "Dados" > "Timeseries"
 
+### Atendimento N1: Estação Offline no Talhão
+
+Quando o cliente informar que um talhão está em vermelho ou que uma estação ficou offline:
+
+1. Confirmar qual estação está afetada e desde quando.
+2. Abrir o device correspondente e verificar `Latest telemetry`.
+3. Validar `Credentials` do device e possível rotação de token.
+4. Se aplicável, reenviar telemetria mínima de teste.
+5. Revisar o dashboard para diferenciar falha real de atraso visual, alias incorreto ou regra.
+
+Mensagem recomendada ao cliente:
+
+“Vamos confirmar se a estação realmente parou de enviar telemetria ou se houve apenas perda de atualização no dashboard. Primeiro validamos o device, o token e a última telemetria recebida. Se necessário, executamos um teste mínimo para identificar se a falha está na conectividade, no cadastro ou somente na visualização.”
+
+Comandos de confirmação:
+
+```bash
+# Autenticação administrativa
+curl -X POST http://95.217.16.195:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"scaixeta@gmail.com","password":"<senha>"}'
+
+# Busca do device por nome
+curl -X GET "http://95.217.16.195:8080/api/tenant/devices?pageSize=100&page=0&textSearch=<nome-da-estacao>" \
+  -H "X-Authorization: Bearer <jwt_token>"
+
+# Telemetria mínima de validação
+curl -X POST "http://95.217.16.195:8080/api/v1/<device_token>/telemetry" \
+  -H "Content-Type: application/json" \
+  -d '{"ts": 1741824300000, "values": {"soil_moisture": 45.2, "soil_temperature": 23.1}}'
+```
+
+Referência KB:
+- `knowledge/thingsboard/ce/runbooks/station-offline-triage.md`
+- `knowledge/thingsboard/ce/runbooks/troubleshooting-ingestion.md`
+
 ## Como Registrar Problemas
 
 1. Documentar em `tests/bugs_log.md`
@@ -135,6 +171,45 @@ Atualizar `Dev_Tracking_S0.md` com:
 - Timestamp da correção
 - Status do bug
 - Referência cruzada
+
+## Procedimentos: thingsboard Documentation Sync
+
+### Refresh de Documentação
+
+Para preparar a base local do ThingsBoard Knowledge Layer no MVP-1:
+
+1. **Fornecer source path**: Clone `thingsboard.github.io` localmente
+2. **Executar sync**:
+   ```powershell
+   .\scripts\sync\thingsboard\sync_thingsboard_ce.ps1 -SourcePath "C:\caminho\para\thingsboard.github.io"
+   ```
+3. **Verificar resultados**:
+   - Pastas gerenciadas presentes em `third_party/thingsboard-ce/` e `knowledge/thingsboard/ce/`
+   - `SOURCES.md` com status de importação executada
+   - Manifestos atualizados com contagem e exclusões aplicadas
+
+### Validação Pós-Execução
+
+1. Verificar que `third_party/thingsboard-ce/SOURCES.md` existe com status executado.
+2. Verificar que `knowledge/thingsboard/ce/manifests/import_manifest.md` indica `executed`.
+3. Verificar que `knowledge/thingsboard/ce/manifests/exclusions.md` lista as exclusões aplicadas.
+4. Verificar que `knowledge/thingsboard/ce/manifests/mapping_table.csv` contém o mapeamento importado.
+
+### Verificação de Atribuição
+
+Para garantir conformidade com licenciamento:
+
+1. Confirmar que não foi criado LICENSE placeholder local.
+2. Confirmar que não foi criado NOTICE placeholder local.
+3. Confirmar que `SOURCES.md` explicita o source path e o commit utilizados.
+4. Confirmar que o escopo segue CE-only e seletivo.
+
+### Rollback (se necessário)
+
+Se algo der errado:
+- Reexecutar com `-DryRun` para diagnosticar caminho/escopo.
+- Corrigir parâmetros e reexecutar no mesmo escopo gerenciado.
+- Não executar ingestão real até source path aprovado pelo PO.
 
 ## Verificação de Estrutura DOC2.5
 

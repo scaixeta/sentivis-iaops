@@ -202,6 +202,61 @@ X-Authorization: Bearer <jwt_token>
 - `Timestamp UTC` nas tabelas de tracking
 - `Dev_Tracking_S0.md` recebe resumo e referências cruzadas
 
+## Workflow: Sincronização de Documentação ThingsBoard
+
+### Quando Usar
+
+Este workflow executa a importação seletiva do ThingsBoard CE para a Knowledge Layer local.
+
+### Pré-requisitos
+
+1. Clone local de `thingsboard.github.io`
+2. Execute `git clone https://github.com/thingsboard/thingsboard.github.io.git` em algum diretório
+
+### Executar Preparação
+
+```powershell
+# No diretório do projeto
+.\scripts\sync\thingsboard\sync_thingsboard_ce.ps1 -SourcePath "C:\caminho\para\thingsboard.github.io"
+```
+
+### Preview (Dry Run)
+
+```powershell
+.\scripts\sync\thingsboard\sync_thingsboard_ce.ps1 -SourcePath "C:\caminho\para\thingsboard.github.io" -DryRun
+```
+
+### O que acontece
+
+1. Valida que `SourcePath` existe.
+2. Valida que `ProjectPath` existe.
+3. Localiza `_includes/docs/reference`, `_includes/docs/user-guide` e `_includes/docs/tutorials`.
+4. Copia apenas arquivos markdown CE para a camada local.
+5. Atualiza `SOURCES.md`, `import_manifest.md`, `exclusions.md` e `mapping_table.csv`.
+
+## Política de Uso do KB
+
+Antes de decidir uma ação em ThingsBoard:
+
+1. Consultar `knowledge/thingsboard/ce/manifests/topic_index.md`.
+2. Ler o runbook mínimo aplicável.
+3. Expandir apenas para `api/`, `user-guide/` ou `tutorials/` se necessário.
+4. Se a intenção estiver ambígua ou o próximo passo não estiver claro, pesquisar primeiro no KB local.
+5. Usar upstream official docs apenas quando o KB local não cobrir a necessidade.
+
+Critérios:
+- Menor consumo de tokens.
+- Melhor cobertura operacional.
+- Melhor precisão prática para execução.
+
+### Estado após execução
+
+Após execução:
+- Conteúdo CE markdown é importado seletivamente.
+- `third_party/thingsboard-ce/SOURCES.md` registra source path, commit e contagem.
+- `import_manifest.md` e `exclusions.md` registram o estado executado.
+- `mapping_table.csv` passa a listar o mapeamento completo importado.
+
 ## VS Code como Workstation
 
 ### Extensões Recomendadas
