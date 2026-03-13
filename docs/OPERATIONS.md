@@ -1,8 +1,8 @@
-# OPERATIONS - Sentivis AIOps
+# OPERATIONS - Sentivis IAOps
 
 ## Propósito
 
-Orientar como operar, validar e manter o projeto Sentivis AIOps.
+Orientar como operar, validar e manter o projeto Sentivis IAOps.
 
 ## Visão Geral de Operação
 
@@ -145,7 +145,7 @@ TB_PASSWORD=<obter_do_arquivo_local>
 
 ### 1. Confirmar Contexto da Sprint
 
-Verificar `Dev_Tracking_S0.md` para contexto atual.
+Verificar `Dev_Tracking_SX.md` para contexto atual.
 
 ### 2. Registrar Bug
 
@@ -167,7 +167,7 @@ BUG-S0-01 – Título curto
 
 ### 4. Atualizar Tracking
 
-Atualizar `Dev_Tracking_S0.md` com:
+Atualizar `Dev_Tracking_SX.md` com:
 - Timestamp da correção
 - Status do bug
 - Referência cruzada
@@ -219,7 +219,7 @@ Para validar que o projeto está conforme DOC2.5:
 # Verificar arquivos obrigatórios
 ls README.md
 ls Dev_Tracking.md
-ls Dev_Tracking_S0.md
+ls Dev_Tracking_S1.md
 ls docs/SETUP.md
 ls docs/ARCHITECTURE.md
 ls docs/DEVELOPMENT.md
@@ -256,5 +256,5 @@ Em caso de problemas com ThingsBoard:
 - `SETUP.md` - Configuração inicial
 - `ARCHITECTURE.md` - Arquitetura técnica
 - `DEVELOPMENT.md` - Fluxo de desenvolvimento
-- `Dev_Tracking_S0.md` - Sprint ativa
+- `Dev_Tracking_SX.md` - Sprint ativa
 - `tests/bugs_log.md` - Log de bugs

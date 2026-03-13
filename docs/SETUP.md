@@ -1,8 +1,8 @@
-# SETUP - Sentivis AIOps
+# SETUP - Sentivis IAOps
 
 ## Propósito
 
-Orientar como preparar o ambiente local para trabalhar com o projeto Sentivis AIOps e ThingsBoard CE.
+Orientar como preparar o ambiente local para trabalhar com o projeto Sentivis IAOps e ThingsBoard CE.
 
 ## Requisitos Mínimos
 
@@ -54,7 +54,7 @@ TB_PASSWORD=<obter_de_.scr/.env>
 Sentivis SIM/
 ├── README.md                    # Entry point oficial
 ├── Dev_Tracking.md              # Índice de sprints
-├── Dev_Tracking_S0.md           # Sprint ativa
+├── Dev_Tracking_SX.md           # Sprint ativa
 ├── docs/
 │   ├── SETUP.md                # Este arquivo
 │   ├── ARCHITECTURE.md         # Arquitetura técnica

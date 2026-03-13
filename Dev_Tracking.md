@@ -2,18 +2,19 @@
 
 ## Projeto
 
-- Nome: Sentivis AIOps
+- Nome: Sentivis IAOps
 - Objetivo: Validar backbone de dados ThingsBoard CE com mock telemetry
 
 ## Sprint Ativa
 
-- **S0** - Em andamento
+- **S1** - Em andamento
 
 ## Lista de Sprints
 
 | Sprint | Período | Estado | Link |
 |--------|---------|--------|------|
-| S0 | 2026-03-10 - em andamento | Em andamento | `Dev_Tracking_S0.md` |
+| S0 | 2026-03-10 - 2026-03-13 | Encerrada | `Sprint/Dev_Tracking_S0.md` |
+| S1 | 2026-03-13 - em andamento | Em andamento | `Dev_Tracking_S1.md` |
 
 ## Observações
 
@@ -27,4 +28,5 @@
 
 Event | Start | Finish | Status
 ---|---|---|---
-S0 | TUE03102026103000PMST | DDDMMDDYYYYHHMMSSamPMFN | Em andamento
+S0 | TUE03102026103000PMST | FRI03132026040518AMFN | Encerrada
+S1 | FRI03132026040518AMST | DDDMMDDYYYYHHMMSSamPMFN | Em andamento

@@ -1,13 +1,13 @@
-# Sentivis AIOps
+# Sentivis IAOps
 
 ## Visão Geral do Projeto
 
 | Item | Descrição |
 |------|-----------|
-| **Nome do Projeto** | Sentivis AIOps |
+| **Nome do Projeto** | Sentivis IAOps |
 | **Plataforma IoT** | ThingsBoard Community Edition |
-| **Fase Atual** | Sprint S0 - Fase 1: Validação do Data Backbone |
-| **Versão** | 1.0.0-S0 |
+| **Fase Atual** | Sprint S1 - Estruturação da camada Jira Cloud no modelo DOC2.5 |
+| **Versão** | 1.0.0-S1 |
 
 ## Escopo do Projeto
 
@@ -47,7 +47,7 @@ Esta fase utiliza dispositivos simulados (mock) para validar o fluxo de dados at
 Sentivis SIM/
 ├── README.md                    # Este arquivo
 ├── Dev_Tracking.md              # Índice de sprints
-├── Dev_Tracking_S0.md           # Sprint ativa
+├── Dev_Tracking_SX.md           # Sprint ativa
 ├── docs/
 │   ├── SETUP.md                # Pré-requisitos e configuração
 │   ├── ARCHITECTURE.md         # Arquitetura da Fase 1
@@ -65,7 +65,8 @@ Sentivis SIM/
 
 | Sprint | Objetivo | Estado | Link |
 |--------|----------|--------|------|
-| S0 | Validar data backbone ThingsBoard CE | Em andamento | `Dev_Tracking_S0.md` |
+| S0 | Validar data backbone ThingsBoard CE | Encerrada | `Sprint/Dev_Tracking_S0.md` |
+| S1 | Estruturar integração Jira Cloud subordinada ao DOC2.5 | Em andamento | `Dev_Tracking_S1.md` |
 
 ## Documentação de Referência
 
@@ -82,10 +83,13 @@ Sentivis SIM/
 
 ## Notas Importantes
 
-- Este projeto está em **Sprint S0** - Fase de configuração e validação inicial
+- Este projeto está em **Sprint S1** - fase de estruturação da camada Jira Cloud subordinada ao DOC2.5
 - Telemetria é gerada por **mock**, não por hardware real
 - O objetivo é estabelecer a base para futura integração com ESP32/LoRa
+- A Sprint S0 foi encerrada com o backbone documental e o teste técnico de integração Jira concluídos
 - Toda a documentação está em **Português (pt-BR)**, exceto comandos e APIs
+- Nome oficial do projeto: **Sentivis IAOps**
+- `Sentivis SIM` permanece como nome do diretório local de trabalho nesta fase
 
 ---
 
@@ -97,4 +101,4 @@ A Cindy é o agente principal do projeto. Em cada run, ela identifica o orchestr
   <img src=".brand/Cindy.jpg" alt="Cindy — Orquestradora" width="220" />
 </p>
 
-*Versão: 1.0.0-S0 | Última atualização: 2026-03-11 | Modelo: DOC2.5*
+*Versão: 1.0.0-S1 | Última atualização: 2026-03-13 | Modelo: DOC2.5*

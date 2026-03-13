@@ -1,4 +1,4 @@
-# DEVELOPMENT - Sentivis AIOps
+# DEVELOPMENT - Sentivis IAOps
 
 ## Propósito
 
@@ -21,7 +21,7 @@ Antes de qualquer trabalho:
 - `README.md` - Visão geral
 - `rules/WORKSPACE_RULES.md` - Regras locais
 - `Dev_Tracking.md` - Índice de sprints
-- `Dev_Tracking_S0.md` - Sprint ativa
+- `Dev_Tracking_SX.md` - Sprint ativa
 - `tests/bugs_log.md` - Log de bugs
 
 ### 2. Planejar
@@ -38,7 +38,7 @@ Antes de qualquer trabalho:
 
 ### 4. Atualizar Rastreabilidade
 
-- Manter `Dev_Tracking_S0.md` coerente
+- Manter `Dev_Tracking_SX.md` coerente
 - Atualizar `Dev_Tracking.md` quando necessário
 - Sincronizar docs canônicos se a realidade mudou
 
@@ -200,7 +200,7 @@ X-Authorization: Bearer <jwt_token>
 
 - Log centralizado em `tests/bugs_log.md`
 - `Timestamp UTC` nas tabelas de tracking
-- `Dev_Tracking_S0.md` recebe resumo e referências cruzadas
+- `Dev_Tracking_SX.md` recebe resumo e referências cruzadas
 
 ## Workflow: Sincronização de Documentação ThingsBoard
 

@@ -1,4 +1,4 @@
-# ARCHITECTURE - Sentivis AIOps
+# ARCHITECTURE - Sentivis IAOps
 
 ## Propósito
 
@@ -232,6 +232,6 @@ knowledge/thingsboard/ce/
 
 - `DEVELOPMENT.md` - Fluxo de desenvolvimento
 - `OPERATIONS.md` - Operação e manutenção
-- `Dev_Tracking_S0.md` - Backlog da sprint
+- `Dev_Tracking_SX.md` - Backlog da sprint ativa
 - `scripts/sync/thingsboard/README.md` - Documentação do sync
 - `knowledge/thingsboard/ce/manifests/` - Metadados de importação
