@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jira Operations"
+  short_description: "Operar Jira de ponta a ponta com guardrails de mutacao"
+  default_prompt: "Usar Jira para investigar, organizar ou atualizar backlog, sprint e issues com contexto claro e sem mutar nada sem autorizacao explicita."

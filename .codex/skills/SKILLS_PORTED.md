@@ -46,22 +46,22 @@
 
 | skill | description | origin |
 |---|---|---|
-| stitch-ui-design | Prompting e workflow para Google Stitch | curadoria local (`.agent/skills`) |
+| stitch-ui-design | Prompting e workflow para Google Stitch | curadoria local (`.agents/skills`) |
 | design-md | Geração de `DESIGN.md` (design system semântico) para Stitch | google-labs-code/stitch-skills |
 | ui-skills | Constraints opinativas para UI não-genérica | ibelick/ui-skills |
-| web-design-guidelines | Guidelines de UI/UX para revisão de interfaces web | curadoria local (`.agent/skills`) |
-| frontend-dev-guidelines | Standards de engenharia frontend (React + TypeScript) | curadoria local (`.agent/skills`) |
-| frontend-design | Craft/estética para interfaces frontend “produção” | curadoria local (`.agent/skills`) |
-| accessibility-compliance-accessibility-audit | Auditoria e remediação de acessibilidade (WCAG) | curadoria local (`.agent/skills`) |
-| web-performance-optimization | Otimização de performance web (Core Web Vitals) | curadoria local (`.agent/skills`) |
-| react-best-practices | Boas práticas React/Next (Vercel) | curadoria local (`.agent/skills`) |
-| nextjs-app-router-patterns | Padrões para Next.js App Router | curadoria local (`.agent/skills`) |
+| web-design-guidelines | Guidelines de UI/UX para revisão de interfaces web | curadoria local (`.agents/skills`) |
+| frontend-dev-guidelines | Standards de engenharia frontend (React + TypeScript) | curadoria local (`.agents/skills`) |
+| frontend-design | Craft/estética para interfaces frontend “produção” | curadoria local (`.agents/skills`) |
+| accessibility-compliance-accessibility-audit | Auditoria e remediação de acessibilidade (WCAG) | curadoria local (`.agents/skills`) |
+| web-performance-optimization | Otimização de performance web (Core Web Vitals) | curadoria local (`.agents/skills`) |
+| react-best-practices | Boas práticas React/Next (Vercel) | curadoria local (`.agents/skills`) |
+| nextjs-app-router-patterns | Padrões para Next.js App Router | curadoria local (`.agents/skills`) |
 
 ### Lean / VSM
 
 | skill | description | origin |
 |---|---|---|
-| vsm-strategic-optimizer | Framework avançado de Mapeamento de Fluxo de Valor (VSM). Diagnostica desperdícios Lean, calcula C/T e L/T, e propõe estado futuro focado em redução de Lead Time. | curadoria local (`.agent/skills`) |
+| vsm-strategic-optimizer | Framework avançado de Mapeamento de Fluxo de Valor (VSM). Diagnostica desperdícios Lean, calcula C/T e L/T, e propõe estado futuro focado em redução de Lead Time. | curadoria local (`.agents/skills`) |
 
 ### Adaptações MCP Market
 
@@ -73,7 +73,8 @@
 
 | skill | description | origin |
 |---|---|---|
-| doc25-preflight | Gate de preflight DOC2.5 com validação cruzada, timestamp e bloqueios de encerramento prematuro | curadoria local (`.agent/skills`) |
-| doc25-context-check | Higiene de contexto DOC2.5 com leitura incremental e redução de desperdício | curadoria local (`.agent/skills`) |
+| doc25-preflight | Gate de preflight DOC2.5 com validação cruzada, timestamp e bloqueios de encerramento prematuro | curadoria local (`.agents/skills`) |
+| doc25-context-check | Higiene de contexto DOC2.5 com leitura incremental e redução de desperdício | curadoria local (`.agents/skills`) |
 | skill-authoring | Autoria e revisao de skills com progressive disclosure, roteamento e espelhamento entre runtimes | curadoria local (`.agents/skills`) baseada em `Wauzap/deep-research-report.md` |
 | mcp-builder | Construcao e validacao de servidores MCP com contrato minimo, seguranca e checklist operacional | curadoria local (`.agents/skills`) refinada a partir de `Wauzap/deep-research-report.md` |
+| jira-operations | Skill unica de dominio Jira para busca, leitura, backlog, sprint, criacao, edicao, comentarios, transicoes, relatorios e operacao completa, com guardrail read-only quando nao houver autorizacao | curadoria local (`.agents/skills`) |
