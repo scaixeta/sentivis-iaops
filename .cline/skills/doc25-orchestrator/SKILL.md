@@ -1,6 +1,6 @@
 ---
 name: doc25-orchestrator
-description: Orquestrar o fluxo DOC2.5 no Codex. Use quando for necessário decidir e encaminhar entre skills de inicialização, desenvolvimento, documentação e commit com gates de aprovação.
+description: Orquestrar o fluxo DOC2.5 no Cline. Use quando for necessário decidir e encaminhar entre skills de inicialização, desenvolvimento, documentação e commit com gates de aprovação.
 ---
 
 Selecione a skill correta com base na intenção do PO:

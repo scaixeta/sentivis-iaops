@@ -1,4 +1,5 @@
 ---
+name: kicad-schema-manager
 description: KiCad Schema Manager
 ---
 

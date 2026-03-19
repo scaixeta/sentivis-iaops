@@ -1,3 +1,8 @@
+---
+name: servicenow-zurich-idea-management
+description: Skill: ServiceNow Zurich - Idea Management (Innovation Management)
+---
+
 # Skill: ServiceNow Zurich - Idea Management (Innovation Management)
 # Status: DRAFT (Based on Zurich 2025)
 

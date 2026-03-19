@@ -1,4 +1,5 @@
 ---
+name: kicad-cli-automation
 description: KiCad CLI Automation
 ---
 

@@ -1,3 +1,8 @@
+---
+name: servicenow-itsm-change-risk-governance
+description: Skill: ServiceNow ITSM Change & Risk Governance
+---
+
 # Skill: ServiceNow ITSM Change & Risk Governance
 
 Este skill capacita o agente a avaliar o risco e a conformidade das mudanças no ServiceNow, integrando a governança formal de TI com a saúde dos projetos (Project Health).

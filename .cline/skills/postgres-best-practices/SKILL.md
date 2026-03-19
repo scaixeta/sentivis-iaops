@@ -1,4 +1,5 @@
 ---
+name: postgres-best-practices
 description: Postgres Best Practices & Optimization (Supabase)
 ---
 

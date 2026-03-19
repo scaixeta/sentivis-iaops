@@ -62,3 +62,18 @@
 | skill | description | origin |
 |---|---|---|
 | vsm-strategic-optimizer | Framework avançado de Mapeamento de Fluxo de Valor (VSM). Diagnostica desperdícios Lean, calcula C/T e L/T, e propõe estado futuro focado em redução de Lead Time. | curadoria local (`.agent/skills`) |
+
+### Adaptações MCP Market
+
+| skill | description | origin |
+|---|---|---|
+| backend-feature-orchestrator-doc25 | Orquestrador ponta a ponta para desenvolvimento de funcionalidades backend | Adaptado de: Backend Feature Development Orchestrator (https://mcpmarket.com/tools/skills/backend-feature-development-orchestrator) |
+
+### Curadoria DOC2.5 Cindy
+
+| skill | description | origin |
+|---|---|---|
+| doc25-preflight | Gate de preflight DOC2.5 com validação cruzada, timestamp e bloqueios de encerramento prematuro | curadoria local (`.agent/skills`) |
+| doc25-context-check | Higiene de contexto DOC2.5 com leitura incremental e redução de desperdício | curadoria local (`.agent/skills`) |
+| skill-authoring | Autoria e revisao de skills com progressive disclosure, roteamento e espelhamento entre runtimes | curadoria local (`.agents/skills`) baseada em `Wauzap/deep-research-report.md` |
+| mcp-builder | Construcao e validacao de servidores MCP com contrato minimo, seguranca e checklist operacional | curadoria local (`.agents/skills`) refinada a partir de `Wauzap/deep-research-report.md` |

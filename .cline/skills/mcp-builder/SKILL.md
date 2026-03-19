@@ -1,34 +1,75 @@
 ---
-description: Guia de Desenvolvimento de Servidores MCP (Anthropic Protocol)
+name: mcp-builder
+description: Criar, revisar ou refatorar servidores MCP, incluindo JSON-RPC 2.0, handshake initialize/initialized, tools/resources, transports stdio ou Streamable HTTP, autenticacao e validacao com inspector. Nao use para criar skills genericas.
 ---
 
-# MCP Builder Skill
+# Skill: MCP Builder
 
-## Overview
-Use esta skill para orientar a construção e refinamento de servidores Model Context Protocol (MCP). Seu objetivo é capacitar LLMs a interagir com serviços externos por meio de ferramentas bem desenhadas, combinando endpoints de APIs robustos com fluxos de trabalho especializados.
+Use esta skill quando o pedido for criar um servidor MCP novo, refatorar um servidor MCP existente, desenhar ferramentas e recursos MCP, ou estabilizar a compatibilidade de um MCP com clientes como Codex, Cline ou Gemini.
 
-## Fases de Desenvolvimento MCP
+## Objetivo
 
-### Fase 1: Pesquisa e Planejamento (Deep Research)
-- **API Coverage vs. Workflow Tools:** Balanceie a cobertura de API (crucial para flexibilidade) com ferramentas de workflow (tarefas específicas). Na dúvida, priorize a cobertura ampla de API.
-- **Nomenclatura (Discoverability):** Use nomes claros e orientados à ação (ex: `github_create_issue`, `github_list_repos`). Padronize os prefixos.
-- **Management de Contexto:** Devolva apenas os dados relevantes. Use paginação e descrições concisas.
-- **Pilha Recomendada (Tech Stack):** TypeScript (SDK completo) ou Python (FastMCP). Prefira HTTP Streamable ou Stdio para servidores locais (JSON stateless).
+Entregar um servidor MCP correto, seguro e testavel, com contrato claro entre cliente, ferramentas, recursos e sistemas externos.
 
-### Fase 2: Implementação
-- **Estruturação:** Estabeleça utilitários como `API Client com auth`, tratamento de erro e paginação.
-- **Input/Output Schema:** Use Zod (TypeScript) ou Pydantic (Python).
-  - Inclua limites explícitos e descrições textuais nos inputs.
-  - O Output deve retornar `structuredContent` junto com o texto para os clientes MCP formatarem o dado.
-- **Erros:** Devolva mensagens que orientem o agente com próximos passos de correção ("actionable error messages").
+## Fluxo
 
-### Fase 3: Code Review e Testes
-- **Inspector:** Use `npx @modelcontextprotocol/inspector` ou `mcp-inspector` (Python) para testar os endpoints localmente antes do deploy.
-- **Code Quality:** Garanta tipagem completa (TypeScript) e ausência de código duplicado (DRY).
+1. Confirmar se MCP e realmente a camada certa:
+   - se o problema for apenas criar ou organizar skills, use `skill-authoring`
+   - se houver integracao externa acionavel por agente, MCP passa a ser candidato forte
+2. Escolher o contorno do servidor:
+   - sistemas externos envolvidos
+   - ferramentas de acao (`tools/*`)
+   - recursos legiveis (`resources/*`)
+   - runtime e stack alvo
+3. Definir o contrato minimo obrigatorio:
+   - `JSON-RPC 2.0`
+   - handshake `initialize` seguido de `notifications/initialized`
+   - transport `stdio` ou `Streamable HTTP`
+4. Projetar as ferramentas:
+   - nomes orientados a acao e descoberta
+   - schemas claros de entrada e saida
+   - erros acionaveis
+   - exposicao minima necessaria
+5. Projetar os recursos:
+   - contexto legivel de alto valor
+   - leitura simples, paginacao quando necessario
+   - sem devolver volume inutil de dados
+6. Implementar com separacao limpa:
+   - cliente da API externa
+   - auth
+   - validacao de input
+   - handler MCP
+7. Tratar seguranca cedo:
+   - auth adequada se remoto
+   - validacao de origem e menor privilegio
+   - filtro de ferramentas quando houver superficie grande
+8. Validar localmente:
+   - inspector
+   - chamadas reais de `tools/list`, `tools/call`, `resources/list` e `resources/read`
+   - smoke test do handshake e do transport
+9. Fechar com avaliacao operacional:
+   - exemplos reais de uso
+   - perguntas de eval
+   - checklist final em `references/mcp-design-checklist.md`
 
-### Fase 4: Avaliação (Evaluations / Evals)
-Defina até 10 questões realistas, focadas e verificáveis, para avaliar se um LLM seria capaz de usar suas ferramentas de forma autônoma para resolver a demanda. Idealmente, cada questão deve forçar o acesso "Read-Only" e complexo de múltiplas chamadas de ferramentas.
+## Regras
 
-## Referências Úteis
-- Sitemap: `https://modelcontextprotocol.io/sitemap.xml`
-- Especificação atual: `https://modelcontextprotocol.io/specification/draft.md`
+- Nao use esta skill para criar skills genericas; nesse caso use `skill-authoring`.
+- Prefira nomes de ferramentas claros e orientados a verbo.
+- Nao exponha tudo por padrao; publique somente o necessario.
+- Se o MCP for remoto, trate autenticacao e validacao de token como parte do escopo.
+- O servidor nao deve misturar protocolo, regras de negocio e cliente externo no mesmo bloco de codigo.
+
+## Done when
+
+- o handshake `initialize` -> `initialized` funciona
+- o transport foi definido e validado
+- `tools/list` e `tools/call` funcionam para o caso alvo
+- `resources/list` e `resources/read` existem quando o caso pede contexto legivel
+- ha estrategia de auth e seguranca compativel com o modo de exposicao
+- a validacao local confirma funcionamento minimo e erros acionaveis
+
+## Referencias
+
+- `references/mcp-design-checklist.md`
+- `references/server-template.md`

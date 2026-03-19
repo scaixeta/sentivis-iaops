@@ -20,4 +20,6 @@ Usar para tarefas de integração ServiceNow, validação de servidor MCP Servic
 
 ## Dependências
 - Node.js 18+
-- Credenciais ServiceNow em `.scr/.env`
+- Credenciais ServiceNow em fonte real disponivel no projeto atual
+- Se `.scr/.env` existir no contexto alvo, pode ser usado
+- Se a fonte de credenciais nao existir, interromper e pedir orientacao ao PO

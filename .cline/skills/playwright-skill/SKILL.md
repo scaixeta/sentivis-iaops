@@ -1,4 +1,5 @@
 ---
+name: playwright-skill
 description: Playwright Browser Automation Executer
 ---
 

@@ -1,3 +1,8 @@
+---
+name: servicenow-zurich-demand-management
+description: Skill: ServiceNow Zurich - Demand Management
+---
+
 # Skill: ServiceNow Zurich - Demand Management
 # Status: DRAFT (Based on Zurich 2025)
 

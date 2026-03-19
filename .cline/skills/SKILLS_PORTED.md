@@ -46,19 +46,25 @@
 
 | skill | description | origin |
 |---|---|---|
-| stitch-ui-design | Prompting e workflow para Google Stitch | curadoria local (`.agent/skills`) |
+| stitch-ui-design | Prompting e workflow para Google Stitch | curadoria local (`.agents/skills`) |
 | design-md | Geração de `DESIGN.md` (design system semântico) para Stitch | google-labs-code/stitch-skills |
 | ui-skills | Constraints opinativas para UI não-genérica | ibelick/ui-skills |
-| web-design-guidelines | Guidelines de UI/UX para revisão de interfaces web | curadoria local (`.agent/skills`) |
-| frontend-dev-guidelines | Standards de engenharia frontend (React + TypeScript) | curadoria local (`.agent/skills`) |
-| frontend-design | Craft/estética para interfaces frontend “produção” | curadoria local (`.agent/skills`) |
-| accessibility-compliance-accessibility-audit | Auditoria e remediação de acessibilidade (WCAG) | curadoria local (`.agent/skills`) |
-| web-performance-optimization | Otimização de performance web (Core Web Vitals) | curadoria local (`.agent/skills`) |
-| react-best-practices | Boas práticas React/Next (Vercel) | curadoria local (`.agent/skills`) |
-| nextjs-app-router-patterns | Padrões para Next.js App Router | curadoria local (`.agent/skills`) |
+| web-design-guidelines | Guidelines de UI/UX para revisão de interfaces web | curadoria local (`.agents/skills`) |
+| frontend-dev-guidelines | Standards de engenharia frontend (React + TypeScript) | curadoria local (`.agents/skills`) |
+| frontend-design | Craft/estética para interfaces frontend “produção” | curadoria local (`.agents/skills`) |
+| accessibility-compliance-accessibility-audit | Auditoria e remediação de acessibilidade (WCAG) | curadoria local (`.agents/skills`) |
+| web-performance-optimization | Otimização de performance web (Core Web Vitals) | curadoria local (`.agents/skills`) |
+| react-best-practices | Boas práticas React/Next (Vercel) | curadoria local (`.agents/skills`) |
+| nextjs-app-router-patterns | Padrões para Next.js App Router | curadoria local (`.agents/skills`) |
 
 ### Lean / VSM
 
 | skill | description | origin |
 |---|---|---|
-| vsm-strategic-optimizer | Framework avançado de Mapeamento de Fluxo de Valor (VSM). Diagnostica desperdícios Lean, calcula C/T e L/T, e propõe estado futuro focado em redução de Lead Time. | curadoria local (`.agent/skills`) |
+| vsm-strategic-optimizer | Framework avançado de Mapeamento de Fluxo de Valor (VSM). Diagnostica desperdícios Lean, calcula C/T e L/T, e propõe estado futuro focado em redução de Lead Time. | curadoria local (`.agents/skills`) |
+
+### Adaptações MCP Market
+
+| skill | description | origin |
+|---|---|---|
+| backend-feature-orchestrator-doc25 | Orquestrador ponta a ponta para desenvolvimento de funcionalidades backend | Adaptado de: Backend Feature Development Orchestrator (https://mcpmarket.com/tools/skills/backend-feature-development-orchestrator) |

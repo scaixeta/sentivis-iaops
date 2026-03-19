@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Authoring"
+  short_description: "Criar e revisar skills com progressive disclosure"
+  default_prompt: "Criar ou refatorar uma skill da Cindy com bom roteamento, estrutura enxuta e validacao final."

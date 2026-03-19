@@ -1,0 +1,4 @@
+interface:
+  display_name: "MCP Builder"
+  short_description: "Criar e revisar servidores MCP com contrato correto"
+  default_prompt: "Criar ou refatorar um servidor MCP com JSON-RPC 2.0, lifecycle correto, tools/resources e validacao local."

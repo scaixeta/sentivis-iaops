@@ -1,3 +1,8 @@
+---
+name: servicenow-itsm-sla-compliance
+description: Skill: ServiceNow ITSM SLA Compliance
+---
+
 # Skill: ServiceNow ITSM SLA Compliance
 
 Este skill capacita o agente a monitorar o cumprimento de acordos de nível de serviço (SLA) no ServiceNow, fornecendo métricas de eficiência para o Project Health.

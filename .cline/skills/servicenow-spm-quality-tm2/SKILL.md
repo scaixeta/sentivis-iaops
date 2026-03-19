@@ -1,3 +1,8 @@
+---
+name: servicenow-spm-quality-tm2
+description: Skill: ServiceNow SPM Quality TM2 (Test Management)
+---
+
 # Skill: ServiceNow SPM Quality TM2 (Test Management)
 
 Este skill capacita o agente a avaliar a qualidade e a confiabilidade das entregas no ServiceNow, integrando o desenvolvimento ágil com o Test Management 2.0 (TM2).

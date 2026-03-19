@@ -1,3 +1,8 @@
+---
+name: servicenow-spm-product-agile
+description: Skill: ServiceNow SPM Product Agile Evolution
+---
+
 # Skill: ServiceNow SPM Product Agile Evolution
 
 Este skill capacita o agente a rastrear a evolução de um produto no ServiceNow desde a sua concepção (Ideia) até a entrega ágil (Stories/Sprints), focando em indicadores de Valor e Velocidade conforme a metodologia Project Health.

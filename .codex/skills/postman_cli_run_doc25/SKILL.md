@@ -25,12 +25,18 @@ Usar para executar collections Postman via CLI no ambiente Windows, gerar relat�
 ### 2. Execução Segura via Wrapper
 **REGRA CRÍTICA DE EXECUÇÃO**: É estritamente proibido criar arquivos JSON de ambiente permanentes em `artifacts/` contendo segredos ou passá-los inline no terminal onde podem vazar nos logs. 
 
-Você **DEVE** utilizar o script wrapper seguro localizado no projeto:
+Se existir um wrapper seguro no projeto atual, ele deve ser preferido:
 ```powershell
 # Execução Segura recomendada
 .\scripts\run-postman.ps1
 ```
-Este script lerá as variáveis de `.scr/.env`, criará um arquivo temporário no diretório `%TEMP%`, executará a collection e deletará o JSON temporário imediatamente, mitigando o risco de vazamento em `artifacts/`.
+Quando presente, esse wrapper pode ler variaveis da fonte local configurada, criar arquivo temporario em `%TEMP%`, executar a collection e deletar o JSON temporario imediatamente, mitigando risco de vazamento em `artifacts/`.
+
+Se o wrapper nao existir no projeto atual:
+
+- nao presumir `.scr/.env`
+- nao criar arquivos permanentes com segredos
+- interromper e pedir ao PO a fonte segura real das variaveis
 
 ### 3. Validação de Variáveis
 
@@ -81,5 +87,6 @@ A skill gera os seguintes artefatos em `<artifacts>/postman-cli-run/<timestamp>/
 ## Observações
 
 - A execução direta do comando CLI só deve ser feita se o Postman estiver lendo variáveis locais ausentes de segredos.
-- Para qualquer injenção de `.scr/.env`, **recorra sempre ao PowerShell wrapper** (`run-postman.ps1`).
+- Se existir uma fonte como `.scr/.env`, ela so pode ser usada quando realmente presente no contexto alvo.
+- Para qualquer injecao de segredos, preferir wrapper seguro existente no projeto.
 - O Postman CLI usa `postman-cli` (não `postman`) no Windows.

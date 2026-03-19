@@ -1,3 +1,8 @@
+---
+name: servicenow-zurich-portfolio-management
+description: Skill: ServiceNow Zurich - Portfolio Management
+---
+
 # Skill: ServiceNow Zurich - Portfolio Management
 # Status: DRAFT (Based on Zurich 2025)
 

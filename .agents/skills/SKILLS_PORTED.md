@@ -62,3 +62,9 @@
 | skill | description | origin |
 |---|---|---|
 | vsm-strategic-optimizer | Framework avançado de Mapeamento de Fluxo de Valor (VSM). Diagnostica desperdícios Lean, calcula C/T e L/T, e propõe estado futuro focado em redução de Lead Time. | curadoria local (`.agent/skills`) |
+
+### Adaptações MCP Market
+
+| skill | description | origin |
+|---|---|---|
+| backend-feature-orchestrator-doc25 | Orquestrador ponta a ponta para desenvolvimento de funcionalidades backend | Adaptado de: Backend Feature Development Orchestrator (https://mcpmarket.com/tools/skills/backend-feature-development-orchestrator) |

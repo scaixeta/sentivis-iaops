@@ -1,3 +1,8 @@
+---
+name: servicenow-itsm-operational-stability
+description: Skill: ServiceNow ITSM Operational Stability
+---
+
 # Skill: ServiceNow ITSM Operational Stability
 
 Este skill capacita o agente a avaliar a estabilidade operacional de produtos e sistemas no ServiceNow, focando no impacto de Incidentes e Problemas na saúde do Project Health.

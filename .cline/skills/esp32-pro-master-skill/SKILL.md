@@ -1,4 +1,5 @@
 ---
+name: esp32-pro-master-skill
 description: ESP32 Pro Master Skill - Engenharia de Firmware Avançada
 ---
 

@@ -1,3 +1,8 @@
+---
+name: servicenow-spm-project-hybrid
+description: Skill: ServiceNow SPM Project Hybrid Health
+---
+
 # Skill: ServiceNow SPM Project Hybrid Health
 
 Este skill capacita o agente a avaliar a saúde de projetos híbridos (Waterfall + Ágil) no ServiceNow, integrando cronogramas tradicionais com execuções ágeis para gerar o Health Score (0-100).

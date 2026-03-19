@@ -1,68 +1,96 @@
-# REGRAS DO WORKSPACE (Codex – Padrão DOC2.5)
+# REGRAS DO WORKSPACE (Codex - Cindy - Padrao DOC2.5)
 
-Este documento consolida as regras globais e locais para operação do Codex no workspace MCP-Projects.
+Este documento define como o runtime Codex deve operar dentro da Cindy.
 
-## 1. Doutrina de Desenvolvimento (Fluxo DOC2.5)
+## 1. Precedencia Obrigatoria
 
-O Codex atua como Arquiteto + Executor e DEVE seguir estas etapas:
+O Codex deve obedecer a seguinte ordem:
 
-1. Entendimento
-2. Discovery de skills
-3. Planejamento
-4. Aprovação explícita do PO
-5. Execução MVP
-6. Rastreabilidade em `Dev_Tracking_SX.md`
+1. `rules/WORKSPACE_RULES.md` como fonte operacional local obrigatoria
+2. `Cindy_Contract.md` como contrato de descoberta e despacho
+3. este arquivo como adaptacao de runtime para Codex
+4. `README.md`, `Dev_Tracking.md`, `Dev_Tracking_SX.md` e docs canonicos
 
-### Trava de Aprovação de Plano (Gate)
+Se houver conflito, a regra local da raiz prevalece.
 
-Antes de qualquer edição/modificação:
+## 2. Fluxo DOC2.5 no Codex
 
-1. Apresentar plano completo
-2. Perguntar: "Você aprova este plano para execução?"
-3. Aguardar resposta do PO
+O Codex deve seguir este fluxo:
 
-Sem aprovação explícita, não executar alterações.
+1. Entendimento do pedido
+2. Leitura minima de contexto
+3. Discovery de skills em `.codex/skills/`
+4. Planejamento proporcional ao impacto
+5. Aprovacao explicita do PO quando houver gate
+6. Execucao com a menor mudanca necessaria
+7. Rastreabilidade em `Dev_Tracking_SX.md` e `tests/bugs_log.md` quando aplicavel
 
-## 2. Idioma e comunicação
+## 3. Idioma e Comunicacao
 
-- Respostas e documentação: pt-BR
-- Código/comandos/parâmetros: inglês
-- Comunicação: direta, técnica, sem floreios
+- respostas e documentacao em pt-BR
+- comandos, nomes de arquivo, identificadores e codigo em ingles quando necessario
+- comunicacao tecnica, direta e objetiva
 
-## 3. Padrão DOC2.5
+## 4. Baseline Canonico da Cindy
 
-- `README.md` na raiz é entrypoint único
-- `docs/` contém apenas: `SETUP.md`, `ARCHITECTURE.md`, `DEVELOPMENT.md`, `OPERATIONS.md`
-- Proibido `docs/README.md` e `docs/INDEX.md`
-- Cada projeto deve versionar `Templates/` local (Template Pack mínimo)
-- `.codex/templates/doc25/` é a fonte fallback embutida do agente, versionada no Git
-- Resolução obrigatória: usar `Templates/` local; se ausente, criar pack local a partir de `.codex/templates/doc25/` antes de gerar/atualizar docs
+O Codex deve assumir como baseline da Cindy:
 
-## 4. Política Git
+- `README.md` como entry point oficial
+- `Cindy_Contract.md` como contrato canonico
+- `Dev_Tracking.md` como indice mestre
+- `Dev_Tracking_SX.md` como sprint ativa
+- `docs/SETUP.md`, `docs/ARCHITECTURE.md`, `docs/DEVELOPMENT.md`, `docs/OPERATIONS.md`
+- `tests/bugs_log.md` como log centralizado
+- `Templates/` como fonte de geracao documental local
 
-- Não usar `git diff` por padrão
-- Usar `git status`/`git status --short` para inspeção
-- Commit somente por comando expresso do PO
+Nao presumir:
 
-### Trava Secret-Free (Higiene de Segredos)
+- `scripts/` na raiz como dependencia obrigatoria
+- `.scr/` como armazenamento obrigatorio
+- `.codex/templates/doc25/` como fallback necessario
 
-Antes de gerar relatórios, exportar arquivos JSON ou iniciar a Trava de Confirmação para Commit/Push:
-1. O agente DEVE varrer ativamente os arquivos afetados/artefatos gerados.
-2. Certificar-se de que NÃO HÁ injeção de senhas brutas, tokens ou vars derivadas de `.scr/.env`. Substituir sempre por `<redacted>`.
-3. Garantir que `artifacts/` ou saídas temporárias de CLI estejam ignoradas pelo `.gitignore`.
-4. **BLOQUEIO ABSOLUTO:** Se um secret foi gerado/escrito, abortar o fluxo, higienizar o arquivo e avisar o PO.
+## 5. Skills do Codex
 
-### Trava de Confirmação para Commit/Push
+- `.codex/skills/` e o runtime counterpart do Codex
+- `.agents/skills/` permanece a canonical authoring source of truth das skills comuns
+- quando houver drift relevante entre `.agents/skills/` e `.codex/skills/`, a Cindy deve avaliar se a divergencia e adaptacao legitima de runtime ou inconsistencia
+- o Codex deve priorizar skills antes de improvisar logica paralela
 
-Antes de `git commit` ou `git push`:
+## 6. Gates Obrigatorios
 
-1. Mostrar mensagem proposta
-2. Mostrar arquivos e remotes alvo
-3. Perguntar confirmação explícita do PO
-4. Executar somente após confirmação
+- alteracoes estruturais exigem plano e rastreabilidade
+- commit e push apenas com ordem expressa do PO
+- conclusao, conformidade ou fechamento de sprint exigem validacao manual conforme `rules/WORKSPACE_RULES.md`
+- somente o PO pode encerrar sprint
 
-## 5. Estrutura Codex versionada
+## 7. Politica Git
 
-- Fonte versionada no repo: `.codex/`
-- Runtime do Codex local: `~/.codex/skills/`
-- Sincronização via `.codex/scripts/sync-to-user-codex.sh`
+- nao usar `git diff` por padrao
+- usar `git status`, `git status --short`, `git log` e `git show` para inspecao
+- nunca executar `git commit` ou `git push` sem comando expresso do PO
+
+## 8. Seguranca
+
+- nunca versionar credenciais
+- nunca documentar segredos
+- nao presumir `.scr/.env` ou qualquer storage local de secrets se o artefato nao existir
+- se uma skill depender de credenciais, ela deve apontar explicitamente para a fonte real disponivel no contexto atual
+
+## 9. Validacao da Stack Codex
+
+Os scripts internos de `.codex/scripts/` servem apenas para:
+
+- sincronizar `.codex/skills/` com o runtime local do usuario
+- validar a integridade minima da stack `.codex/`
+
+Eles nao substituem os gates operacionais definidos em `rules/WORKSPACE_RULES.md`.
+
+## 10. Referencias
+
+- `rules/WORKSPACE_RULES.md`
+- `Cindy_Contract.md`
+- `README.md`
+- `Dev_Tracking.md`
+- `Dev_Tracking_SX.md`
+- `.codex/skills/`
+- `.agents/skills/`

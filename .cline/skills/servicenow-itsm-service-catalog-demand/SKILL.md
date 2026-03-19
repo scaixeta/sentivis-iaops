@@ -1,3 +1,8 @@
+---
+name: servicenow-itsm-service-catalog-demand
+description: Skill: ServiceNow ITSM Service Catalog Demand
+---
+
 # Skill: ServiceNow ITSM Service Catalog Demand
 
 Este skill capacita o agente a rastrear demandas originadas no Catálogo de Serviços do ServiceNow, integrando o fluxo de Requisições com a evolução do Produto.

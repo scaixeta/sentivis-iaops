@@ -2,51 +2,102 @@
 
 ## Proposito
 
-Descrever como o sistema esta organizado em termos de governanca, componentes, fluxos e integracoes.
+Descrever a arquitetura conceitual do projeto, suas camadas, fronteiras, componentes principais, fluxos centrais, fontes de evidencia e decisoes arquiteturais relevantes.
 
-## Visao geral da arquitetura
+## 1. Visao geral da arquitetura
 
-- papel do projeto
-- camadas principais
-- limites do que faz parte do modelo canonico
+- Papel do projeto: `{{PROJECT_ROLE}}`
+- Tipo de arquitetura: `{{ARCHITECTURE_TYPE}}`
+- Escopo arquitetural atual: `{{ARCHITECTURE_SCOPE}}`
+- Limite do modelo atual: `{{CURRENT_ARCHITECTURE_BOUNDARY}}`
 
-## Componentes principais
+## 2. Camadas principais
 
-- regras e governanca
-- runtime de skills
-- workflows
-- documentacao canonica
-- utilitarios e scripts
+### 2.1 Governanca
 
-## Fluxos principais
+- `{{GOVERNANCE_COMPONENT_1}}`
+- `{{GOVERNANCE_COMPONENT_2}}`
+- `{{GOVERNANCE_COMPONENT_3}}`
 
-### Fluxo 1: Descoberta e planejamento
+### 2.2 Nucleo funcional
 
-- identificar orchestrator ou runtime
-- carregar regras e tracking
-- consultar skills e workflows
-- propor plano ao PO
+- `{{CORE_COMPONENT_1}}`
+- `{{CORE_COMPONENT_2}}`
+- `{{CORE_COMPONENT_3}}`
 
-### Fluxo 2: Execucao e rastreabilidade
+### 2.3 Memoria, evidencia ou conhecimento
 
-- executar a menor mudanca necessaria
-- atualizar tracking e testes
-- registrar `Timestamp UTC`
+- `{{KNOWLEDGE_COMPONENT_1}}`
+- `{{KNOWLEDGE_COMPONENT_2}}`
+- `{{KNOWLEDGE_COMPONENT_3}}`
 
-## Integracoes externas
+### 2.4 Operacao e validacao
 
-- listar apenas integracoes reais do projeto
-- remover referencias a ferramentas ou projetos externos que nao facam parte da base
+- `{{OPERATIONS_COMPONENT_1}}`
+- `{{OPERATIONS_COMPONENT_2}}`
+- `{{OPERATIONS_COMPONENT_3}}`
 
-## Decisoes arquiteturais relevantes
+## 3. Componentes principais
 
-- registrar apenas decisoes reais e ja tomadas
-- referenciar `Dev_Tracking_SX.md` quando houver decisao de sprint
+- `{{MAIN_COMPONENT_1}}`
+- `{{MAIN_COMPONENT_2}}`
+- `{{MAIN_COMPONENT_3}}`
+- `{{MAIN_COMPONENT_4}}`
 
-## Relacao com outros artefatos
+## 4. Fluxos principais
 
-- `DEVELOPMENT.md`
-- `OPERATIONS.md`
+### 4.1 Descoberta e planejamento
+
+- `{{FLOW_DISCOVERY_STEP_1}}`
+- `{{FLOW_DISCOVERY_STEP_2}}`
+- `{{FLOW_DISCOVERY_STEP_3}}`
+- `{{FLOW_DISCOVERY_STEP_4}}`
+
+### 4.2 Execucao e rastreabilidade
+
+- `{{FLOW_EXECUTION_STEP_1}}`
+- `{{FLOW_EXECUTION_STEP_2}}`
+- `{{FLOW_EXECUTION_STEP_3}}`
+- `{{FLOW_EXECUTION_STEP_4}}`
+
+### 4.3 Validacao e aprendizado
+
+- `{{FLOW_VALIDATION_STEP_1}}`
+- `{{FLOW_VALIDATION_STEP_2}}`
+- `{{FLOW_VALIDATION_STEP_3}}`
+
+## 5. Fronteiras arquiteturais
+
+- O que faz parte: `{{IN_SCOPE_ARCHITECTURE}}`
+- O que nao faz parte: `{{OUT_OF_SCOPE_ARCHITECTURE}}`
+- Dependencias externas reais: `{{REAL_EXTERNAL_DEPENDENCIES}}`
+- Integracoes ainda nao implantadas: `{{NOT_YET_IMPLEMENTED_INTEGRATIONS}}`
+
+## 6. Evidencias e verdade canonica
+
+- Fontes primarias: `{{PRIMARY_EVIDENCE_SOURCES}}`
+- Fontes secundarias: `{{SECONDARY_EVIDENCE_SOURCES}}`
+- Inferencias arquiteturais ativas: `{{ACTIVE_ARCHITECTURE_INFERENCES}}`
+- Confirmacoes do PO que alteram o canonico: `{{PO_ARCHITECTURE_CONFIRMATIONS}}`
+
+## 7. Decisoes arquiteturais relevantes
+
+- Registrar apenas decisoes reais e ja tomadas
+- Referenciar `Dev_Tracking_SX.md` quando houver decisao de sprint
+- Explicitar impacto e fronteira alterada quando a decisao mudar o desenho do projeto
+
+Exemplos:
+
+- `{{ARCH_DECISION_1}}`
+- `{{ARCH_DECISION_2}}`
+- `{{ARCH_DECISION_3}}`
+
+## 8. Relacao com outros artefatos
+
+- `README.md`
+- `docs/SETUP.md`
+- `docs/DEVELOPMENT.md`
+- `docs/OPERATIONS.md`
 - `Dev_Tracking.md`
 - `Dev_Tracking_SX.md`
 - `tests/bugs_log.md`

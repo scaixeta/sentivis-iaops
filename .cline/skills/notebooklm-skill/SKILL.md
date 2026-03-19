@@ -1,4 +1,5 @@
 ---
+name: notebooklm-skill
 description: Integração com Google NotebookLM / RAG Assistant
 ---
 

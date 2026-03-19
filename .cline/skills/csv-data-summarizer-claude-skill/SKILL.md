@@ -1,4 +1,5 @@
 ---
+name: csv-data-summarizer-claude-skill
 description: CSV Data Summarizer
 ---
 

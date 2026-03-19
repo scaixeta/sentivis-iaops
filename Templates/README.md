@@ -1,33 +1,61 @@
-# Template Pack DOC2.5 (Local do Projeto)
+# {{PROJECT_NAME}}
 
-Este diretorio contem o pack local de templates DOC2.5 da Cindy.
+## {{WORKSTREAM_NAME}}
 
-## Uso recomendado
+Resumo executivo do projeto em pt-BR, com foco no objetivo atual, no valor esperado e no limite de escopo da sprint/fase em vigor.
 
-1. Usar os arquivos deste diretorio como base para documentacao
-2. Adaptar apenas o conteudo especifico do projeto, preservando o modelo canonico
-3. Manter o pack versionado no repositorio
+---
 
-## Fonte fallback do agente
+## 1. Visao geral
 
-- `.clinerules/templates/doc25/`
+O `{{PROJECT_NAME}}` e o repositorio raiz para:
 
-## Arquivos do pack
+- {{PRIMARY_SCOPE_1}}
+- {{PRIMARY_SCOPE_2}}
+- {{PRIMARY_SCOPE_3}}
+
+Objetivos principais:
+
+- {{MAIN_OBJECTIVE_1}}
+- {{MAIN_OBJECTIVE_2}}
+- {{MAIN_OBJECTIVE_3}}
+
+## 2. Estado atual
+
+- Sprint ativa: `{{ACTIVE_SPRINT}}`
+- Estado da sprint: `{{SPRINT_STATUS}}`
+- Fase atual: `{{CURRENT_PHASE}}`
+- Escopo aprovado: `{{APPROVED_SCOPE}}`
+
+## 3. Controle de sprints
+
+| Sprint | Periodo | Estado | Tracking | Observacoes |
+| --- | --- | --- | --- | --- |
+| {{ACTIVE_SPRINT}} | {{SPRINT_PERIOD}} | {{SPRINT_STATUS}} | `Dev_Tracking_{{ACTIVE_SPRINT}}.md` | {{SPRINT_NOTES}} |
+
+## 4. Pendencias Atuais
+
+- `{{PENDING_ITEM_1}}`
+- `{{PENDING_ITEM_2}}`
+- `{{PENDING_ITEM_3}}`
+
+## 5. Artefatos Canonicos
 
 - `README.md`
-- `SETUP.md`
-- `ARCHITECTURE.md`
-- `DEVELOPMENT.md`
-- `OPERATIONS.md`
 - `Dev_Tracking.md`
-- `Dev_Tracking_SPRINT_Template.md`
-- `bugs_log.md`
+- `Dev_Tracking_{{ACTIVE_SPRINT}}.md`
+- `docs/SETUP.md`
+- `docs/ARCHITECTURE.md`
+- `docs/DEVELOPMENT.md`
+- `docs/OPERATIONS.md`
+- `tests/bugs_log.md`
 
-## Regras do pack
 
-- `README.md` na raiz e o entry point unico
-- `README.md` deve terminar com `## Cindy — Orquestradora (Context Router)` e imagem centralizada (`.brand/Cindy.jpg`)
-- `docs/` deve conter apenas `SETUP.md`, `ARCHITECTURE.md`, `DEVELOPMENT.md` e `OPERATIONS.md`
-- `Dev_Tracking_SX.md` fica na raiz enquanto a sprint estiver ativa
-- `tests/bugs_log.md` centraliza bugs e testes
-- `Timestamp UTC` deve existir nos artefatos de tracking
+## Cindy — Orquestradora (Context Router)
+
+A Cindy é o agente principal do projeto. Em cada run, ela identifica o orchestrator ativo (Cline/Codex/Antigravity), a superfície de execução (VSCode/CLI) e o workspace root; em seguida, descobre e seleciona as skills/workflows disponíveis no contexto atual, respeitando os gates DOC2.5 (plano aprovado antes de execução; commit/push apenas sob ordem explícita do PO).
+
+<p align="center">
+  <img src=".brand/Cindy.jpg" alt="Cindy — Orquestradora" width="220" />
+</p>
+

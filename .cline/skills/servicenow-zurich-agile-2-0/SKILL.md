@@ -1,3 +1,8 @@
+---
+name: servicenow-zurich-agile-2-0
+description: Skill: ServiceNow Zurich - Agile Development 2.0
+---
+
 # Skill: ServiceNow Zurich - Agile Development 2.0
 # Status: DRAFT (Based on Zurich 2025)
 

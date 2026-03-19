@@ -1,6 +1,6 @@
 ---
 name: doc25-rules-policy
-description: Aplicar políticas globais DOC2.5 de idioma, comunicação, documentação, git e segurança no Codex.
+description: Aplicar políticas globais DOC2.5 de idioma, comunicação, documentação, git e segurança no Cline.
 ---
 
 Aplicar continuamente:

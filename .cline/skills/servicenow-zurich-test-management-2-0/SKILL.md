@@ -1,3 +1,8 @@
+---
+name: servicenow-zurich-test-management-2-0
+description: Skill: ServiceNow Zurich - Test Management 2.0
+---
+
 # Skill: ServiceNow Zurich - Test Management 2.0
 # Status: DRAFT (Based on Zurich 2025)
 

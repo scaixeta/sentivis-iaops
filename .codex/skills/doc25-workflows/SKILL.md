@@ -15,11 +15,14 @@ Usar quando o usuário pedir para atualizar docs, encerrar sprint, preparar comm
 
 ## Procedimento
 1) Determinar qual workflow se aplica:
+   - `doc25-context-check`: Higiene de contexto por etapa
    - `/docs-doc25`: Atualização de documentação canônica
    - `/dev-doc25`: Desenvolvimento completo
+   - `doc25-preflight`: Gate de validação antes de alegar conformidade
    - `/commit-doc25`: Commit (somente por comando do PO)
    - `/init`: Inicialização de contexto
 2) Coletar evidência: listar arquivos alterados, resumir edições pretendidas, propor menor conjunto de atualizações.
 3) Executar apenas o que o PO solicitou (atualizações de docs, tasks, bug log).
 4) Para "encerrar sprint": verificar Dev_Tracking atualizado, tasks atualizadas, bugs conhecidos registrados.
 5) Validar checkpoints DOC2.5 obrigatórios antes de declarar conclusão.
+6) Bloquear linguagem de encerramento prematuro sem ordem explícita do PO.

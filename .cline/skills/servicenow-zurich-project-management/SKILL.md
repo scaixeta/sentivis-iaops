@@ -1,3 +1,8 @@
+---
+name: servicenow-zurich-project-management
+description: Skill: ServiceNow Zurich - Project Management
+---
+
 # Skill: ServiceNow Zurich - Project Management
 # Status: DRAFT (Based on Zurich 2025)
 
