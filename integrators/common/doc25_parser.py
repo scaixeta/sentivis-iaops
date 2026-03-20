@@ -40,7 +40,7 @@ def extract_items(content: str, sprint: str) -> list[Doc25Item]:
     # Exemplo: | To-Do | ST-S1-01 - Levantar campos, issue types... |
     # Aceita tanto - (hifen) quanto – (travessao)
     backlog_pattern = re.compile(
-        r"\|\s*(To-Do|Doing|Done|Accepted|Pending-SX)\s*\|\s*([A-Z]+-S\d+-\d+)\s*[-–—]\s*([^\|]+)\s*\|",
+        r"\|\s*(To-Do|Doing|Done|Accepted|Pending-S(?:\d+|X))\s*\|\s*([A-Z]+-S\d+-\d+)\s*[-–—]\s*([^\|]+)\s*\|",
         re.IGNORECASE
     )
 
@@ -167,6 +167,109 @@ def get_status_mapping() -> dict:
         "Done": "Done",
         "Accepted": "Done",
         "Pending-SX": "To Do",
+    }
+
+
+@dataclass
+class Doc25Timestamp:
+    """Timestamp de um item no tracking DOC2.5."""
+    item_id: str
+    start: Optional[str]  # YYYY-MM-DDTHH:MM:SS-ST
+    finish: Optional[str]  # YYYY-MM-DDTHH:MM:SS-FN ou "-"
+    status: str
+
+
+def extract_timestamps(content: str) -> list[Doc25Timestamp]:
+    """Extrai timestamps da secao ## 6. Timestamp UTC."""
+    timestamps = []
+
+    # Procura secao de Timestamp UTC
+    ts_pattern = re.compile(
+        r"##\s*6\.\s*Timestamp UTC.*?(?=##|\Z)",
+        re.DOTALL
+    )
+    ts_section = ts_pattern.search(content)
+    if not ts_section:
+        return timestamps
+
+    # Processa linha por linha usando split("|")
+    for line in ts_section.group(0).split("\n"):
+        line = line.strip()
+        # Pula linhas vazias, header ou separadores
+        if not line or line.startswith("Event") or "---" in line:
+            continue
+        
+        # Parse: ST-S0-01 | 2026-03-11T02:15:56-ST | 2026-03-11T02:15:56-FN | Done
+        parts = [p.strip() for p in line.split("|")]
+        if len(parts) < 4:
+            continue
+        
+        item_id = parts[0]
+        # Valida se e um ID valido
+        if not re.match(r"^[A-Z]+-S\d+-\d+$", item_id):
+            continue
+        
+        start = parts[1] if parts[1] not in ("", "-") else None
+        finish = parts[2] if parts[2] not in ("", "-") else None
+        status = parts[3]
+
+        timestamps.append(Doc25Timestamp(
+            item_id=item_id,
+            start=start,
+            finish=finish,
+            status=status
+        ))
+
+    return timestamps
+
+
+def timestamp_to_date(ts: Optional[str]) -> Optional[str]:
+    """Converte timestamp DOC2.5 para data ISO (YYYY-MM-DD).
+    
+    Formato entrada: YYYY-MM-DDTHH:MM:SS-ST ou YYYY-MM-DDTHH:MM:SS-FN
+    Formato saida: YYYY-MM-DD
+    """
+    if not ts:
+        return None
+    # Extrai apenas a parte da data
+    match = re.match(r"(\d{4}-\d{2}-\d{2})", ts)
+    if match:
+        return match.group(1)
+    return None
+
+
+def parse_sprint_backlog(tracking_file: str | Path) -> dict:
+    """
+    Parser principal do tracking DOC2.5.
+
+    Retorna:
+        {
+            "sprint": "S1",
+            "items": [Doc25Item, ...],
+            "decisions": [Doc25Item, ...],
+            "objectives": [str, ...],
+            "timestamps": [Doc25Timestamp, ...]
+        }
+    """
+    path = Path(tracking_file)
+    if not path.exists():
+        print(f"[ERRO] Arquivo nao encontrado: {path}")
+        return {"sprint": "", "items": [], "decisions": [], "objectives": [], "timestamps": []}
+
+    content = path.read_text(encoding="utf-8")
+    sprint = parse_sprint_id(path.name)
+
+    items = extract_items(content, sprint or "S1")
+    decisions = extract_decisions(content)
+    objectives = extract_objectives(content)
+    timestamps = extract_timestamps(content)
+
+    return {
+        "sprint": sprint or "S1",
+        "items": items,
+        "decisions": decisions,
+        "objectives": objectives,
+        "timestamps": timestamps,
     }
 
 

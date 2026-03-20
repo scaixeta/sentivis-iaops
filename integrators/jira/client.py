@@ -16,6 +16,7 @@ import base64
 import json
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Any
@@ -127,11 +128,41 @@ class JiraClient:
         project_key: str,
         max_results: int = 50,
         start_at: int = 0,
+        fields: str = "summary,labels,issuetype,status,project",
     ) -> dict:
         """GET /rest/api/3/search/jql - Busca issues por projeto."""
         jql = f"project = {project_key} ORDER BY created DESC"
-        params = f"jql={urllib.parse.quote(jql)}&maxResults={max_results}&startAt={start_at}"
-        return self._make_request("GET", f"{self.API_BASE}/search/jql?{params}")
+        params = {
+            "jql": jql,
+            "maxResults": str(max_results),
+            "startAt": str(start_at),
+            "fields": fields,
+        }
+        query = urllib.parse.urlencode(params, quote_via=urllib.parse.quote)
+        response = self._make_request("GET", f"{self.API_BASE}/search/jql?{query}")
+
+        issues = list(response.get("issues", []))
+        next_page_token = response.get("nextPageToken")
+        is_last = response.get("isLast", True)
+
+        while next_page_token and not is_last:
+            next_params = {
+                "jql": jql,
+                "maxResults": str(max_results),
+                "startAt": str(start_at),
+                "nextPageToken": next_page_token,
+                "fields": fields,
+            }
+            next_query = urllib.parse.urlencode(next_params, quote_via=urllib.parse.quote)
+            page = self._make_request("GET", f"{self.API_BASE}/search/jql?{next_query}")
+            issues.extend(page.get("issues", []))
+            next_page_token = page.get("nextPageToken")
+            is_last = page.get("isLast", True)
+
+        response["issues"] = issues
+        response["isLast"] = True
+        response.pop("nextPageToken", None)
+        return response
 
     def get_issue(self, issue_key: str) -> dict:
         """GET /rest/api/3/issue/{key} - Obtem issue especifica."""
@@ -199,6 +230,82 @@ class JiraClient:
     def get_statuses(self) -> dict:
         """GET /rest/api/3/status - Lista statuses."""
         return self._make_request("GET", f"{self.API_BASE}/status")
+
+    # === Agile API (Jira Software) ===
+
+    def get_boards(self, project_key_or_id: str, max_results: int = 50) -> dict:
+        """GET /rest/agile/1.0/board - Lista boards por projeto."""
+        params = {
+            "projectKeyOrId": project_key_or_id,
+            "maxResults": str(max_results),
+        }
+        query = urllib.parse.urlencode(params, quote_via=urllib.parse.quote)
+        return self._make_request("GET", f"/rest/agile/1.0/board?{query}")
+
+    def get_sprints(self, board_id: int, state: str = "active,future,closed", max_results: int = 100) -> dict:
+        """GET /rest/agile/1.0/board/{boardId}/sprint - Lista sprints de um board."""
+        params = {
+            "state": state,
+            "maxResults": str(max_results),
+        }
+        query = urllib.parse.urlencode(params, quote_via=urllib.parse.quote)
+        return self._make_request("GET", f"/rest/agile/1.0/board/{board_id}/sprint?{query}")
+
+    def create_sprint(self, name: str, origin_board_id: int, goal: str = "") -> dict:
+        """POST /rest/agile/1.0/sprint - Cria um novo sprint."""
+        data = {
+            "name": name,
+            "originBoardId": origin_board_id,
+        }
+        if goal:
+            data["goal"] = goal
+        return self._make_request("POST", "/rest/agile/1.0/sprint", data)
+
+    def get_sprint_issues(self, sprint_id: int, max_results: int = 100, fields: str = "summary,labels") -> dict:
+        """GET /rest/agile/1.0/sprint/{sprintId}/issue - Lista issues de um sprint."""
+        params = {
+            "maxResults": str(max_results),
+            "fields": fields,
+        }
+        query = urllib.parse.urlencode(params, quote_via=urllib.parse.quote)
+        return self._make_request("GET", f"/rest/agile/1.0/sprint/{sprint_id}/issue?{query}")
+
+    def add_issues_to_sprint(self, sprint_id: int, issue_keys: list[str]) -> dict:
+        """POST /rest/agile/1.0/sprint/{sprintId}/issue - Adiciona issues ao sprint."""
+        # Jira aceita max 50 issues por request
+        results = []
+        for i in range(0, len(issue_keys), 50):
+            chunk = issue_keys[i:i + 50]
+            data = {"issues": chunk}
+            result = self._make_request("POST", f"/rest/agile/1.0/sprint/{sprint_id}/issue", data)
+            results.append(result)
+        return {"chunks": len(results), "results": results}
+
+    def get_sprint(self, sprint_id: int) -> dict:
+        """GET /rest/agile/1.0/sprint/{sprintId} - Obtem detalhes de um sprint."""
+        return self._make_request("GET", f"/rest/agile/1.0/sprint/{sprint_id}")
+
+    def update_sprint(
+        self,
+        sprint_id: int,
+        name: str,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        state: str | None = None,
+        goal: str | None = None,
+    ) -> dict:
+        """PUT /rest/agile/1.0/sprint/{sprintId} - Atualiza sprint (datas, estado, objetivo)."""
+        # Jira requer campo 'name' obrigatório
+        data = {"name": name}
+        if start_date is not None:
+            data["startDate"] = start_date
+        if end_date is not None:
+            data["endDate"] = end_date
+        if state is not None:
+            data["state"] = state
+        if goal is not None:
+            data["goal"] = goal
+        return self._make_request("PUT", f"/rest/agile/1.0/sprint/{sprint_id}", data)
 
 
 def test_connection() -> bool:

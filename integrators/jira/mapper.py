@@ -27,14 +27,22 @@ class JiraPayload:
     labels: list
 
 
+# Nota: O Jira Cloud pode ter Sprint nativo (via Jira Software).
+# Este integrator usa LABELS como fallback quando Sprint nativo nao esta disponivel.
+# Labels usadas:
+#   - sprint_s0, sprint_s1, sprint_s2: indicativo de sprint via label
+#   - tracking_<ID>: rastreabilidade unica do item DOC2.5
+#   - type_<TYPE>: tipo do item (ST, BUG, CR, etc)
+# Se o projeto STVIA tiver board/sprint nativo, isso deve ser verificado via discover.
+
 def build_labels(item: Doc25Item, state: JiraState) -> list[str]:
     """Constrói labels para issue Jira."""
     labels = list(state.labels_base)
 
-    # Label de sprint
+    # Label de sprint (LABEL FALLBACK - nao e campo Sprint nativo)
     labels.append(f"sprint_{item.sprint.lower()}")
 
-    # Label de tracking
+    # Label de tracking (identificador unico)
     labels.append(f"tracking_{item.id}")
 
     # Label de tipo

@@ -142,6 +142,113 @@ Nenhum bug registrado até o momento.
 
 ---
 
+## 5. Sprint S2
+
+### 4. Bugs Registrados
+
+- `BUG-S2-01` – Bug aberto herdado da S1 para triagem e qualificação funcional
+  - Origem: herança direta do `BUG-S1-01` (pendente ao fim da S1)
+  - Estado: corrigido
+  - Correção: `reconcile` passou a aplicar escopo por label de sprint do tracking (`sprint_sX`), evitando falsos orphans quando o projeto tem issues de outras sprints
+  - Evidência: TEST-S2-12 aprovado
+  - Referências: `integrators/jira/cli.py`, `Dev_Tracking_S2.md`, `Sprint/Dev_Tracking_S1.md`
+
+- `BUG-S2-02` – Listagem Jira retornando payload mínimo e reconcile preso ao tracking padrão
+  - Origem: `search/jql` devolvia somente `id`/paginação sem `fields`, `reconcile` estava acoplado ao tracking ativo e o parser não reconhecia `Pending-S2`
+  - Estado: corrigido
+  - Correção: `get_project_issues()` agora solicita campos úteis e pagina automaticamente; `reconcile` aceita `--tracking-file`; parser DOC2.5 reconhece `Pending-S2`
+  - Evidência: TEST-S2-05, TEST-S2-06 e TEST-S2-07 aprovados
+  - Referências: `integrators/jira/client.py`, `integrators/jira/cli.py`, `integrators/common/doc25_parser.py`
+
+### 5. Testes Registrados
+
+- `TEST-S2-01` – Validação de transporte S0 para Jira
+  - Escopo: executar sync com --tracking-file Sprint/Dev_Tracking_S0.md
+  - Resultado: aprovado
+  - Evidências: 10 issues criadas no Jira (STVIA-25 a STVIA-34), labels sprint_s0 e tracking_ST-S0-XX
+
+- `TEST-S2-02` – Validação de transporte S1 para Jira
+  - Escopo: executar sync com --tracking-file Sprint/Dev_Tracking_S1.md
+  - Resultado: aprovado
+  - Evidências: 10 issues criadas no Jira (STVIA-35 a STVIA-44), labels sprint_s1 e tracking_ST-S1-XX
+
+- `TEST-S2-03` – Validação de suporte a --tracking-file
+  - Escopo: confirmar que CLI aceita argumento --tracking-file
+  - Resultado: aprovado
+  - Evidências: sync com arquivo Sprint/Dev_Tracking_S0.md e Sprint/Dev_Tracking_S1.md funcionou
+
+- `TEST-S2-04` – Validação de suporte a --yes para auto-confirmação
+  - Escopo: confirmar que CLI aceita --yes para executar sem interação
+  - Resultado: aprovado
+  - Evidências: sync executado com --yes sem pedir confirmação
+
+- `TEST-S2-05` – Validação da listagem Jira com campos completos
+  - Escopo: confirmar que `search/jql` retorna `key`, `summary`, `labels` e `issuetype`
+  - Resultado: aprovado
+  - Evidências: 20 issues com campos completos visíveis
+
+- `TEST-S2-06` – Validação de reconcile com tracking arquivado
+  - Escopo: confirmar que `reconcile` aceita `--tracking-file` para S1 arquivada e S2 ativa
+  - Resultado: aprovado
+  - Evidências: `python -m integrators.jira reconcile --tracking-file Sprint/Dev_Tracking_S1.md` funciona
+
+- `TEST-S2-07` – Validação de parser DOC2.5 para estados Pending-S2
+  - Escopo: confirmar que o parser reconhece backlog com `Pending-S2`
+  - Resultado: aprovado
+  - Evidências: `python -m integrators.jira reconcile` enxerga os 15 itens locais da S2
+
+- `TEST-S2-08` – Validação de labels de sprint já atribuídas
+  - Escopo: confirmar que todas as issues S0 e S1 têm labels sprint_s0 / sprint_s1
+  - Resultado: aprovado
+  - Evidências:
+    - JQL: `project = STVIA` retornou 20 issues com campos completos
+    - S0: 10 issues (STVIA-25 a STVIA-34) têm label `sprint_s0`
+    - S1: 10 issues (STVIA-35 a STVIA-44) têm label `sprint_s1`
+    - Cada issue também tem label `tracking_<ID>`
+
+- `TEST-S2-09` – Validação de correção de CLI sync default para S2
+  - Escopo: confirmar que sync default agora usa Dev_Tracking_S2.md
+  - Resultado: aprovado
+  - Evidências: `python -m integrators.jira sync --dry-run` usa S2 por padrão
+
+- `TEST-S2-10` – Validação de compilação dos módulos após correções
+  - Escopo: confirmar que todos os módulos compilam sem erros
+  - Resultado: aprovado
+  - Evidências: py_compile executado com sucesso em todos os módulos
+
+- `TEST-S2-11` – Validação de documentação de labels vs Sprint nativo
+  - Escopo: confirmar que mapper.py documenta claramente que usa labels como fallback
+  - Resultado: aprovado
+  - Evidências: `integrators/jira/mapper.py` contém nota explicativa sobre labels vs Sprint nativo
+
+- `TEST-S2-12` – Validação de reconcile com escopo por sprint do tracking
+  - Escopo: confirmar que `reconcile` não marca como orphan issues de outras sprints quando há label `sprint_sX`
+  - Resultado: aprovado
+  - Evidências:
+    - `python -m integrators.jira reconcile` mostra escopo `sprint_s2` e elimina falsos orphans de S0/S1
+    - `python -m integrators.jira reconcile --tracking-file Sprint/Dev_Tracking_S1.md` mostra escopo `sprint_s1` e orphans coerentes com a sprint
+
+- `TEST-S2-13` – Validação de comando sprint dates para definição de datas
+  - Escopo: confirmar que o comando `sprint dates` define datas de início e fim em sprints nativos
+  - Resultado: aprovado
+  - Evidências:
+    - Sprint S0: datas definidas (2026-03-10 a 2026-03-13)
+    - Sprint S1: datas definidas (2026-03-13 a 2026-03-20)
+    - Jira retorna os campos startDate e endDate corretamente
+    - Documentação atualizada em docs/OPERATIONS.md
+
+- `TEST-S2-14` – Validação de sincronização de datas de issues com timestamps do tracking
+  - Escopo: confirmar que o comando `issue dates` sincroniza datas das issues Jira com timestamps DOC2.5
+  - Resultado: aprovado
+  - Evidências:
+    - Comando: `python -m integrators.jira issue dates --tracking-file Sprint/Dev_Tracking_S0.md --dry-run` e `--yes`
+    - Parser extrai timestamps da seção ## 6. Timestamp UTC
+    - 18 issues atualizadas com Start Date e Due Date
+    - Mapeamento: Start Date = timestamp start (data), Data Limite = timestamp finish (data)
+    - Documentação atualizada em docs/ARCHITECTURE.md e docs/OPERATIONS.md
+
+---
+
 ## 6. Timestamp UTC
 
 Event | Start | Finish | Status
@@ -165,6 +272,18 @@ TEST-S1-09 | 2026-03-19T21:55:00-ST | 2026-03-19T21:57:00-FN | Passed
 TEST-S1-10 | 2026-03-20T00:04:00-ST | 2026-03-20T00:05:00-FN | Passed
 TEST-S1-11 | 2026-03-20T00:16:00-ST | 2026-03-20T00:17:00-FN | Passed
 BUG-S1-02 | 2026-03-19T21:30:00-ST | 2026-03-19T21:31:00-FN | Closed
+BUG-S2-01 | 2026-03-20T01:31:05-ST | 2026-03-20T03:25:00-FN | Closed
+BUG-S2-02 | 2026-03-20T01:44:00-ST | 2026-03-20T01:44:00-FN | Closed
+TEST-S2-05 | 2026-03-20T01:44:00-ST | 2026-03-20T01:44:30-FN | Passed
+TEST-S2-06 | 2026-03-20T01:44:30-ST | 2026-03-20T01:45:00-FN | Passed
+TEST-S2-07 | 2026-03-20T01:45:00-ST | 2026-03-20T01:45:30-FN | Passed
+TEST-S2-08 | 2026-03-20T02:10:00-ST | 2026-03-20T02:10:30-FN | Passed
+TEST-S2-09 | 2026-03-20T02:10:30-ST | 2026-03-20T02:11:00-FN | Passed
+TEST-S2-10 | 2026-03-20T02:11:00-ST | 2026-03-20T02:11:30-FN | Passed
+TEST-S2-11 | 2026-03-20T02:11:30-ST | 2026-03-20T02:12:00-FN | Passed
+TEST-S2-12 | 2026-03-20T03:25:00-ST | 2026-03-20T03:26:00-FN | Passed
+TEST-S2-13 | 2026-03-20T04:10:00-ST | 2026-03-20T04:15:00-FN | Passed
+TEST-S2-14 | 2026-03-20T04:33:00-ST | 2026-03-20T00:53:30-FN | Passed
 
 ## 7. Ressalvas Técnicas
 
@@ -175,4 +294,4 @@ BUG-S1-02 | 2026-03-19T21:30:00-ST | 2026-03-19T21:31:00-FN | Closed
 
 ## 8. Sprints Futuras
 
-Sprints subsequentes (S1, S2, etc.) serão adicionadas conforme o progresso do projeto.
+Sprints subsequentes (S3, S4, etc.) serão adicionadas conforme o progresso do projeto.

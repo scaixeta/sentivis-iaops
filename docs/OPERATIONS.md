@@ -378,9 +378,122 @@ python -m integrators.jira reconcile
 ### Limitações Conhecidas
 
 1. **Sem Epic**: STVIA não tem Epic configurado, usa-se "Tarefa"
-2. **Sem Sprint nativa**: Jira não tem sprint configurado
+2. **Sprint nativa**: Implementada via comando `sprint assign` (labels como fallback)
 3. **Unidirecional**: Sync local -> Jira apenas (sem write-back)
 4. **Labels fixed**: `doc25`, `sentivis`, `tracking_<id>` são fixas
+
+### Sprint Nativo (Comandos)
+
+O integrator agora suporta atribuição de issues a sprints nativos do Jira Software:
+
+```bash
+# Verificar boards e sprints
+python -m integrators.jira sprint status
+
+# Atribuir issues por label (dry-run)
+python -m integrators.jira sprint assign --label sprint_s0 --sprint-name "Sprint S0" --dry-run
+
+# Atribuir issues por label (execução)
+python -m integrators.jira sprint assign --label sprint_s0 --sprint-name "Sprint S0" --yes
+```
+
+Fluxo:
+1. `sprint status` lista boards e sprints existentes com contagem de issues
+2. `sprint assign` filtra issues por label (`sprint_s0`, `sprint_s1`, etc.)
+3. Atribui issues ao campo Sprint nativo do Jira
+4. Labels permanecem como metadata de fallback
+
+Exemplo de mapeamento:
+- Label `sprint_s0` → Sprint nativo "Sprint S0"
+- Label `sprint_s1` → Sprint nativo "Sprint S1"
+
+### Sprint Dates (Comandos)
+
+O integrator suporta definição de datas de início e fim para sprints nativos:
+
+```bash
+# Verificar datas atuais (dry-run)
+python -m integrators.jira sprint dates --sprint-name "Sprint S0" --start-date 2026-03-20 --end-date 2026-04-02 --dry-run
+
+# Definir datas do sprint (execução)
+python -m integrators.jira sprint dates --sprint-name "Sprint S0" --start-date 2026-03-20 --end-date 2026-04-02 --yes
+```
+
+Formato de datas:
+- Entrada: `YYYY-MM-DD` (ex: `2026-03-20`)
+- Saída (ISO8601 UTC):
+  - startDate: `YYYY-MM-DDT00:00:00.000Z`
+  - endDate: `YYYY-MM-DDT23:59:59.999Z`
+
+Notas:
+- O comando requer `--sprint-name`, `--start-date` e `--end-date`
+- O `--yes` pula a confirmação
+- O `--dry-run` mostra as datas atuais vs propostas sem mutation
+- O Jira Agile API requer `name` e `state` no payload de update
+
+### Issue Dates Sync (Sincronização de Datas de Issues)
+
+O integrator suporta sincronização de datas das issues com os timestamps do tracking DOC2.5.
+
+#### Mapeamento de Campos
+
+| Campo Jira | Fonte DOC2.5 | Descrição |
+|------------|--------------|-----------|
+| Start Date (customfield_10015) | Timestamp `start` (data) | Data de início do item |
+| Data Limite (duedate) | Timestamp `finish` (data) | Data de conclusão do item |
+
+#### Lógica de Sincronização
+
+1. O parser extrai timestamps da seção `## 6. Timestamp UTC` do Dev_Tracking_SX.md
+2. Para cada item com timestamp `finish`, busca a issue correspondente no Jira pela label `tracking_<id>`
+3. Converte timestamps para datas (YYYY-MM-DD):
+   - Start: data do timestamp `start` (se existir)
+   - Due: data do timestamp `finish`
+4. Compara com valores atuais na issue
+5. Atualiza apenas se houver diferença
+
+#### Comando
+
+```bash
+# Verificar atualizações planejadas (dry-run)
+python -m integrators.jira issue dates --tracking-file Sprint/Dev_Tracking_S0.md --dry-run
+
+# Executar sincronização
+python -m integrators.jira issue dates --tracking-file Sprint/Dev_Tracking_S0.md --yes
+```
+
+#### Exemplos de Datas Aplicadas
+
+| Tracking ID | Jira Key | Start Date | Due Date |
+|------------|----------|------------|----------|
+| ST-S0-01 | STVIA-25 | 2026-03-11 | 2026-03-11 |
+| ST-S0-02 | STVIA-26 | 2026-03-12 | 2026-03-12 |
+| ST-S0-03 | STVIA-45 | 2026-03-13 | 2026-03-13 |
+
+#### Fallback
+
+- Se `start` estiver vazio, usa apenas `finish` para Data Limite
+- Se `finish` estiver vazio, ignora o item (não concluído)
+- Itens de decisão (D-SX-YY) não são sincronizados (não são issues no Jira)
+
+#### Sprints Reais Aplicadas
+
+| Sprint | Período | Issues Atualizadas |
+|--------|---------|-------------------|
+| Sprint S0 | 2026-03-10 a 2026-03-13 | 18 (STVIA-25 a STVIA-34, STVIA-27 a STVIA-31) |
+| Sprint S1 | 2026-03-13 a 2026-03-20 | 7 (STVIA-35 a STVIA-41) |
+
+#### Warnings Registrados
+
+- **D-S0-XX** (14 itens): Decisões não são sincronizadas (não são issues no Jira)
+- **D-S1-XX** (2 itens): Decisões não são sincronizadas
+- **TEST-S1-10, TEST-S1-11**: Itens de teste não são sincronizados
+
+#### Status de Atualização
+
+- S0: 18 issues atualizadas com Start Date e Due Date
+- S1: 7 issues atualizadas com Start Date e Due Date
+- Dry-run subsequente mostra "(vazio) -> data" - comportamento esperado quando timestamp start é nulo (usa finish como fallback)
 
 ### Segurança
 

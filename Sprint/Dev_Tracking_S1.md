@@ -4,7 +4,7 @@
 
 - Sprint: S1
 - Projeto: Sentivis IAOps
-- Período: 2026-03-13 – em andamento
+- Período: 2026-03-13 – 2026-03-20 (encerrada)
 - Contexto inicial:
   - Sprint aberta após o encerramento da S0, que consolidou a base DOC2.5, o KB local e a prova técnica de integração Jira Cloud.
   - O projeto segue com ThingsBoard CE como backbone validado e com o Jira tratado como camada externa opcional.
@@ -130,11 +130,19 @@ D-S1-02 | 2026-03-13T00:41:00-ST | 2026-03-13T00:41:00-FN | Logged
 
 ## 8. Estado final da Sprint
 
-(Preencher ao encerrar a sprint S1.)
-
 - Itens concluídos:
+  - ST-S1-01 a ST-S1-07
+  - TEST-S1-01 a TEST-S1-11 (evidências registradas)
+  - BUG-S1-02 corrigido
 - Itens pendentes e realocados:
+  - ST-S1-08
+  - CR-S1-01
+  - CR-S1-02
+  - ST-S0-03 a ST-S0-10
+  - BUG-S1-01 (aberto)
 - Observações finais:
+  - Sprint encerrada com a arquitetura `integrators/` consolidada e documentação canônica revisada.
+  - Pendências realocadas para a S2 com foco no transporte completo de S0 e S1 para o Jira.
 
 ---
 

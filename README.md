@@ -6,8 +6,8 @@
 |------|-----------|
 | **Nome do Projeto** | Sentivis IAOps |
 | **Plataforma IoT** | ThingsBoard Community Edition |
-| **Fase Atual** | Sprint S1 - Estruturação da camada Jira Cloud no modelo DOC2.5 |
-| **Versão** | 1.0.0-S1 |
+| **Fase Atual** | Sprint S2 - Transporte de S0 e S1 para Jira com rastreabilidade completa |
+| **Versão** | 1.0.0-S2 |
 
 ## Escopo do Projeto
 
@@ -66,11 +66,12 @@ Sentivis SIM/
 | Sprint | Objetivo | Estado | Link |
 |--------|----------|--------|------|
 | S0 | Validar data backbone ThingsBoard CE | Encerrada | `Sprint/Dev_Tracking_S0.md` |
-| S1 | Estruturar integração Jira Cloud subordinada ao DOC2.5 | Em andamento | `Dev_Tracking_S1.md` |
+| S1 | Estruturar integração Jira Cloud subordinada ao DOC2.5 | Encerrada | `Sprint/Dev_Tracking_S1.md` |
+| S2 | Transportar S0 e S1 para Jira com detalhes completos | Em andamento | `Dev_Tracking_S2.md` |
 
 ## Camada Jira DOC2.5
 
-A sprint atual consolidou uma camada de integração Jira para refletir o backlog local no projeto `STVIA`, mantendo `Dev_Tracking_S1.md` como source of truth.
+A sprint S2 consolidou uma camada de integração Jira para refletir o backlog local no projeto `STVIA`, mantendo `Dev_Tracking_S2.md` como source of truth.
 
 ### Arquitetura atual
 
@@ -84,11 +85,34 @@ A sprint atual consolidou uma camada de integração Jira para refletir o backlo
 - `bootstrap`: valida credenciais, usuário e projeto Jira
 - `status`: mostra o estado observado da integração
 - `discover`: atualiza metadados do projeto Jira
-- `sync --dry-run`: calcula o delta entre `Dev_Tracking_S1.md` e o Jira sem mutação remota
+- `sync --dry-run`: calcula o delta entre `Dev_Tracking_S2.md` e o Jira sem mutação remota
+- `issue dates`: sincroniza datas das issues com timestamps do tracking
+
+### Mapeamento de Datas
+
+O integrator suporta sincronização de datas entre timestamps DOC2.5 e campos Jira:
+
+| Campo Jira | Fonte DOC2.5 | Descrição |
+|------------|--------------|-----------|
+| Start Date | Timestamp `start` (data) | Data de início do item |
+| Data Limite (Due date) | Timestamp `finish` (data) | Data de conclusão do item |
+
+Comando para sincronizar datas:
+```bash
+python -m integrators.jira issue dates --tracking-file Sprint/Dev_Tracking_S0.md --dry-run
+python -m integrators.jira issue dates --tracking-file Sprint/Dev_Tracking_S0.md --yes
+```
+
+### Sprints Nativas
+
+O integrator suporta sprints nativas do Jira Software:
+- `sprint status`: lista boards e sprints
+- `sprint assign`: atribui issues a sprint por label
+- `sprint dates`: define datas de início e fim
 
 ### Princípios
 
-- `Dev_Tracking_S1.md` continua sendo a verdade local
+- `Dev_Tracking_S2.md` é a verdade local (sprint ativa)
 - Jira funciona como espelho operacional
 - `dry-run` é o modo padrão recomendado antes de qualquer escrita
 - A arquitetura `integrators/<provider>/` prepara o repositório para futuros providers
@@ -109,16 +133,19 @@ A sprint atual consolidou uma camada de integração Jira para refletir o backlo
 
 ## Notas Importantes
 
-- Este projeto está em **Sprint S1** - fase de estruturação da camada Jira Cloud subordinada ao DOC2.5
+- Este projeto está em **Sprint S2** - fase de transporte de S0 e S1 para o Jira com rastreabilidade completa
 - A integração Jira já possui arquitetura provider-oriented em `integrators/` com compatibilidade preservada em `scripts/`
 - Telemetria é gerada por **mock**, não por hardware real
 - O objetivo é estabelecer a base para futura integração com ESP32/LoRa
 - A Sprint S0 foi encerrada com o backbone documental e o teste técnico de integração Jira concluídos
+- A Sprint S1 foi encerrada com a arquitetura `integrators/` consolidada e documentação canônica atualizada
 - Toda a documentação está em **Português (pt-BR)**, exceto comandos e APIs
 - Nome oficial do projeto: **Sentivis IAOps**
 - `Sentivis SIM` permanece como nome do diretório local de trabalho nesta fase
 
 ---
+
+Este repositorio e orquestrado pela Cindy sob a doutrina DOC2.5.
 
 ## Cindy — Orquestradora (Context Router)
 

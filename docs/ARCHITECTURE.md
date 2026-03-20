@@ -335,6 +335,49 @@ O bootstrap persiste um estado observado em `.scr/mgmt_layer.jira.json`:
 | Issue Type | Tarefa (padrão) | STVIA não tem Epic configurado |
 | Sincronização | Unidirecional (local -> Jira) | Não há write-back |
 
+### Mapeamento de Datas (Issue Dates Sync)
+
+O integrator sincroniza timestamps DOC2.5 com campos de data das issues Jira:
+
+| Campo Jira | Fonte DOC2.5 | Formato |
+|------------|--------------|---------|
+| Start Date (customfield_10015) | Timestamp `start` | YYYY-MM-DD |
+| Data Limite (duedate) | Timestamp `finish` | YYYY-MM-DD |
+
+#### Fluxo de Sincronização
+
+```
+Dev_Tracking_SX.md (## 6. Timestamp UTC)
+        |
+        v
+doc25_parser.py (extract_timestamps)
+        |
+        v
+timestamp_to_date (converte ISO8601 para YYYY-MM-DD)
+        |
+        v
+cli.py cmd_issue_dates (compara com valores atuais)
+        |
+        v
+client.py (PUT /rest/api/3/issue/{key})
+        |
+        v
+Jira Cloud (campos Start Date e Due Date atualizados)
+```
+
+#### Regras de Reconciliação
+
+1. **Item com finish**: Sincroniza data de início (se start existir) e data limite
+2. **Item sem finish**: Ignora (item não concluído no tracking)
+3. **Start vazio**: Usa apenas finish para Data Limite
+4. **Decisões (D-SX-YY)**: Não sincroniza (não são issues no Jira)
+
+#### Fallback e Tratamento de Erros
+
+- Se campo não existir no Jira, retorna erro mas continua com outros itens
+- Se issue não encontrada por label, registra warning e continua
+- Comparação é feita truncando para data (YYYY-MM-DD) para evitar falses positives
+
 ## Referências
 
 - `DEVELOPMENT.md` - Fluxo de desenvolvimento
