@@ -28,5 +28,5 @@
 
 Event | Start | Finish | Status
 ---|---|---|---
-S0 | TUE03102026103000PMST | FRI03132026040518AMFN | Encerrada
-S1 | FRI03132026040518AMST | DDDMMDDYYYYHHMMSSamPMFN | Em andamento
+S0 | 2026-03-10T10:30:00-ST | 2026-03-13T00:40:18-FN | Encerrada
+S1 | 2026-03-13T00:40:18-ST | - | Em andamento

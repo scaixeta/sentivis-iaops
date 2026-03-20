@@ -31,21 +31,21 @@
 
 | Status | Estória |
 |---|---|
-| To-Do | ST-S0-03 – Definir contrato de mock telemetry |
-| To-Do | ST-S0-04 – Mapear device/profile modeling |
-| To-Do | ST-S0-05 – Documentar configuração post-setup |
-| To-Do | ST-S0-06 – Definir baseline de dashboard |
-| To-Do | ST-S0-07 – Avaliar uso do Rule Engine |
-| To-Do | ST-S0-08 – Validar VS Code como workstation |
-| To-Do | ST-S0-09 – Documentar trilha de evidência |
-| To-Do | ST-S0-10 – Preparar baseline para hardware real |
-| To-Do | ST-S1-01 – Levantar campos, issue types e transições reais do projeto Jira STVIA |
-| To-Do | ST-S1-02 – Definir mapeamento DOC2.5 para labels, status e identificadores Jira |
-| To-Do | ST-S1-03 – Criar bootstrap local da camada `mgmt_layer_jira` com estado observado em `.scr/` |
-| To-Do | ST-S1-04 – Implementar comando de leitura `status/discover` para o Jira |
-| To-Do | ST-S1-05 – Implementar sincronização `dry-run` da sprint ativa para o Jira |
-| To-Do | ST-S1-06 – Implementar sincronização real com reconciliação mínima e sem escrita local automática |
-| To-Do | ST-S1-07 – Atualizar documentação canônica e KB com o fluxo definitivo de operação Jira |
+| Pending-S1 | ST-S0-03 – Definir contrato de mock telemetry |
+| Pending-S1 | ST-S0-04 – Mapear device/profile modeling |
+| Pending-S1 | ST-S0-05 – Documentar configuração post-setup |
+| Pending-S1 | ST-S0-06 – Definir baseline de dashboard |
+| Pending-S1 | ST-S0-07 – Avaliar uso do Rule Engine |
+| Pending-S1 | ST-S0-08 – Validar VS Code como workstation |
+| Pending-S1 | ST-S0-09 – Documentar trilha de evidência |
+| Pending-S1 | ST-S0-10 – Preparar baseline para hardware real |
+| Done | ST-S1-01 – Levantar campos, issue types e transições reais do projeto Jira STVIA |
+| Done | ST-S1-02 – Definir mapeamento DOC2.5 para labels, status e identificadores Jira |
+| Done | ST-S1-03 – Criar bootstrap local da camada `mgmt_layer_jira` com estado observado em `.scr/` |
+| Done | ST-S1-04 – Implementar comando de leitura `status/discover` para o Jira |
+| Done | ST-S1-05 – Implementar sincronização `dry-run` da sprint ativa para o Jira |
+| Done | ST-S1-06 – Refatorar código para arquitetura integrators/ com wrappers de compatibilidade |
+| Done | ST-S1-07 – Atualizar documentação canônica e KB com o fluxo definitivo de operação Jira |
 | To-Do | ST-S1-08 – Validar ciclo completo de criação, transição e limpeza controlada no Jira |
 | To-Do | CR-S1-01 – Modelar a integração Jira sem Sprint nativa, Epic ou campos inexistentes |
 | To-Do | CR-S1-02 – Definir política de sincronização, limpeza e reexecução segura no Jira |
@@ -83,26 +83,28 @@ Aqui devem constar apenas resumos e referências cruzadas, por exemplo:
 
 Event | Start | Finish | Status
 ---|---|---|---
-ST-S0-03 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
-ST-S0-04 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
-ST-S0-05 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
-ST-S0-06 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
-ST-S0-07 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
-ST-S0-08 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
-ST-S0-09 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
-ST-S0-10 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
-ST-S1-01 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
-ST-S1-02 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
-ST-S1-03 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
-ST-S1-04 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
-ST-S1-05 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
-ST-S1-06 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
-ST-S1-07 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
-ST-S1-08 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
-CR-S1-01 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
-CR-S1-02 | DDDMMDDYYYYHHMMSSamPMST | DDDMMDDYYYYHHMMSSamPMFN | To-Do
-D-S1-01 | FRI03132026040518AMST | FRI03132026040518AMFN | Logged
-D-S1-02 | FRI03132026041040AMST | FRI03132026041040AMFN | Logged
+ST-S0-03 | 2026-03-13T00:00:00-ST | - | Pending-S1
+ST-S0-04 | 2026-03-13T00:00:00-ST | - | Pending-S1
+ST-S0-05 | 2026-03-13T00:00:00-ST | - | Pending-S1
+ST-S0-06 | 2026-03-13T00:00:00-ST | - | Pending-S1
+ST-S0-07 | 2026-03-13T00:00:00-ST | - | Pending-S1
+ST-S0-08 | 2026-03-13T00:00:00-ST | - | Pending-S1
+ST-S0-09 | 2026-03-13T00:00:00-ST | - | Pending-S1
+ST-S0-10 | 2026-03-13T00:00:00-ST | - | Pending-S1
+ST-S1-01 | 2026-03-19T21:00:00-ST | 2026-03-19T21:05:00-FN | Done
+ST-S1-02 | 2026-03-19T21:05:00-ST | 2026-03-19T21:10:00-FN | Done
+ST-S1-03 | 2026-03-19T21:10:00-ST | 2026-03-19T21:15:00-FN | Done
+ST-S1-04 | 2026-03-19T21:15:00-ST | 2026-03-19T21:20:00-FN | Done
+ST-S1-05 | 2026-03-19T21:20:00-ST | 2026-03-19T21:30:00-FN | Done
+ST-S1-06 | 2026-03-19T21:53:00-ST | 2026-03-19T21:57:00-FN | Done
+ST-S1-07 | 2026-03-20T00:16:00-ST | 2026-03-20T00:17:00-FN | Done
+TEST-S1-10 | 2026-03-20T00:04:00-ST | 2026-03-20T00:05:00-FN | Passed
+TEST-S1-11 | 2026-03-20T00:16:00-ST | 2026-03-20T00:17:00-FN | Passed
+ST-S1-08 | 2026-03-19T21:30:00-ST | - | To-Do
+CR-S1-01 | 2026-03-19T21:30:00-ST | - | To-Do
+CR-S1-02 | 2026-03-19T21:30:00-ST | - | To-Do
+D-S1-01 | 2026-03-13T00:40:18-ST | 2026-03-13T00:40:18-FN | Logged
+D-S1-02 | 2026-03-13T00:41:00-ST | 2026-03-13T00:41:00-FN | Logged
 
 ---
 

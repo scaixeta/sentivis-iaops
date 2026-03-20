@@ -228,6 +228,113 @@ knowledge/thingsboard/ce/
 2. **Fase 3**: Gateway LoRa
 3. **Fase 4**: Alertas e regras advanced
 
+## Camada de Integração Jira
+
+### Visão Geral
+
+O projeto Sentivis IAOps utiliza uma camada de integração com Jira Cloud para sincronização de artefatos de rastreabilidade DOC2.5. Esta camada permite que o backlog local (Dev_Tracking) seja refletido no Jira como issues, mantendo rastreabilidade operacional por labels e reconciliação local.
+
+### Arquitetura de Integração
+
+```
+integrators/
+├── jira/                    # Provider Jira
+│   ├── __init__.py         # Exports públicos
+│   ├── __main__.py         # Entry point -m
+│   ├── client.py           # Cliente HTTP Jira REST API
+│   ├── state.py            # Persistência de estado observado
+│   ├── mapper.py           # Mapeamento DOC2.5 -> Jira
+│   ├── sync_engine.py      # Engine de sincronização
+│   ├── bootstrap.py        # Inicialização e discovery
+│   └── cli.py              # Router de comandos
+└── common/                  # Módulos compartilhados
+    └── doc25_parser.py     # Parser de tracking DOC2.5
+```
+
+### Padrão Provider-Oriented
+
+A arquitetura segue um padrão provider-oriented que permite adicionar novos integradores:
+
+| Provider | Local | Status |
+|----------|-------|--------|
+| Jira | `integrators/jira/` | Implementado |
+| Outros providers | `integrators/<provider>/` | Padrão arquitetural preparado |
+
+**Princípios:**
+1. Cada provider vive em `integrators/<provider>/`
+2. Lógica compartilhada vai para `integrators/common/`
+3. Wrappers em `scripts/` apenas quando necessário para compatibilidade
+
+### Módulos e Responsabilidades
+
+| Módulo | Responsabilidade |
+|--------|------------------|
+| `client.py` | HTTP client para Jira Cloud REST API v3 |
+| `state.py` | Persistência do estado observado em `.scr/mgmt_layer.jira.json` |
+| `mapper.py` | Conversão de itens DOC2.5 para payloads Jira |
+| `sync_engine.py` | Cálculo de delta e execução de sync |
+| `bootstrap.py` | Discovery inicial de projeto, issue types, statuses |
+| `cli.py` | Router de comandos CLI |
+
+### Wrappers de Compatibilidade
+
+Os wrappers em `scripts/` mantêm compatibilidade retroativa:
+
+| Wrapper | Delega para | Propósito |
+|---------|-------------|-----------|
+| `scripts/mgmt_layer_jira.py` | `integrators.jira.cli` | Interface legado |
+| `scripts/mgmt_layer_jira_init.py` | `integrators.jira.bootstrap` | Init legado |
+
+### Fluxo de Sincronização
+
+```
+Dev_Tracking_SX.md (local)
+        |
+        v
+doc25_parser.py (parse_sprint_backlog)
+        |
+        v
+sync_engine.py (dry_run -> calcula delta)
+        |
+        v
+mapper.py (create_create_payload)
+        |
+        v
+client.py (POST /rest/api/3/issue)
+        |
+        v
+Jira Cloud (STVIA project)
+```
+
+### Estado Observado
+
+O bootstrap persiste um estado observado em `.scr/mgmt_layer.jira.json`:
+
+```json
+{
+  "connector": "jira",
+  "project_key": "STVIA",
+  "project_id": "10000",
+  "authenticated_user": {
+    "account_id": "...",
+    "display_name": "Sergio Caixeta"
+  },
+  "issue_type_map": {"Tarefa": "10003", ...},
+  "status_map": {"To-Do": "10000", ...},
+  "labels_base": ["doc25", "sentivis"]
+}
+```
+
+### Decisões de Design
+
+| Decisão | Valor | Motivação |
+|---------|-------|-----------|
+| Source of Truth | Dev_Tracking_SX.md local | Jira é espelho, não origem |
+| Modo Padrão | dry-run | Segurança contra mutation acidental |
+| Labels | doc25 + sentivis | Identificação de origem |
+| Issue Type | Tarefa (padrão) | STVIA não tem Epic configurado |
+| Sincronização | Unidirecional (local -> Jira) | Não há write-back |
+
 ## Referências
 
 - `DEVELOPMENT.md` - Fluxo de desenvolvimento

@@ -68,12 +68,38 @@ Sentivis SIM/
 | S0 | Validar data backbone ThingsBoard CE | Encerrada | `Sprint/Dev_Tracking_S0.md` |
 | S1 | Estruturar integração Jira Cloud subordinada ao DOC2.5 | Em andamento | `Dev_Tracking_S1.md` |
 
+## Camada Jira DOC2.5
+
+A sprint atual consolidou uma camada de integração Jira para refletir o backlog local no projeto `STVIA`, mantendo `Dev_Tracking_S1.md` como source of truth.
+
+### Arquitetura atual
+
+- Implementação principal em `integrators/jira/`
+- Módulos compartilhados em `integrators/common/`
+- Wrappers de compatibilidade em `scripts/mgmt_layer_jira.py` e `scripts/mgmt_layer_jira_init.py`
+- Estado observado persistido em `.scr/mgmt_layer.jira.json`
+
+### Fluxo operacional
+
+- `bootstrap`: valida credenciais, usuário e projeto Jira
+- `status`: mostra o estado observado da integração
+- `discover`: atualiza metadados do projeto Jira
+- `sync --dry-run`: calcula o delta entre `Dev_Tracking_S1.md` e o Jira sem mutação remota
+
+### Princípios
+
+- `Dev_Tracking_S1.md` continua sendo a verdade local
+- Jira funciona como espelho operacional
+- `dry-run` é o modo padrão recomendado antes de qualquer escrita
+- A arquitetura `integrators/<provider>/` prepara o repositório para futuros providers
+
 ## Documentação de Referência
 
 1. [SETUP.md](docs/SETUP.md) - Pré-requisitos e configuração
 2. [ARCHITECTURE.md](docs/ARCHITECTURE.md) - Arquitetura técnica
 3. [DEVELOPMENT.md](docs/DEVELOPMENT.md) - Fluxo de desenvolvimento
 4. [OPERATIONS.md](docs/OPERATIONS.md) - Operação e manutenção
+5. [KB/jira-doc25-workflow-estudo.md](KB/jira-doc25-workflow-estudo.md) - Estudo e decisões da integração Jira
 
 ## ThingsBoard CE
 
@@ -84,6 +110,7 @@ Sentivis SIM/
 ## Notas Importantes
 
 - Este projeto está em **Sprint S1** - fase de estruturação da camada Jira Cloud subordinada ao DOC2.5
+- A integração Jira já possui arquitetura provider-oriented em `integrators/` com compatibilidade preservada em `scripts/`
 - Telemetria é gerada por **mock**, não por hardware real
 - O objetivo é estabelecer a base para futura integração com ESP32/LoRa
 - A Sprint S0 foi encerrada com o backbone documental e o teste técnico de integração Jira concluídos
@@ -100,5 +127,3 @@ A Cindy é o agente principal do projeto. Em cada run, ela identifica o orchestr
 <p align="center">
   <img src=".brand/Cindy.jpg" alt="Cindy — Orquestradora" width="220" />
 </p>
-
-*Versão: 1.0.0-S1 | Última atualização: 2026-03-13 | Modelo: DOC2.5*

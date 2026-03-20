@@ -251,6 +251,144 @@ Em caso de problemas com ThingsBoard:
 - Verificar logs do servidor
 - Reportar via canal apropriado
 
+## Procedimentos: Jira Integration
+
+### Visão Geral
+
+A camada Jira permite sincronizar o backlog DOC2.5 (Dev_Tracking) com o projeto STVIA no Jira Cloud. O Jira funciona como espelho, não como source of truth.
+
+### Configuração de Credenciais
+
+1. Criar arquivo `.scr/.env` na raiz do projeto:
+```bash
+JIRA_EMAIL=scaixeta@gmail.com
+JIRA_API_TOKEN=<token_api_jira>
+JIRA_PROJECT_KEY=STVIA
+```
+
+2. Nunca versionar este arquivo
+3. O token pode ser gerado em: https://id.atlassian.com/manage-profile/security/api-tokens
+4. Na implementação atual, o host Jira está parametrizado no cliente da integração e o projeto é definido por `JIRA_PROJECT_KEY`
+
+### Comandos de Operação
+
+#### Bootstrap (Inicialização)
+
+```bash
+# Modo dry-run (sem criar arquivos)
+python -m integrators.jira bootstrap --dry-run
+
+# Execução real
+python -m integrators.jira bootstrap
+```
+
+O bootstrap:
+1. Valida credenciais via `/rest/api/3/myself`
+2. Busca projeto STVIA via `/rest/api/3/project/STVIA`
+3. Mapeia issue types disponíveis
+4. Mapeia statuses disponíveis
+5. Persiste estado em `.scr/mgmt_layer.jira.json`
+
+#### Status (Verificar Estado)
+
+```bash
+# Via módulo
+python -m integrators.jira status
+
+# Via wrapper legado
+python scripts/mgmt_layer_jira.py status
+```
+
+Mostra:
+- Projeto, ID, tipo
+- Usuário autenticado
+- Issue types e statuses mapeados
+- Última sincronização (fingerprint)
+
+#### Discover (Atualizar Metadados)
+
+```bash
+python -m integrators.jira discover
+python scripts/mgmt_layer_jira.py discover
+```
+
+Atualiza metadados do Jira sem sincronizar backlog.
+
+#### Sync (Sincronizar Backlog)
+
+```bash
+# Dry-run: mostra operações sem executar
+python -m integrators.jira sync --dry-run
+python scripts/mgmt_layer_jira.py sync --dry-run
+
+# Execução real (PEDE CONFIRMAÇÃO)
+python -m integrators.jira sync
+python scripts/mgmt_layer_jira.py sync
+```
+
+O sync:
+1. Parseia Dev_Tracking_SX.md (padrão: Dev_Tracking_S1.md)
+2. Calcula delta entre local e Jira
+3. Cria, atualiza ou remove issues conforme necessário
+4. Labels são usadas para rastreabilidade: `doc25`, `sentivis`, `tracking_ST-S1-01`
+
+#### Reconcile (Analisar Divergências)
+
+```bash
+python -m integrators.jira reconcile
+```
+
+Mostra:
+- Itens pendentes (local sem Jira)
+- Orphans (Jira sem tracking local)
+
+### Modo Dry-Run
+
+O modo dry-run é o padrão recomendado:
+- **NUNCA** cria issues no Jira
+- **NUNCA** modifica estado persistido
+- Mostra plano de operações
+- Safe para executar repetidamente
+
+### Validação de Operação
+
+```bash
+# 1. Validar entrada
+python -m integrators.jira status
+
+# 2. Verificar sincronização (dry-run)
+python -m integrators.jira sync --dry-run
+
+# 3. Analisar divergências
+python -m integrators.jira reconcile
+
+# 4. Executar sync real APENAS se necessário
+```
+
+### Tratamento de Falhas
+
+| Sintoma | Causa Provável | Solução |
+|---------|----------------|---------|
+| "Estado não encontrado" | Bootstrap não executado | Executar `bootstrap` primeiro |
+| "Credenciais inválidas" | Token expirado ou errado | Regenerar token em id.atlassian.com |
+| "Projeto não encontrado" | STVIA não existe ou sem acesso | Verificar permissões |
+| Zero issues no Jira | Nenhuma sincronização feita | Executar `sync` |
+| ImportError: No module | Path incorreto | Executar da raiz do projeto |
+
+### Limitações Conhecidas
+
+1. **Sem Epic**: STVIA não tem Epic configurado, usa-se "Tarefa"
+2. **Sem Sprint nativa**: Jira não tem sprint configurado
+3. **Unidirecional**: Sync local -> Jira apenas (sem write-back)
+4. **Labels fixed**: `doc25`, `sentivis`, `tracking_<id>` são fixas
+
+### Segurança
+
+- **NUNCA** imprimir tokens em logs
+- **NUNCA** commitar `.scr/.env`
+- **NUNCA** usar credenciais de produção em testes
+- Usar `--dry-run` antes de qualquer operação real
+
 ## Referências
 
 - `SETUP.md` - Configuração inicial
@@ -258,3 +396,4 @@ Em caso de problemas com ThingsBoard:
 - `DEVELOPMENT.md` - Fluxo de desenvolvimento
 - `Dev_Tracking_SX.md` - Sprint ativa
 - `tests/bugs_log.md` - Log de bugs
+- `KB/jira-doc25-workflow-estudo.md` - Workflow de estudo Jira
