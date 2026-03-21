@@ -6,8 +6,8 @@
 |------|-----------|
 | **Nome do Projeto** | Sentivis IAOps |
 | **Plataforma IoT** | ThingsBoard Community Edition |
-| **Fase Atual** | Sprint S2 local ativa e refletida no Jira |
-| **Versão** | 1.0.0-S2 |
+| **Fase Atual** | Sprint S3 local ativa e refletida no Jira |
+| **Versão** | 1.0.0-S3 |
 
 ## Escopo do Projeto
 
@@ -67,11 +67,12 @@ Sentivis SIM/
 |--------|----------|--------|------|
 | S0 | Validar data backbone ThingsBoard CE | Encerrada | `Sprint/Dev_Tracking_S0.md` |
 | S1 | Estruturar integração Jira Cloud subordinada ao DOC2.5 | Encerrada | `Sprint/Dev_Tracking_S1.md` |
-| S2 | Consolidar a visibilidade executiva da entrega com rastreabilidade entre o SoT local e o Jira | Em andamento (local) | `Dev_Tracking_S2.md` |
+| S2 | Consolidar a visibilidade executiva da entrega com rastreabilidade entre o SoT local e o Jira | Encerrada (local) | `Sprint/Dev_Tracking_S2.md` |
+| S3 | Retomar a base funcional do projeto com o backlog Mock ThingsBoard | Em andamento (local) | `Dev_Tracking_S3.md` |
 
 ## Camada Jira DOC2.5
 
-A sprint S2 consolidou uma camada de integração Jira para refletir o backlog local no projeto `STVIA`, mantendo `Dev_Tracking_S2.md` como source of truth local. No Jira, as sprints `S0` e `S1` ja foram encerradas e a `Sprint S2` encontra-se ativa.
+A sprint S2 consolidou a camada de integração Jira para refletir o backlog local no projeto `STVIA`. No plano local, a sprint ativa agora é a `S3`; no Jira, as sprints `S0`, `S1` e `S2` estão encerradas, e a `Sprint S3` está ativa para o backlog base do Mock ThingsBoard.
 
 ### Arquitetura atual
 
@@ -85,7 +86,7 @@ A sprint S2 consolidou uma camada de integração Jira para refletir o backlog l
 - `bootstrap`: valida credenciais, usuário e projeto Jira
 - `status`: mostra o estado observado da integração
 - `discover`: atualiza metadados do projeto Jira
-- `sync --dry-run`: calcula o delta entre `Dev_Tracking_S2.md` e o Jira sem mutação remota
+- `sync --dry-run`: calcula o delta entre o tracking local ativo e o Jira sem mutação remota
 - `sprint create`: cria sprint com `end-date` padrão de `+3 dias` quando omitido
 - `sprint goal`: reflete no Jira o objetivo de negócio declarado no tracking local
 - `sprint assign`: atribui itens ao sprint e herda a `due date` da sprint para as issues
@@ -125,8 +126,8 @@ Regras operacionais locais:
 
 ### Princípios
 
-- `Dev_Tracking_S2.md` e a verdade local (sprint ativa local)
-- o Jira reflete a execucao remota: `S0` e `S1` encerradas, `S2` ativa
+- `Dev_Tracking_S3.md` e a verdade local (sprint ativa local)
+- o Jira reflete a execucao remota: `S0`, `S1` e `S2` encerradas, `S3` ativa
 - Jira funciona como espelho operacional
 - `dry-run` é o modo padrão recomendado antes de qualquer escrita
 - A arquitetura `integrators/<provider>/` prepara o repositório para futuros providers
@@ -147,7 +148,7 @@ Regras operacionais locais:
 
 ## Notas Importantes
 
-- Este projeto esta em **Sprint S2** no plano local - fase de consolidacao do source of truth apos o transporte de S0 e S1 para o Jira
+- Este projeto esta em **Sprint S3** no plano local - fase de retomada do backlog base do Mock ThingsBoard apos a consolidacao da camada Jira
 - A integração Jira já possui arquitetura provider-oriented em `integrators/` com compatibilidade preservada em `scripts/`
 - Telemetria é gerada por **mock**, não por hardware real
 - O objetivo é estabelecer a base para futura integração com ESP32/LoRa

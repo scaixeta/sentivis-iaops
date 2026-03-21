@@ -58,7 +58,7 @@ Antes de qualquer trabalho:
 - Quando aplicável, preferir `Jira Key` como identificador principal visível da estória, preservando a rastreabilidade local durante a transição
 - Aceitar status local em dois modos:
   - modelo DOC2.5 legado (`To-Do`, `Doing`, `Done`, `Pending-SX`)
-  - modelo nativo do Jira (`Pendentes`, `Em progresso`, `Em Testes`, `Feito`, `Bloqueado`, `Backlog`)
+  - modelo nativo do Jira (`Pendentes`, `Em Progresso`, `Em Testes`, `Feito`, `Bloqueado`, `Backlog`)
 - Registrar decisões como `[D-SX-YY]`
 - Referenciar bugs e testes em `tests/bugs_log.md`
 

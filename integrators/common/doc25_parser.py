@@ -209,6 +209,8 @@ def _map_bug_state_to_doc25_status(value: str) -> str:
     raw = (value or "").strip().lower()
     if raw in {"corrigido", "closed", "fechado", "resolvido", "resolved"}:
         return "Done"
+    if raw in {"em testes", "in test", "in tests", "testing", "teste", "test"}:
+        return "Em Testes"
     if raw in {"em andamento", "doing", "in progress"}:
         return "Doing"
     return "To-Do"
@@ -219,7 +221,7 @@ def extract_bugs_from_log(content: str, sprint: str) -> list[Doc25Item]:
     items: list[Doc25Item] = []
 
     sprint_section_pattern = re.compile(
-        rf"##\s*5\.\s*Sprint\s+{re.escape(sprint)}\s*(.*?)(?=\n##\s*5\.\s*Sprint\s+S\d+|\Z)",
+        rf"##\s*\d+\.\s*Sprint\s+{re.escape(sprint)}\s*(.*?)(?=\n##\s*\d+\.\s*Sprint\s+S\d+|\Z)",
         re.IGNORECASE | re.DOTALL,
     )
     sprint_section = sprint_section_pattern.search(content)
@@ -351,12 +353,13 @@ def get_status_mapping() -> dict:
     """Retorna mapeamento padrao de status DOC2.5 para Jira."""
     return {
         "To-Do": "Pendentes",
-        "Doing": "Em progresso",
+        "Doing": "Em Progresso",
         "Done": "Feito",
         "Accepted": "Feito",
         "Pending-SX": "Pendentes",
         "Pendentes": "Pendentes",
-        "Em progresso": "Em progresso",
+        "Em progresso": "Em Progresso",
+        "Em Progresso": "Em Progresso",
         "Em Testes": "Em Testes",
         "Feito": "Feito",
         "Bloqueado": "Bloqueado",

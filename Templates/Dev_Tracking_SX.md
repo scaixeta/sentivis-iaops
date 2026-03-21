@@ -34,7 +34,7 @@
 
 Estados possiveis:
 - modelo DOC2.5 legado: `To-Do`, `Doing`, `Done`, `Accepted`, `Pending-SX`
-- modelo nativo Jira: `Pendentes`, `Em progresso`, `Em Testes`, `Feito`, `Bloqueado`, `Backlog`
+- modelo nativo Jira: `Pendentes`, `Em Progresso`, `Em Testes`, `Feito`, `Bloqueado`, `Backlog`
 
 Observacao:
 - preferir `Jira Key` como identificador principal visivel da estoria quando ela ja existir

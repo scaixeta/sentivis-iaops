@@ -24,13 +24,14 @@
 - o tracking local tambem deve declarar o objetivo de negocio da sprint como entrega de valor ao cliente
 - o backlog local determina o que deve existir no Jira
 - `To-Do` e `Pending-SX` locais devem refletir `Pendentes` no Jira
-- `Doing` local deve refletir `Em progresso`
+- `Doing` local deve refletir `Em Progresso`
 - `Done` e `Accepted` locais devem refletir `Feito`
 - `ST` deve refletir label `estoria`
 - `BUG` deve refletir label `bug`
 - `CR` deve refletir label `change_request`
 - `D-*` não devem ser criadas no Jira
 - `tracking_<ID>` deve permanecer como label de rastreabilidade
+- bugs e testes registrados localmente devem ser espelhados no Jira com o mesmo estado operacional, incluindo criacao da issue quando necessario
 - a sprint tem duração padrão esperada de `3 dias` quando criada sem `end-date` explícito
 - a data limite das issues da sprint deve herdar por padrao a data limite da sprint
 - a sprint pode terminar antes do prazo, mas o prazo inicial deve nascer coerente no local e no Jira

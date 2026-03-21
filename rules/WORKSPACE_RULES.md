@@ -103,7 +103,7 @@ O backlog da sprint ativa deve usar tabela simples:
 Estados permitidos:
 
 - modelo DOC2.5 legado: `To-Do`, `Doing`, `Done`, `Accepted`, `Pending-SX`
-- modelo nativo Jira: `Pendentes`, `Em progresso`, `Em Testes`, `Feito`, `Bloqueado`, `Backlog`
+- modelo nativo Jira: `Pendentes`, `Em Progresso`, `Em Testes`, `Feito`, `Bloqueado`, `Backlog`
 
 Campos adicionais do backlog (padrao local deste repositorio):
 
@@ -414,6 +414,7 @@ Quando houver operacao com Jira:
 - o Jira nao substitui `Dev_Tracking.md`, `Dev_Tracking_SX.md`, `README.md` ou `tests/bugs_log.md`
 - a Cindy nao deve se comportar como se estivesse executando um "workflow do Jira"; ela deve executar um workflow local que usa o Jira como reflexo operacional
 - o objetivo de negocio da sprint deve nascer no tracking local e, quando houver uso de sprint nativa no Jira, deve ser refletido como `Sprint goal`
+- estados registrados localmente para backlog, bugs e testes devem ser espelhados no Jira; se um item local estiver `Em Testes`, o Jira tambem deve refletir `Em Testes`, inclusive com criacao da issue quando necessario
 
 Para sincronizacao do source of truth local para o Jira, a Cindy deve priorizar a orientacao local documentada em:
 

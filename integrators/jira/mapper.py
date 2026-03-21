@@ -112,28 +112,34 @@ def map_status(doc25_status: str, state: JiraState) -> str:
     if doc25_status in (state.status_map or {}):
         return doc25_status
 
+    in_progress_name = _prefer_known_status_name("Em Progresso", state, "Em progresso")
+    pending_name = _prefer_known_status_name("Pendentes", state)
+    testing_name = _prefer_known_status_name("Em Testes", state)
+    done_name = _prefer_known_status_name("Feito", state)
+    blocked_name = _prefer_known_status_name("Bloqueado", state)
+    backlog_name = _prefer_known_status_name("Backlog", state)
+
     # Mapeamento por nome (em portugues do Jira)
     name_map = {
-        "To-Do": "Pendentes",
-        "Doing": "Em progresso",
-        "Done": "Feito",
-        "Accepted": "Feito",
-        "Pending-SX": "Pendentes",
-        "Pendentes": "Pendentes",
-        "Em progresso": "Em progresso",
-        "Em Testes": "Em Testes",
-        "Feito": "Feito",
-        "Bloqueado": "Bloqueado",
-        "Backlog": "Backlog",
+        "To-Do": pending_name,
+        "Doing": in_progress_name,
+        "Done": done_name,
+        "Accepted": done_name,
+        "Pending-SX": pending_name,
+        "Pendentes": pending_name,
+        "Em progresso": in_progress_name,
+        "Em Progresso": in_progress_name,
+        "Em Testes": testing_name,
+        "Feito": done_name,
+        "Bloqueado": blocked_name,
+        "Backlog": backlog_name,
     }
-    
-    # Primeiro verifica se tem mapeamento customizado no estado
-    target_name = name_map.get(doc25_status, "Pendentes")
-    if target_name in state.status_map:
+
+    target_name = name_map.get(doc25_status, pending_name)
+    if target_name in (state.status_map or {}):
         return target_name
 
-    # Fallback para mapeamento padrao
-    return name_map.get(doc25_status, "Pendentes")
+    return target_name
 
 
 def create_create_payload(item: Doc25Item, project_key: str, state: JiraState) -> dict:
@@ -233,6 +239,27 @@ def _board_status_sequence(state: JiraState) -> list[str]:
     return ordered
 
 
+def _normalize_status_name(value: str) -> str:
+    return (value or "").strip().lower()
+
+
+def _prefer_known_status_name(preferred: str, state: JiraState, *aliases: str) -> str:
+    candidates = (preferred, *aliases)
+    status_map = state.status_map or {}
+
+    for candidate in candidates:
+        if candidate in status_map:
+            return candidate
+
+    for candidate in candidates:
+        normalized = _normalize_status_name(candidate)
+        for known in status_map.keys():
+            if _normalize_status_name(known) == normalized:
+                return known
+
+    return preferred
+
+
 def _reachable_statuses_from(
     start_status: str,
     transitions_provider,
@@ -289,8 +316,11 @@ def _effective_target_status(
     if target_status in reachable:
         return target_status, None
 
-    if target_status == "Pendentes" and "Em progresso" in reachable:
-        return "Em progresso", "workflow_jira_sem_retorno_para_pendentes"
+    if _normalize_status_name(target_status) == _normalize_status_name("Pendentes"):
+        in_progress_name = _prefer_known_status_name("Em Progresso", state, "Em progresso")
+        for reachable_status in reachable:
+            if _normalize_status_name(reachable_status) == _normalize_status_name(in_progress_name):
+                return reachable_status, "workflow_jira_sem_retorno_para_pendentes"
 
     # Para o planner, usamos a melhor aproximacao pela ordem do board.
     status_to_index = {name: idx for idx, name in enumerate(ordered_statuses)}

@@ -258,7 +258,44 @@ Nenhum bug registrado até o momento.
   - Escopo: confirmar existência do campo "Story point estimate" para permitir sync de `SP` -> Jira
   - Resultado: aprovado
   - Evidências:
+
+---
+
+## 6. Sprint S3
+
+### 4. Bugs Registrados
+
+- `BUG-S3-01` – Board Jira com colunas/status `Pendentes` e `Em Progresso` desalinhados
+  - Origem: problema herdado da configuração operacional usada na S2 e identificado durante a transição S2 -> S3
+  - Jira: `STVIA-60`
+  - Estado: em testes
+  - Correção aplicada: a configuração do board foi ajustada no Jira para recolocar `Pendentes` e `Em Progresso` nas colunas corretas; o código local passou a normalizar `Em Progresso` / `Em progresso` e a documentação foi atualizada para tratar o fallback apenas como contingência
+  - Impacto observado: itens `Pending-SX` podiam refletir como `Em progresso` em vez de `Pendentes`, gerando interpretação errada do fluxo
+  - Evidência inicial: dry-run da `S3` voltou a produzir apenas `UPDATE`, sem `ALIGN_STATUS` nem fallback para `Em Progresso`
+  - Espelhamento Jira: issue criada e mantida em `Em Testes` na `Sprint S3`
+  - Critério de saída: manter em observação até validação operacional real da sprint confirmar que o fluxo permaneceu estável
+  - Referências: `integrators/jira/mapper.py`, `integrators/common/doc25_parser.py`, `KB/jira-doc25-workflow-estudo.md`, `docs/OPERATIONS.md`, `docs/ARCHITECTURE.md`, `Dev_Tracking_S3.md`
+
+### 5. Testes Registrados
+
+- `TEST-S3-01` – Validação do board Jira após correção de `Pendentes` x `Em Progresso`
+  - Escopo: confirmar a configuração real do board e validar o comportamento do sync da `S3`
+  - Resultado: aprovado
+  - Evidências:
+    - configuração do board mostra `Pendentes` associado ao status `Pendentes`
+    - configuração do board mostra `Em Progresso` associado ao status `Em Progresso`
+    - `STVIA-45` a `STVIA-52` passaram a aparecer como `Pendentes` no Jira
+    - `python -m integrators.jira sync --tracking-file Dev_Tracking_S3.md --dry-run` retornou apenas `UPDATE`
     - `/rest/api/3/field` contém `customfield_10016 | Story point estimate | number`
+
+- `TEST-S3-02` – Validação do espelhamento de bug local em `Em Testes` no Jira
+  - Escopo: confirmar que um bug registrado no SoT local como `em testes` também existe em `Em Testes` no Jira
+  - Resultado: aprovado
+  - Evidências:
+    - `BUG-S3-01` foi criado no Jira como `STVIA-60`
+    - `STVIA-60` está na `Sprint S3`
+    - `STVIA-60` está no status `Em Testes`
+    - labels da issue: `bug`, `tracking_BUG-S3-01`
 
 - `TEST-S2-17` – Validação de reconcile após migração da tabela do backlog
   - Escopo: confirmar que `reconcile` segue operando com o tracking S2 no novo formato de tabela

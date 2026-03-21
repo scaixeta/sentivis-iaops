@@ -38,6 +38,7 @@ Regra oficial do projeto:
 3. a Cindy é a orquestradora do workflow local;
 4. o Jira não substitui aceite, governança nem rastreabilidade local;
 5. mudanças diretas no Jira precisam ser reconciliadas com o SoT local.
+6. backlog, bugs e testes devem manter espelhamento de estado entre local e Jira, com criacao da issue quando necessario.
 
 ### 2.2 Papel da Cindy
 
@@ -262,7 +263,7 @@ Configuração relevante observada do board:
 |---|---|
 | 1 | `Backlog` |
 | 2 | `Pendentes` |
-| 3 | `Em progresso` |
+| 3 | `Em Progresso` |
 | 4 | `Em Testes` |
 | 5 | `Feito` |
 
@@ -274,14 +275,14 @@ Mapeamento implementado:
 |---|---|
 | `To-Do` | `Pendentes` |
 | `Pending-SX` | `Pendentes` |
-| `Doing` | `Em progresso` |
+| `Doing` | `Em Progresso` |
 | `Done` | `Feito` |
 | `Accepted` | `Feito` |
 
 Além disso, o parser local agora aceita status nativo do Jira diretamente:
 
 - `Pendentes`
-- `Em progresso`
+- `Em Progresso`
 - `Em Testes`
 - `Feito`
 - `Bloqueado`
@@ -304,7 +305,7 @@ Exemplo real:
 - um item em `Feito` pode não ter transição direta para `Pendentes`
 - mas pode voltar parcialmente por:
   - `Feito -> Em Testes`
-  - `Em Testes -> Em progresso`
+  - `Em Testes -> Em Progresso`
 
 ## 7.2 Regra implementada no integrador
 
@@ -314,23 +315,31 @@ O integrador foi ajustado para:
 - alinhar status passo a passo;
 - não assumir que só existe sync se houver transição direta para o alvo final.
 
-## 7.3 Limitação real observada
+## 7.3 Limitação observada e correção posterior
 
-Também foi observado que o Jira atual não permite, em certos casos, voltar até `Pendentes`.
+Durante os testes, foi observado um período em que a configuração do board causava comportamento anômalo ao tentar retornar itens para `Pendentes`.
 
-Caso real:
+Diagnóstico histórico:
 
-- de `Em progresso`, o workflow disponível não oferecia retorno para `Pendentes`
+- a coluna/status de `Pendentes` estava desalinhada no board
+- isso fazia o integrador precisar usar `Em Progresso` como alvo efetivo mínimo em alguns cenários
 
-Então a regra local foi ajustada para:
+Depois, o board foi corrigido manualmente no Jira.
 
-- usar `Em progresso` como **menor estado retornável** quando `Pendentes` não for alcançável pelo workflow real do Jira.
+Estado atual esperado:
+
+- itens locais `Pending-SX` voltam a refletir normalmente como `Pendentes`
+- o fallback deixa de ser comportamento principal
+
+Contingência preservada:
+
+- usar `Em Progresso` como **alvo efetivo minimo** quando `Pendentes` nao for alcancavel pelo workflow real do Jira
 
 ### Resultado operacional
 
 Se o local pedir `Pendentes` e o Jira não permitir chegar lá:
 
-- o integrador usa `Em progresso` como alvo efetivo;
+- o integrador usa `Em Progresso` como alvo efetivo;
 - isso aparece explicitamente no dry-run;
 - a interpretação não fica escondida.
 

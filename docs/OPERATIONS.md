@@ -301,6 +301,8 @@ Em caso de problemas com ThingsBoard:
 
 A camada Jira permite sincronizar o backlog DOC2.5 (`Dev_Tracking`) com o projeto `STVIA` no Jira Cloud. O Jira funciona como espelho operacional, não como source of truth.
 
+Regra operacional: o estado local deve refletir no Jira. Isso inclui backlog, bugs e testes, com criacao da issue quando necessario. Se um item local estiver `Em Testes`, o espelho operacional no Jira tambem deve estar `Em Testes`.
+
 ### Configuração de Credenciais
 
 1. Criar arquivo `.scr/.env` na raiz do projeto:
@@ -550,17 +552,23 @@ python -m integrators.jira issue dates --tracking-file Sprint/Dev_Tracking_S0.md
 | ST-S0-02 | STVIA-26 | 2026-03-12 | 2026-03-12 |
 | ST-S0-03 | STVIA-45 | 2026-03-13 | 2026-03-13 |
 
-### Status Sync e Fallback de Workflow
+### Status Sync e Contingencia de Workflow
 
-O integrador foi ajustado para interpretar o board de forma natural:
+O integrador interpreta o board de forma natural:
 
 1. lê a ordem real das colunas
 2. calcula o próximo passo natural entre statuses
 3. alinha a issue passo a passo, em vez de depender de transição direta
 
-Fallback implementado:
+Com o board corrigido, o comportamento esperado voltou a ser:
 
-- se o tracking local pedir `Pendentes` e o workflow Jira não permitir voltar até essa coluna, o integrador usa `Em progresso` como menor estado retornável
+- `To-Do` / `Pending-SX` -> `Pendentes`
+- `Doing` -> `Em Progresso`
+- `Done` / `Accepted` -> `Feito`
+
+Contingencia preservada:
+
+- se o tracking local pedir `Pendentes` e o workflow Jira não permitir voltar até essa coluna, o integrador usa `Em Progresso` como alvo efetivo mínimo em contingência
 - esse comportamento aparece explicitamente no dry-run como `alvo efetivo`
 
 #### Fallback

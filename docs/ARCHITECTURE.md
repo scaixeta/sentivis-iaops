@@ -407,9 +407,9 @@ Quando o tracking local exige mudança de status, o planner:
 2. calcula o próximo passo natural do item;
 3. executa transição passo a passo quando necessário.
 
-Fallback implementado:
+Contingencia implementada:
 
-- se o tracking pede `Pendentes`, mas o workflow do Jira não permite retorno completo a essa coluna, o alvo efetivo mínimo passa a ser `Em progresso`;
+- se o tracking pede `Pendentes`, mas o workflow do Jira não permite retorno completo a essa coluna, o alvo efetivo mínimo passa a ser `Em Progresso`;
 - esse fallback é explícito no dry-run.
 
 #### Fallback e Tratamento de Erros
