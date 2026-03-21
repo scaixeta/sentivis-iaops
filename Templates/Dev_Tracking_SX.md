@@ -15,6 +15,11 @@
 
 ## 2. Objetivos da Sprint
 
+### Objetivo de Negocio da Sprint
+
+- Objetivo executivo / valor para cliente: `{{SPRINT_GOAL_BUSINESS}}`
+- Sprint goal no Jira: `{{SPRINT_GOAL_BUSINESS}}`
+
 - `[OBJ-{{SPRINT_ID}}-01] {{SPRINT_OBJECTIVE_1}}`
 - `[OBJ-{{SPRINT_ID}}-02] {{SPRINT_OBJECTIVE_2}}`
 
@@ -24,11 +29,16 @@
 
 | Status | SP | Jira | Estoria |
 |---|---:|---|---|
-| To-Do |  |  | ST-{{SPRINT_ID}}-01 - {{SPRINT_STORY_1}} |
-| To-Do |  |  | ST-{{SPRINT_ID}}-02 - {{SPRINT_STORY_2}} |
+| Pendentes |  | STVIA-000 | STVIA-000 - {{SPRINT_STORY_1}} |
+| Pendentes |  | STVIA-001 | STVIA-001 - {{SPRINT_STORY_2}} |
 
 Estados possiveis:
-- `To-Do`, `Doing`, `Done`, `Accepted`, `Pending-SX`
+- modelo DOC2.5 legado: `To-Do`, `Doing`, `Done`, `Accepted`, `Pending-SX`
+- modelo nativo Jira: `Pendentes`, `Em progresso`, `Em Testes`, `Feito`, `Bloqueado`, `Backlog`
+
+Observacao:
+- preferir `Jira Key` como identificador principal visivel da estoria quando ela ja existir
+- manter rastreabilidade local conforme o workflow do projeto
 
 ---
 
@@ -56,8 +66,8 @@ Usar formato DOC2.5 (ISO 8601, 24h): `YYYY-MM-DDTHH:MM:SS-ST` para inicio e `YYY
 
 Event | Start | Finish | Status
 ---|---|---|---
-`ST-{{SPRINT_ID}}-01` | `{{TS_1_START}}` | `{{TS_1_FINISH}}` | `To-Do`
-`ST-{{SPRINT_ID}}-02` | `{{TS_2_START}}` | `{{TS_2_FINISH}}` | `To-Do`
+`STVIA-000` | `{{TS_1_START}}` | `{{TS_1_FINISH}}` | `Pendentes`
+`STVIA-001` | `{{TS_2_START}}` | `{{TS_2_FINISH}}` | `Pendentes`
 `D-{{SPRINT_ID}}-01` | `{{TD_1_START}}` | `{{TD_1_FINISH}}` | `Logged`
 
 ---

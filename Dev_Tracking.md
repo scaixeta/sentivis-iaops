@@ -7,7 +7,9 @@
 
 ## Sprint Ativa
 
-- **S2** - Em andamento
+- **S2** - Em andamento no source of truth local
+- Objetivo de negocio atual: `Estabelecer a visibilidade executiva do projeto com rastreabilidade confiavel entre planejamento local e operacao no Jira.`
+- Jira remoto: `S2` ativa; `S0` e `S1` encerradas
 
 ## Lista de Sprints
 
@@ -15,13 +17,14 @@
 |--------|---------|--------|------|
 | S0 | 2026-03-10 - 2026-03-13 | Encerrada | `Sprint/Dev_Tracking_S0.md` |
 | S1 | 2026-03-13 - 2026-03-20 | Encerrada | `Sprint/Dev_Tracking_S1.md` |
-| S2 | 2026-03-20 - em andamento | Em andamento | `Dev_Tracking_S2.md` |
+| S2 | 2026-03-20 - 2026-03-21 18:00 | Em andamento (local) | `Dev_Tracking_S2.md` |
 
 ## Observações
 
 - Sprints encerradas devem ser movidas para `Sprint/Dev_Tracking_SX.md`
 - O arquivo ativo permanece na raiz (`Dev_Tracking_SX.md`)
 - Manter este índice sincronizado com `README.md` e `tests/bugs_log.md`
+- O estado remoto do Jira deve ser refletido aqui sem substituir a precedência do SoT local
 
 ---
 

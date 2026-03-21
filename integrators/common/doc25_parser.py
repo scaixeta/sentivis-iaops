@@ -18,7 +18,7 @@ from typing import Optional
 @dataclass
 class Doc25Item:
     """Item do tracking DOC2.5."""
-    id: str          # ex: ST-S1-01
+    id: str          # identificador lido na historia; pode ser Jira key no modelo novo
     type: str        # ST, BUG, TEST, CR, D
     status: str      # To-Do, Doing, Done, etc.
     title: str       # titulo/descricao
@@ -26,6 +26,17 @@ class Doc25Item:
     raw_line: str    # linha original
     sp: Optional[int] = None      # Story Points (Fibonacci) - opcional
     jira: Optional[str] = None    # Chave da issue no Jira (ex: STVIA-123) - opcional
+    tracking_id: Optional[str] = None  # identificador local legado (ST-Sx-yy / CR-Sx-yy / BUG-Sx-yy)
+
+    @property
+    def primary_id(self) -> str:
+        """Identificador principal do item para exibicao local."""
+        return self.jira or self.id
+
+    @property
+    def tracking_key(self) -> str:
+        """Chave de rastreabilidade estavel usada internamente no integrador."""
+        return self.tracking_id or self.id
 
 
 def parse_sprint_id(filename: str) -> Optional[str]:
@@ -44,7 +55,18 @@ def extract_items(content: str, sprint: str) -> list[Doc25Item]:
             return False
         if re.fullmatch(r"Pending-S(\d+|X)", v, flags=re.IGNORECASE):
             return True
-        return v.lower() in {"to-do", "doing", "done", "accepted"}
+        return v.lower() in {
+            "to-do",
+            "doing",
+            "done",
+            "accepted",
+            "pendentes",
+            "em progresso",
+            "em testes",
+            "feito",
+            "bloqueado",
+            "backlog",
+        }
 
     lines = content.splitlines()
 
@@ -102,20 +124,42 @@ def extract_items(content: str, sprint: str) -> list[Doc25Item]:
 
         story_cell = cols[story_idx].strip()
 
-        # Esperado: ST-S1-01 - Titulo (aceita -, –, —)
+        tracking_id = None
+
+        # Modelo legado: ST-S1-01 - Titulo
         story_match = re.match(r"^([A-Z]+-S\d+-\d+)\s*[-–—]\s*(.+)$", story_cell)
         if story_match:
-            item_id = story_match.group(1).strip()
+            tracking_id = story_match.group(1).strip()
+            item_id = jira_key or tracking_id
             title = story_match.group(2).strip()
         else:
             id_match = re.match(r"^([A-Z]+-S\d+-\d+)\s*(.*)$", story_cell)
-            if not id_match:
-                continue
-            item_id = id_match.group(1).strip()
-            title = id_match.group(2).lstrip(" -–—").strip()
+            if id_match:
+                tracking_id = id_match.group(1).strip()
+                item_id = jira_key or tracking_id
+                title = id_match.group(2).lstrip(" -–—").strip()
+            else:
+                # Modelo novo/transicional: story cell com Jira key
+                jira_story_match = re.match(r"^([A-Z][A-Z0-9]+-\d+)\s*[-–—]\s*(.+)$", story_cell)
+                if jira_story_match:
+                    item_id = jira_story_match.group(1).strip().upper()
+                    title = jira_story_match.group(2).strip()
+                else:
+                    jira_id_match = re.match(r"^([A-Z][A-Z0-9]+-\d+)\s*(.*)$", story_cell)
+                    if not jira_id_match:
+                        continue
+                    item_id = jira_id_match.group(1).strip().upper()
+                    title = jira_id_match.group(2).lstrip(" -–—").strip()
+                if not jira_key:
+                    jira_key = item_id
 
-        id_type = item_id.split("-")[0].upper()
-        sprint_from_id = item_id.split("-")[1] if len(item_id.split("-")) > 1 else sprint
+        type_source = tracking_id or item_id
+        id_type = type_source.split("-")[0].upper()
+        if id_type.startswith("STVIA") or re.fullmatch(r"[A-Z][A-Z0-9]+", id_type):
+            # Se a linha usar apenas Jira key, preserva compatibilidade operacional
+            # assumindo Estoria como tipo padrao ate que exista coluna de tipo no tracking.
+            id_type = "ST"
+        sprint_from_id = tracking_id.split("-")[1] if tracking_id and len(tracking_id.split("-")) > 1 else sprint
 
         items.append(Doc25Item(
             id=item_id,
@@ -126,6 +170,7 @@ def extract_items(content: str, sprint: str) -> list[Doc25Item]:
             raw_line=line,
             sp=sp_val,
             jira=jira_key,
+            tracking_id=tracking_id,
         ))
 
     return items
@@ -158,6 +203,74 @@ def extract_decisions(content: str) -> list[Doc25Item]:
         ))
 
     return decisions
+
+
+def _map_bug_state_to_doc25_status(value: str) -> str:
+    raw = (value or "").strip().lower()
+    if raw in {"corrigido", "closed", "fechado", "resolvido", "resolved"}:
+        return "Done"
+    if raw in {"em andamento", "doing", "in progress"}:
+        return "Doing"
+    return "To-Do"
+
+
+def extract_bugs_from_log(content: str, sprint: str) -> list[Doc25Item]:
+    """Extrai bugs da sprint a partir do bugs_log."""
+    items: list[Doc25Item] = []
+
+    sprint_section_pattern = re.compile(
+        rf"##\s*5\.\s*Sprint\s+{re.escape(sprint)}\s*(.*?)(?=\n##\s*5\.\s*Sprint\s+S\d+|\Z)",
+        re.IGNORECASE | re.DOTALL,
+    )
+    sprint_section = sprint_section_pattern.search(content)
+    if not sprint_section:
+        return items
+
+    bug_section_pattern = re.compile(
+        r"###\s*4\.\s*Bugs Registrados\s*(.*?)(?=\n###\s*5\.\s*Testes Registrados|\Z)",
+        re.IGNORECASE | re.DOTALL,
+    )
+    bug_section = bug_section_pattern.search(sprint_section.group(1))
+    if not bug_section:
+        return items
+
+    entry_pattern = re.compile(
+        r"-\s*`(BUG-S\d+-\d+)`\s*[–-]\s*(.+?)(?=\n-\s*`BUG-S\d+-\d+`|\Z)",
+        re.IGNORECASE | re.DOTALL,
+    )
+
+    for match in entry_pattern.finditer(bug_section.group(1)):
+        item_id = match.group(1).strip().upper()
+        body = match.group(2).strip()
+        lines = [line.strip() for line in body.splitlines() if line.strip()]
+        if not lines:
+            continue
+
+        title = lines[0].strip()
+        state_text = ""
+        jira_key = None
+
+        for line in lines[1:]:
+            normalized = line.lstrip("-").strip()
+            lower = normalized.lower()
+            if lower.startswith("estado:"):
+                state_text = normalized.split(":", 1)[1].strip()
+            if "stv" in normalized.upper():
+                key_match = re.search(r"\b([A-Z][A-Z0-9]+-\d+)\b", normalized.upper())
+                if key_match:
+                    jira_key = key_match.group(1)
+
+        items.append(Doc25Item(
+            id=item_id,
+            type="BUG",
+            status=_map_bug_state_to_doc25_status(state_text),
+            title=title,
+            sprint=sprint,
+            raw_line=match.group(0),
+            jira=jira_key,
+        ))
+
+    return items
 
 
 def extract_objectives(content: str) -> list[str]:
@@ -213,6 +326,16 @@ def parse_sprint_backlog(tracking_file: str | Path) -> dict:
     }
 
 
+def parse_bug_log_for_sprint(bugs_log_file: str | Path, sprint: str) -> list[Doc25Item]:
+    """Extrai bugs de uma sprint a partir do arquivo `tests/bugs_log.md`."""
+    path = Path(bugs_log_file)
+    if not path.exists():
+        return []
+
+    content = path.read_text(encoding="utf-8")
+    return extract_bugs_from_log(content, sprint)
+
+
 def get_item_type_mapping() -> dict:
     """Retorna mapeamento padrao de tipo DOC2.5 para tipo Jira."""
     return {
@@ -227,11 +350,17 @@ def get_item_type_mapping() -> dict:
 def get_status_mapping() -> dict:
     """Retorna mapeamento padrao de status DOC2.5 para Jira."""
     return {
-        "To-Do": "To Do",
-        "Doing": "In Progress",
-        "Done": "Done",
-        "Accepted": "Done",
-        "Pending-SX": "To Do",
+        "To-Do": "Pendentes",
+        "Doing": "Em progresso",
+        "Done": "Feito",
+        "Accepted": "Feito",
+        "Pending-SX": "Pendentes",
+        "Pendentes": "Pendentes",
+        "Em progresso": "Em progresso",
+        "Em Testes": "Em Testes",
+        "Feito": "Feito",
+        "Bloqueado": "Bloqueado",
+        "Backlog": "Backlog",
     }
 
 

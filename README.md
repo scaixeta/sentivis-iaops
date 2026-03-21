@@ -6,7 +6,7 @@
 |------|-----------|
 | **Nome do Projeto** | Sentivis IAOps |
 | **Plataforma IoT** | ThingsBoard Community Edition |
-| **Fase Atual** | Sprint S2 - Transporte de S0 e S1 para Jira com rastreabilidade completa |
+| **Fase Atual** | Sprint S2 local ativa e refletida no Jira |
 | **Versão** | 1.0.0-S2 |
 
 ## Escopo do Projeto
@@ -67,11 +67,11 @@ Sentivis SIM/
 |--------|----------|--------|------|
 | S0 | Validar data backbone ThingsBoard CE | Encerrada | `Sprint/Dev_Tracking_S0.md` |
 | S1 | Estruturar integração Jira Cloud subordinada ao DOC2.5 | Encerrada | `Sprint/Dev_Tracking_S1.md` |
-| S2 | Transportar S0 e S1 para Jira com detalhes completos | Em andamento | `Dev_Tracking_S2.md` |
+| S2 | Consolidar a visibilidade executiva da entrega com rastreabilidade entre o SoT local e o Jira | Em andamento (local) | `Dev_Tracking_S2.md` |
 
 ## Camada Jira DOC2.5
 
-A sprint S2 consolidou uma camada de integração Jira para refletir o backlog local no projeto `STVIA`, mantendo `Dev_Tracking_S2.md` como source of truth.
+A sprint S2 consolidou uma camada de integração Jira para refletir o backlog local no projeto `STVIA`, mantendo `Dev_Tracking_S2.md` como source of truth local. No Jira, as sprints `S0` e `S1` ja foram encerradas e a `Sprint S2` encontra-se ativa.
 
 ### Arquitetura atual
 
@@ -86,6 +86,9 @@ A sprint S2 consolidou uma camada de integração Jira para refletir o backlog l
 - `status`: mostra o estado observado da integração
 - `discover`: atualiza metadados do projeto Jira
 - `sync --dry-run`: calcula o delta entre `Dev_Tracking_S2.md` e o Jira sem mutação remota
+- `sprint create`: cria sprint com `end-date` padrão de `+3 dias` quando omitido
+- `sprint goal`: reflete no Jira o objetivo de negócio declarado no tracking local
+- `sprint assign`: atribui itens ao sprint e herda a `due date` da sprint para as issues
 - `issue dates`: sincroniza datas das issues com timestamps do tracking
 
 ### Mapeamento de Datas
@@ -107,12 +110,23 @@ python -m integrators.jira issue dates --tracking-file Sprint/Dev_Tracking_S0.md
 
 O integrator suporta sprints nativas do Jira Software:
 - `sprint status`: lista boards e sprints
-- `sprint assign`: atribui issues a sprint por label
+- `sprint create`: cria sprint nativa
+- `sprint assign`: atribui issues ao sprint usando tracking local ou label
 - `sprint dates`: define datas de início e fim
+- `sprint open`: abre sprint futura
+- `sprint close`: fecha sprint com gate local de segurança
+
+Regras operacionais locais:
+- duração padrão esperada da sprint: `3 dias` quando criada sem `end-date`
+- data limite das issues da sprint: mesma data limite da sprint por padrão
+- cada sprint deve declarar objetivo de negócio / valor para cliente no tracking local
+- quando houver sprint nativa no Jira, esse objetivo deve refletir o `Sprint goal`
+- status local pode ser escrito no padrão DOC2.5 ou no padrão nativo do Jira
 
 ### Princípios
 
-- `Dev_Tracking_S2.md` é a verdade local (sprint ativa)
+- `Dev_Tracking_S2.md` e a verdade local (sprint ativa local)
+- o Jira reflete a execucao remota: `S0` e `S1` encerradas, `S2` ativa
 - Jira funciona como espelho operacional
 - `dry-run` é o modo padrão recomendado antes de qualquer escrita
 - A arquitetura `integrators/<provider>/` prepara o repositório para futuros providers
@@ -133,7 +147,7 @@ O integrator suporta sprints nativas do Jira Software:
 
 ## Notas Importantes
 
-- Este projeto está em **Sprint S2** - fase de transporte de S0 e S1 para o Jira com rastreabilidade completa
+- Este projeto esta em **Sprint S2** no plano local - fase de consolidacao do source of truth apos o transporte de S0 e S1 para o Jira
 - A integração Jira já possui arquitetura provider-oriented em `integrators/` com compatibilidade preservada em `scripts/`
 - Telemetria é gerada por **mock**, não por hardware real
 - O objetivo é estabelecer a base para futura integração com ESP32/LoRa

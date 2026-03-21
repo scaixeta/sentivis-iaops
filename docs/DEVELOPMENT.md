@@ -53,6 +53,12 @@ Antes de qualquer trabalho:
 ### 3. Executar
 
 - Atualizar backlog em tabela `Status | SP | Jira | Estória`
+- Declarar no tracking o objetivo de negócio / valor para cliente da sprint
+- Quando houver sprint nativa no Jira, refletir esse objetivo via `Sprint goal`
+- Quando aplicável, preferir `Jira Key` como identificador principal visível da estória, preservando a rastreabilidade local durante a transição
+- Aceitar status local em dois modos:
+  - modelo DOC2.5 legado (`To-Do`, `Doing`, `Done`, `Pending-SX`)
+  - modelo nativo do Jira (`Pendentes`, `Em progresso`, `Em Testes`, `Feito`, `Bloqueado`, `Backlog`)
 - Registrar decisões como `[D-SX-YY]`
 - Referenciar bugs e testes em `tests/bugs_log.md`
 

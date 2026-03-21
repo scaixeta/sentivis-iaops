@@ -17,7 +17,7 @@ from typing import Any
 
 SCR_DIR = Path(".scr")
 STATE_FILE = SCR_DIR / "mgmt_layer.jira.json"
-SCHEMA_VERSION = "1.0.0"
+SCHEMA_VERSION = "1.2.0"
 
 
 class JiraState:
@@ -30,6 +30,12 @@ class JiraState:
         self.project_key: str = ""
         self.project_id: str = ""
         self.project_type: str = ""
+        self.boards: list[dict] = []
+        self.board_id: int | None = None
+        self.board_name: str = ""
+        self.board_type: str = ""
+        self.board_columns: list[dict] = []  # [{name: str, status_ids: [str], status_names: [str]}]
+        self.local_status_guidance: list[dict] = []
         self.issue_type_map: dict = {}
         self.status_map: dict = {}
         self.transitions_map: dict = {}
@@ -45,6 +51,12 @@ class JiraState:
             "project_key": self.project_key,
             "project_id": self.project_id,
             "project_type": self.project_type,
+            "boards": self.boards,
+            "board_id": self.board_id,
+            "board_name": self.board_name,
+            "board_type": self.board_type,
+            "board_columns": self.board_columns,
+            "local_status_guidance": self.local_status_guidance,
             "issue_type_map": self.issue_type_map,
             "status_map": self.status_map,
             "transitions_map": self.transitions_map,
@@ -62,6 +74,12 @@ class JiraState:
         state.project_key = data.get("project_key", "")
         state.project_id = data.get("project_id", "")
         state.project_type = data.get("project_type", "")
+        state.boards = data.get("boards", []) or []
+        state.board_id = data.get("board_id", None)
+        state.board_name = data.get("board_name", "")
+        state.board_type = data.get("board_type", "")
+        state.board_columns = data.get("board_columns", []) or []
+        state.local_status_guidance = data.get("local_status_guidance", []) or []
         state.issue_type_map = data.get("issue_type_map", {})
         state.status_map = data.get("status_map", {})
         state.transitions_map = data.get("transitions_map", {})
@@ -125,5 +143,8 @@ def get_fingerprint(state: JiraState) -> str:
         "project_id": state.project_id,
         "issue_type_map": state.issue_type_map,
         "status_map": state.status_map,
+        "board_id": state.board_id,
+        "board_columns": state.board_columns,
+        "local_status_guidance": state.local_status_guidance,
     }, sort_keys=True)
     return hashlib.sha256(data.encode()).hexdigest()[:16]

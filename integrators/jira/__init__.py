@@ -13,12 +13,14 @@ Módulos:
 
 __version__ = "1.0.0"
 
+from .board_reader import derive_local_status_guidance
 from .client import JiraClient, JiraClientError
 from .state import JiraState, load_state, save_state
 from .mapper import JiraMapper, create_create_payload
 from .sync_engine import SyncEngine, SyncResult
 
 __all__ = [
+    "derive_local_status_guidance",
     "JiraClient",
     "JiraClientError",
     "JiraState",

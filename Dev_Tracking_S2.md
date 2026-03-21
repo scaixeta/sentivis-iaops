@@ -4,15 +4,21 @@
 
 - Sprint: S2
 - Projeto: Sentivis IAOps
-- Período: 2026-03-20 – em andamento
+- Período: 2026-03-20 – 2026-03-21 18:00
 - Contexto inicial:
   - Sprint aberta após o encerramento da S1, que consolidou a arquitetura `integrators/` e a documentação canônica da integração Jira.
   - O foco desta sprint é transportar os detalhes das Sprints S0 e S1 para o Jira, mantendo rastreabilidade completa.
   - Pendências herdadas: itens `Pending-S2`, change requests e bug aberto da S1.
+  - Data-alvo de entrega da sprint e das estórias desta sprint: 2026-03-21 18:00 (`America/Sao_Paulo`).
 
 ---
 
 ## 2. Objetivos da Sprint
+
+### Objetivo de Negócio da Sprint
+
+- Objetivo executivo / valor para cliente: `Estabelecer a visibilidade executiva do projeto com rastreabilidade confiável entre planejamento local e operação no Jira.`
+- Sprint goal no Jira: `Estabelecer a visibilidade executiva do projeto com rastreabilidade confiável entre planejamento local e operação no Jira.`
 
 - [OBJ-S2-01] Transportar backlog e detalhes da Sprint S0 para o Jira com rastreabilidade completa
 - [OBJ-S2-02] Transportar backlog e detalhes da Sprint S1 para o Jira com rastreabilidade completa
@@ -87,6 +93,12 @@
   - Execução: 18 issues da S0 atualizadas com datas (STVIA-25 a STVIA-34, STVIA-27 a STVIA-31)
   - Evidência: `integrators/common/doc25_parser.py` e `integrators/jira/cli.py` atualizados, docs/ARCHITECTURE.md e docs/OPERATIONS.md atualizados, TEST-S2-14 aprovado
 
+[D-S2-09] – 2026-03-21 - Decisão: Manter o source of truth local acima do estado remoto do Jira
+  - Regra: `Dev_Tracking_S2.md` continua sendo a sprint ativa local e a referência canônica para o projeto
+  - Estado remoto observado: Jira com `Sprint S0` e `Sprint S1` encerradas e sem sprint ativa no board
+  - Interpretação correta: o Jira registra a execução remota, mas não substitui o planejamento e a governança do SoT local
+  - Ação: `README.md` e `Dev_Tracking.md` passam a refletir explicitamente essa relação
+
 ---
 
 ## 5. Referências a Testes e Bugs (resumo)
@@ -95,12 +107,15 @@ Os detalhes de testes e bugs relacionados a esta sprint devem ser registrados em
 - `tests/bugs_log.md`, na seção correspondente à Sprint S2
 
 Aqui devem constar apenas resumos e referências cruzadas, por exemplo:
-- BUG-S2-01 – Bug herdado da S1 para triagem e qualificação – ver `tests/bugs_log.md`
-- CR-S1-01 – Modelagem da integração Jira no escopo DOC2.5 – ver backlog desta sprint
+- BUG-S2-01 – Bug herdado daDOC2.5 – ver backlog desta sprint
 - CR-S1-02 – Política de sincronização e limpeza segura no Jira – ver backlog desta sprint
 - TEST-S2-15 – Instrumentação do backlog (SP + Jira) no tracking – ver `tests/bugs_log.md`
 - TEST-S2-16 – Campo Story Points no Jira (customfield_10016) validado – ver `tests/bugs_log.md`
 - TEST-S2-17 – Reconcile validado após migração da tabela do backlog – ver `tests/bugs_log.md`
+- TEST-S2-18 – Transição de status das estórias S0 para "Em progresso" via integrator – ver `tests/bugs_log.md`
+- TEST-S2-19 – Leitura das colunas do board Jira (workflow) – ver `tests/bugs_log.md`
+- TEST-S2-20 – Orientação de estado local derivada das colunas do board Jira – ver `tests/bugs_log.md`
+- TEST-S2-21 – Transição pontual de issue Jira com comentário opcional validada em dry-run – ver `tests/bugs_log.md`
 
 ---
 
@@ -131,7 +146,7 @@ D-S2-05 | 2026-03-20T03:25:00-ST | 2026-03-20T03:25:00-FN | Logged
 D-S2-06 | 2026-03-20T03:47:00-ST | 2026-03-20T03:50:00-FN | Logged
 D-S2-07 | 2026-03-20T04:10:00-ST | 2026-03-20T04:15:00-FN | Logged
 D-S2-08 | 2026-03-20T04:33:00-ST | 2026-03-20T04:38:00-FN | Logged
-D-S2-09 | 2026-03-20T00:52:00-ST | 2026-03-20T00:53:30-FN | Logged
+D-S2-09 | 2026-03-21T17:45:00-ST | 2026-03-21T17:48:00-FN | Logged
 
 ---
 

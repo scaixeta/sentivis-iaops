@@ -266,6 +266,45 @@ Nenhum bug registrado até o momento.
   - Evidências:
     - `python -m integrators.jira reconcile --tracking-file Dev_Tracking_S2.md` executa com sucesso
 
+- `TEST-S2-18` – Transição de status das estórias S0 para Em andamento via integrator
+  - Escopo: usar issue progress (dry-run + apply)
+  - Resultado: aprovado
+  - Evidências:
+    - Comando dry-run: `python -m integrators.jira issue progress --tracking-file Dev_Tracking_S2.md --prefix ST-S0- --target-status "Em progresso" --dry-run`
+    - Comando apply: `python -m integrators.jira issue progress --tracking-file Dev_Tracking_S2.md --prefix ST-S0- --target-status "Em progresso" --yes`
+    - 8 issues transicionadas de "A Fazer" para "Em progresso"
+    - Keys: STVIA-45 a STVIA-52 (ST-S0-03 a ST-S0-10)
+  - Entregáveis: `integrators/jira/cli.py` (novo comando issue progress)
+
+- `TEST-S2-19` – Validação de leitura das colunas do board Jira (workflow)
+  - Escopo: listar colunas/status do board do projeto STVIA e registrar no estado observado local
+  - Resultado: aprovado
+  - Evidências:
+    - Comando: `python -m integrators.jira board columns --project-key STVIA`
+    - Colunas observadas: Backlog, Pendentes, Em progresso, Em Testes, Feito
+    - Estado persistido: `.scr/mgmt_layer.jira.json` (campo `board_columns`)
+  - Entregáveis: `integrators/jira/client.py`, `integrators/jira/state.py`, `integrators/jira/sync_engine.py`, `integrators/jira/cli.py`
+
+- `TEST-S2-20` – Validação de orientação de estado local a partir das colunas do board Jira
+  - Escopo: confirmar que a leitura do board agora tambem produz uma orientacao explicita para o estado local DOC2.5 sem alterar arquivos de tracking
+  - Resultado: aprovado
+  - Evidências:
+    - Comando: `python -m integrators.jira board columns --project-key STVIA --no-save`
+    - Saída inclui seção `Orientacao para estado local (somente referencia)`
+    - Estado observado suporta o campo `local_status_guidance`
+    - Heuristica registrada: `Pendentes -> To-Do/Pending-SX`, `Em progresso -> Doing`, `Em Testes -> Doing`, `Feito -> Done/Accepted`
+  - Entregáveis: `integrators/jira/board_reader.py`, `integrators/jira/state.py`, `integrators/jira/sync_engine.py`, `integrators/jira/cli.py`, `docs/OPERATIONS.md`
+
+- `TEST-S2-21` – Validação de transição pontual de issue com comentário opcional
+  - Escopo: confirmar que o integrador suporta transicionar uma issue Jira por key e adicionar comentario na mesma operacao
+  - Resultado: aprovado em dry-run
+  - Evidências:
+    - Comando: `python -m integrators.jira issue transition --issue-key STVIA-25 --target-status "Bloqueado" --comment "Blocked temporarily while waiting for state." --dry-run`
+    - Dry-run mostrou plano `TRANSITION STVIA-25: Em progresso -> Bloqueado`
+    - Dry-run mostrou `COMMENT STVIA-25`
+    - Transicoes disponiveis observadas para `STVIA-25`: `Bloqueado`, `Em Testes`, `Em progresso`, `Feito`
+  - Entregáveis: `integrators/jira/cli.py`, `docs/OPERATIONS.md`
+
 ### 6. Snapshot de Desempenho (observado)
 
 Objetivo: registrar um baseline replicável para análises de desempenho do time, baseado em `Timestamp UTC` (observação) e na calibração Fibonacci.
@@ -313,6 +352,8 @@ TEST-S2-14 | 2026-03-20T04:33:00-ST | 2026-03-20T04:38:00-FN | Passed
 TEST-S2-15 | 2026-03-20T23:57:34-ST | 2026-03-20T23:57:34-FN | Passed
 TEST-S2-16 | 2026-03-20T23:57:34-ST | 2026-03-20T23:57:34-FN | Passed
 TEST-S2-17 | 2026-03-20T23:57:34-ST | 2026-03-20T23:57:34-FN | Passed
+TEST-S2-18 | 2026-03-21T10:23:00-ST | 2026-03-21T10:28:40-FN | Passed
+TEST-S2-19 | 2026-03-21T13:42:56-ST | 2026-03-21T13:42:56-FN | Passed
 
 ## 7. Ressalvas Técnicas
 

@@ -17,12 +17,13 @@ from typing import Optional
 
 def extract_doc25_id_from_story(story_cell: str) -> Optional[str]:
     """
-    Extrai o ID DOC2.5 de uma celula de estoria.
+    Extrai o identificador principal de uma celula de estoria.
     
-    Formato esperado: "ST-S0-03 - Titulo" ou "ST-S0-03"
+    Formato esperado:
+    - legado: "ST-S0-03 - Titulo" ou "ST-S0-03"
+    - novo/transicional: "STVIA-45 - Titulo" ou "STVIA-45"
     """
-    # Padrão: ID no inicio seguido de " - " ou apenas ID
-    match = re.match(r"^([A-Z]+-S\d+-\d+)", story_cell.strip())
+    match = re.match(r"^([A-Z]+-S\d+-\d+|[A-Z][A-Z0-9]+-\d+)", story_cell.strip())
     if match:
         return match.group(1)
     return None

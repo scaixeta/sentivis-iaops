@@ -1,411 +1,676 @@
-# Estudo - Workflow Alternativo Jira Cloud + DOC2.5 + Cindy
+# Estudo Operacional - Jira Cloud + DOC2.5 + Cindy
 
 ## 1. Objetivo
 
-Definir como o projeto pode operar com uma camada externa Jira Cloud sem quebrar o modelo canônico DOC2.5, mantendo a Cindy como orquestradora e o `Dev_Tracking_SX.md` como fonte primária de verdade local.
+Este documento registra, com rigor operacional, como o projeto `Sentivis IAOps` usa o Jira Cloud como camada operacional externa sem romper o modelo canônico DOC2.5.
 
-Meta operacional:
+Objetivos deste estudo:
 
-- permitir que a equipe trabalhe no fluxo DOC2.5 normal;
-- refletir o estado operacional no Jira;
-- permitir que atualizações de sprint no tracking local atualizem o Jira de forma controlada;
-- evitar duplicidade de governança entre workspace e ferramenta externa.
+- documentar o modelo de precedência entre `Dev_Tracking` e Jira;
+- registrar o comportamento real observado da API e do board;
+- consolidar o que já foi implementado no integrador local;
+- descrever regras, exceções e limites para reprodução futura;
+- reduzir ambiguidade para Cindy, PO e futuros mantenedores.
 
-## 2. Premissas e Guardrails
+Escopo deste documento:
 
-### 2.1 Fonte primária de verdade
+- workflow local do projeto;
+- integrador local em `integrators/jira/`;
+- board Jira do projeto `STVIA`;
+- uso da sprint ativa, backlog, bugs, CRs, datas e transições.
 
-O modelo oficial continua sendo local:
+Fora de escopo:
+
+- alteração de `.clinerules/`;
+- alteração do contrato canônico global da Cindy;
+- uso do Jira como fonte primária de verdade.
+
+---
+
+## 2. Princípio Canônico
+
+### 2.1 Precedência
+
+Regra oficial do projeto:
+
+1. o `Dev_Tracking_SX.md` ativo continua sendo a fonte primária de verdade local;
+2. o Jira é um alvo operacional e de visibilidade;
+3. a Cindy é a orquestradora do workflow local;
+4. o Jira não substitui aceite, governança nem rastreabilidade local;
+5. mudanças diretas no Jira precisam ser reconciliadas com o SoT local.
+
+### 2.2 Papel da Cindy
+
+A Cindy, neste contexto, deve:
+
+- ler o SoT local antes de operar o Jira;
+- usar o integrador local em `integrators/jira/`;
+- aplicar `dry-run` antes de mutações relevantes;
+- respeitar gates de PO quando houver decisão ambígua;
+- reportar divergências entre local e Jira;
+- nunca assumir que o Jira venceu o tracking local.
+
+### 2.3 Escopo local vs canônico global
+
+As regras e workflows descritos aqui são **locais ao projeto**.
+
+Isso significa:
+
+- podem ser implementados em `KB/`, `rules/WORKSPACE_RULES.md` e `integrators/`;
+- não devem ser promovidos automaticamente para `.clinerules/`;
+- não redefinem o baseline global da Cindy.
+
+---
+
+## 3. Estado Atual da Integração
+
+## 3.1 Projeto Jira
+
+- Instância: `https://sentivisiaops.atlassian.net`
+- Projeto: `STVIA`
+- Board operacional observado: `DEV board`
+
+## 3.2 Sprints observadas
+
+No estado atual observado durante os testes:
+
+- `Sprint S0` - encerrada
+- `Sprint S1` - encerrada
+- `Sprint S2` - ativa
+
+## 3.3 Arquivos locais relevantes
+
+Fontes locais obrigatórias para o workflow:
 
 - `README.md`
-- `docs/SETUP.md`
-- `docs/ARCHITECTURE.md`
-- `docs/DEVELOPMENT.md`
-- `docs/OPERATIONS.md`
 - `Dev_Tracking.md`
-- `Dev_Tracking_SX.md`
+- `Dev_Tracking_S2.md` ou outro `Dev_Tracking_SX.md` ativo
 - `tests/bugs_log.md`
+- `rules/WORKSPACE_RULES.md`
+- `KB/local-jira-sync-doc25-workflow.md`
 
-O Jira passa a ser camada externa de gestão e visibilidade, nunca substituto do DOC2.5.
+## 3.4 Estado observado em `.scr/`
 
-### 2.2 Guardrails obrigatórios
+O integrador usa estado local observado, não canônico, em:
 
-- Nenhum segredo pode ser versionado.
-- Credenciais Jira permanecem em `.scr/.env`.
-- O `Dev_Tracking_SX.md` continua sendo o gate do "feito".
-- Mudanças no Jira não podem invalidar o tracking local.
-- Conclusão real de estória exige registro no tracking local.
-- A Cindy só opera a camada Jira quando o modo estiver habilitado.
-
-### 2.3 Papel da Cindy
-
-A Cindy atua como roteadora de contexto:
-
-- lê regras do workspace;
-- identifica se a camada Jira está desativada, condicionada ou ativa;
-- executa ou propõe sincronizações;
-- preserva os gates DOC2.5 de plano, escrita e rastreabilidade.
-
-## 3. Operações Jira Cloud Confirmadas
-
-Com base nos testes realizados, as seguintes operações estão confirmadas para o projeto `STVIA`.
-
-### 3.1 Autenticação e contexto do usuário
-
-| Operação | Endpoint | Uso no workflow |
-|---|---|---|
-| GET `myself` | `/rest/api/3/myself` | validar credenciais, descobrir `accountId`, validar contexto do operador |
-
-### 3.2 Projetos
-
-| Operação | Endpoint | Uso no workflow |
-|---|---|---|
-| GET `project/{key}` | `/rest/api/3/project/STVIA` | validar projeto alvo, tipos de issue, roles e metadados |
-| GET `project` | `/rest/api/3/project` | descobrir projetos acessíveis e validar chave correta |
-
-### 3.3 Issues
-
-| Operação | Endpoint | Uso no workflow |
-|---|---|---|
-| GET `search/jql` | `/rest/api/3/search/jql` | localizar issues por sprint, status, labels, tipo e chaves DOC2.5 |
-| GET `issue/{id}` | `/rest/api/3/issue/STVIA-1` | ler issue detalhada antes de decidir update |
-| POST `issue` | `/rest/api/3/issue` | criar issue a partir de estória, bug ou teste do tracking |
-| PUT `issue/{id}` | `/rest/api/3/issue/{id}` | atualizar resumo, descrição, labels, prioridade, due date, componentes |
-| DELETE `issue/{id}` | `/rest/api/3/issue/{id}` | uso administrativo e excepcional |
-| POST `issue/{id}/comment` | `/rest/api/3/issue/{id}/comment` | anexar evidência, contexto de sprint e comentários de operação |
-
-Campos suportados já observados:
-
-- `summary`
-- `description`
-- `priority`
-- `status`
-- `assignee`
-- `duedate`
-- `labels`
-- `components`
-
-### 3.4 Workflow e transições
-
-| Operação | Endpoint | Uso no workflow |
-|---|---|---|
-| GET `issue/{id}/transitions` | `/rest/api/3/issue/{id}/transitions` | validar transições permitidas antes de sincronizar status |
-| POST `issue/{id}/transitions` | `/rest/api/3/issue/{id}/transitions` | mover issue entre estados do fluxo Jira |
-
-### 3.5 Boards e sprints
-
-| Operação | Endpoint | Observação |
-|---|---|---|
-| GET `board` | `/rest/api/3/board` | suporte limitado |
-| GET `board/{id}/sprint` | `/rest/api/3/board/{id}/sprint` | suporte limitado |
-
-Limite operacional atual:
-
-- o projeto `STVIA` foi descrito como "Next-Gen";
-- não devemos depender de boards/sprints tradicionais como pivô da integração;
-- o vínculo de sprint deve ser modelado principalmente por campos locais do DOC2.5 e, se necessário, por `labels`, `components` ou campos Jira validados.
-
-## 4. Cruzamento entre Jira e Dev_Tracking
-
-## 4.1 Entidades DOC2.5 relevantes
-
-O `Dev_Tracking_SX.md` hoje carrega quatro blocos úteis para sincronização:
-
-| Bloco DOC2.5 | Papel | Reflexo Jira recomendado |
-|---|---|---|
-| Objetivos da sprint | direção e escopo | comentário de contexto ou epic lógico |
-| Backlog `Status | Estória` | trabalho operacional | issues Jira |
-| Decisões `[D-SX-YY]` | governança e arquitetura | comentários em issues ou issue específica de decisão |
-| Timestamp UTC | rastreabilidade temporal | comentário, due date, auditoria, ou campo auxiliar |
-
-## 4.2 Mapeamento sugerido
-
-### Backlog de estórias
-
-| Dev_Tracking | Jira |
-|---|---|
-| `ST-S0-18` | chave lógica no `summary`, `description` e `labels` |
-| texto da estória | `summary` |
-| contexto detalhado | `description` |
-| `To-Do`, `Doing`, `Done` | status Jira equivalente |
-| sprint `S0` | `label` `sprint:S0` ou componente `Sprint-S0` |
-| tipo implícito `ST` | `issueType` Task ou Story |
-
-### Bugs
-
-| DOC2.5 | Jira |
-|---|---|
-| `BUG-S0-XX` | issue type Bug |
-| status no log | status Jira |
-| evidência | comentário |
-| impacto | descrição |
-
-### Testes
-
-| DOC2.5 | Jira |
-|---|---|
-| `TEST-S0-XX` | Task, Subtask ou issue type custom se existir |
-| resultado de validação | comentário |
-| referência cruzada | label e descrição |
-
-### Decisões
-
-As decisões `[D-SX-YY]` não devem virar issue automaticamente por padrão. Melhor estratégia:
-
-- registrar a decisão no `Dev_Tracking_SX.md` primeiro;
-- refletir no Jira como comentário na issue impactada;
-- criar issue dedicada somente quando a decisão gerar trabalho rastreável.
-
-## 4.3 Campos auxiliares recomendados no Jira
-
-Para manter o vínculo entre DOC2.5 e Jira, o mínimo recomendado é:
-
-- label `doc25`
-- label `sentivis`
-- label `sprint:S0`
-- label com identificador lógico, por exemplo `tracking:ST-S0-18`
-- componente opcional por área funcional
-
-Se houver campo customizado disponível, o ideal é adicionar:
-
-- `DOC25 Tracking ID`
-- `DOC25 Sprint`
-- `DOC25 Source`
-
-Se não houver campo customizado, labels já resolvem o acoplamento mínimo.
-
-## 5. Modelo de Precedência
-
-## 5.1 Regra principal
-
-Precedência proposta:
-
-1. `Dev_Tracking_SX.md` define o trabalho oficial.
-2. Jira reflete e amplia visibilidade operacional.
-3. Mudanças feitas direto no Jira precisam ser reconciliadas no tracking local.
-4. `Done` só é verdadeiro quando o tracking local estiver atualizado.
-
-## 5.2 Regras de conflito
-
-### Cenário A - Mudança no tracking local
-
-Quando o backlog local mudar:
-
-- a Cindy identifica delta;
-- atualiza ou cria issue no Jira;
-- registra evidência mínima no tracking, se a mudança for estrutural.
-
-### Cenário B - Mudança direta no Jira
-
-Quando alguém mudar status, prioridade ou descrição direto no Jira:
-
-- a Cindy trata isso como sinal externo;
-- propõe reconciliação no `Dev_Tracking_SX.md`;
-- nunca assume conclusão local sem evidência no tracking.
-
-### Cenário C - Divergência
-
-Quando `Dev_Tracking` e Jira divergirem:
-
-- prevalece o tracking local para aceite e governança;
-- Jira é corrigido ou marcado com comentário de divergência;
-- a diferença deve ser registrada como decisão curta ou comentário operacional.
-
-## 6. Workflow Alternativo Proposto
-
-## 6.1 Modo de operação
-
-Seguir o mesmo padrão já pensado para a camada de gestão opcional:
-
-- `MGMT_LAYER_MODE=off`
-- `MGMT_LAYER_MODE=prompt`
-- `MGMT_LAYER_MODE=on`
-
-E trocar a ferramenta:
-
-- `MGMT_LAYER_TOOL=jira`
-
-## 6.2 Estado observado local
-
-Criar arquivo não versionado em `.scr/`, por exemplo:
-
+- `.scr/.env`
 - `.scr/mgmt_layer.jira.json`
 
-Conteúdo esperado:
+Esse estado serve para:
 
-- `jira_base_url`
-- `project_key`
-- `project_id`
-- `user_account_id`
-- `status_map`
-- `priority_map`
-- `issue_type_map`
-- `last_sync_at`
-- `sync_mode`
+- autenticação;
+- metadados do projeto;
+- mapeamento de board/colunas/status;
+- otimização de sync e reconciliação.
 
-Esse arquivo guarda o estado observado, não a configuração canônica.
+## 3.5 Objetivo de negocio da sprint
 
-## 6.3 Ciclo operacional da Cindy
+No modelo local adotado no projeto, cada sprint deve declarar explicitamente um objetivo de negocio / valor para cliente no `Dev_Tracking_SX.md`.
 
-### Etapa 1 - Inicialização
+Regra operacional:
 
-1. Ler `rules/WORKSPACE_RULES.md`.
-2. Verificar se a camada Jira está `off`, `prompt` ou `on`.
-3. Carregar `.scr/.env`.
-4. Validar acesso com `GET /myself`.
-5. Validar projeto com `GET /project/STVIA`.
+- o texto nasce localmente
+- o texto deve ser curto e orientado a entrega de valor, nao a detalhe tecnico
+- quando a sprint for refletida no Jira, esse texto deve ser propagado ao atributo `goal` da entidade Sprint
+- o `Sprint goal` nao substitui o objetivo local; ele o espelha operacionalmente
 
-### Etapa 2 - Descoberta de estado
+Exemplo aplicado na S2:
 
-1. Ler `Dev_Tracking_SX.md`.
-2. Ler `tests/bugs_log.md` quando houver bug/teste.
-3. Buscar issues relevantes via JQL.
-4. Montar mapa local `tracking ID -> issue Jira`.
+- `Estabelecer a visibilidade executiva do projeto com rastreabilidade confiavel entre planejamento local e operacao no Jira.`
 
-### Etapa 3 - Sincronização
+---
 
-1. Identificar novas estórias no backlog local.
-2. Criar issues Jira para itens ainda não refletidos.
-3. Atualizar campos quando houver delta.
-4. Aplicar transição Jira quando o status local mudar.
-5. Adicionar comentário quando houver decisão, evidência ou contexto operacional.
+## 4. Modelo de Dados Local
 
-### Etapa 4 - Rastreabilidade
+## 4.1 O que existe hoje no `Dev_Tracking`
 
-1. Registrar no `Dev_Tracking_SX.md` apenas o necessário.
-2. Não inflar o tracking com espelhamento excessivo.
-3. Usar decisões curtas para mudanças de política, precedência e integração.
+Na tabela de backlog, hoje trabalhamos com:
 
-## 6.4 Quando a sprint atualiza o Jira
+- `Status`
+- `SP`
+- `Jira`
+- `Estória`
 
-Regra proposta:
+Historicamente, a célula `Estória` carregava algo como:
 
-- toda atualização material no backlog da sprint pode disparar sincronização Jira;
-- a atualização de texto livre no tracking não precisa gerar update remoto;
-- somente mudanças em estória, status, prioridade, prazo, responsável ou decisão relacionada devem refletir no Jira.
+- `ST-S0-03 – Definir contrato de mock telemetry`
 
-Disparadores recomendados:
+E a coluna `Jira` carregava algo como:
 
-- inclusão de nova estória;
-- mudança de `To-Do` para `Doing`;
-- mudança de `Doing` para `Done`;
-- criação de bug/teste;
-- alteração de prioridade;
-- inclusão de observação operacional relevante.
+- `STVIA-45`
 
-## 7. Operações que Devemos Implementar
+## 4.2 Decisão evolutiva do modelo
 
-## 7.1 Fase 1 - Especificação e governança
+O modelo local foi ajustado para suportar:
 
-1. Formalizar a camada Jira nas regras do workspace.
-2. Definir se o modo padrão será `prompt` ou `on`.
-3. Declarar o Jira como camada externa opcional, não canônica.
-4. Definir mapeamento de status DOC2.5 -> Jira.
+- a chave do Jira como identificador principal;
+- status nativo do Jira no tracking;
+- compatibilidade com IDs locais legados.
 
-## 7.2 Fase 2 - Estado local e bootstrap
+### Resultado prático
 
-1. Criar `scripts/mgmt_layer_jira_init.py`.
-2. Validar `.scr/.env` sem expor segredos.
-3. Descobrir usuário, projeto e metadados do Jira.
-4. Persistir estado observado em `.scr/mgmt_layer.jira.json`.
+O parser local agora suporta dois formatos:
 
-## 7.3 Fase 3 - Leitura e reconciliação
+Formato legado:
 
-1. Criar `scripts/mgmt_layer_jira.py status`.
-2. Criar `scripts/mgmt_layer_jira.py discover`.
-3. Implementar busca via JQL por labels e sprint lógica.
-4. Mapear issue existente para item do tracking.
+- `ST-S0-03 – Definir contrato de mock telemetry`
 
-## 7.4 Fase 4 - Escrita controlada
+Formato novo/transicional:
 
-1. Criar `scripts/mgmt_layer_jira.py sync`.
-2. Suportar criação de issue.
-3. Suportar update de summary, description, priority, due date, labels e components.
-4. Suportar transição de status.
-5. Suportar comentário de evidência.
+- `STVIA-45 – Definir contrato de mock telemetry`
 
-## 7.5 Fase 5 - Regras de reconciliação
+## 4.3 Compatibilidade interna
 
-1. Implementar dry-run.
-2. Mostrar delta antes de escrever.
-3. Evitar exclusão automática de issue por padrão.
-4. Tratar conflito de status entre Jira e tracking.
-5. Nunca marcar local como concluído com base só no Jira.
+Mesmo quando a chave Jira passa a ser o identificador principal, o integrador preserva internamente:
 
-## 7.6 Fase 6 - Operação da sprint
+- `tracking_key`
 
-1. Ao atualizar `Dev_Tracking_SX.md`, executar rotina de sync Jira.
-2. Ao detectar mudança remota relevante, propor atualização local.
-3. Registrar decisão no tracking quando a política mudar.
-4. Registrar bugs/testes no log canônico e refletir no Jira quando aplicável.
+Esse `tracking_key` continua sendo usado para:
 
-## 8. Proposta de Mapeamento Inicial
+- labels `tracking_<ID>`;
+- match estável com issues já existentes;
+- write-back e reconcile;
+- compatibilidade com o backlog histórico.
 
-## 8.1 Status
+### Exemplo
 
-| DOC2.5 | Jira |
-|---|---|
-| `To-Do` | `To Do` |
-| `Doing` ou `In Progress` | `In Progress` |
-| `Done` | `Done` |
+Para uma linha atual da S2:
 
-## 8.2 Prioridade
+- Jira: `STVIA-45`
+- Estória legada: `ST-S0-03 – Definir contrato...`
 
-| Sentido operacional | Jira |
-|---|---|
-| baixa | `Low` |
-| média | `Medium` |
-| alta | `High` |
-| crítica | `Highest` |
+O item lido fica assim, conceitualmente:
 
-## 8.3 Tipos
+- `id = STVIA-45`
+- `primary_id = STVIA-45`
+- `tracking_key = ST-S0-03`
 
-| Prefixo | Tipo Jira sugerido |
-|---|---|
-| `ST-` | Task |
-| `BUG-` | Bug |
-| `TEST-` | Task ou Subtask |
-| `D-` | comentário ou Task, conforme impacto |
+Essa compatibilidade permite migracao gradual da linguagem local sem perder reconciliacao com o historico anterior.
 
-## 9. Exemplo de fluxo desejado
+---
+
+## 5. Tipos, Labels e Rastreabilidade
+
+## 5.1 Tipos operacionais da Cindy
+
+No modelo local do projeto, os tipos operacionais são:
+
+- `Estória`
+- `BUG`
+- `Change Request`
+- `Decisão`
+
+Regra:
+
+- `Decisão` permanece local-only;
+- `Estória`, `BUG` e `Change Request` podem refletir no Jira.
+
+## 5.2 Labels Jira adotadas
+
+Labels canônicas atualmente usadas nas issues sincronizadas:
+
+- `doc25`
+- `sentivis`
+- `estoria`
+- `bug`
+- `change_request`
+- `tracking_<ID>`
+
+### Observação
+
+O label `tracking_<ID>` continua baseado no identificador estável de rastreabilidade, não necessariamente no ID principal visível no tracking.
 
 Exemplo:
 
-1. A sprint recebe `ST-S0-18 - Especificar camada Jira`.
-2. A Cindy detecta item novo no backlog.
-3. O módulo Jira cria uma issue no projeto `STVIA`.
-4. A issue recebe:
-   - `summary` com o título da estória;
-   - `label` `tracking:ST-S0-18`;
-   - `label` `sprint:S0`;
-   - `label` `doc25`;
-   - descrição com contexto da sprint.
-5. Quando o backlog local muda para `Doing`, a Cindy consulta transições e move a issue.
-6. Quando a estória vira `Done`, a issue é movida para `Done` e recebe comentário com evidência.
+- `tracking_ST-S0-03`
+- `tracking_CR-S1-02`
+- `tracking_BUG-S2-01`
 
-## 10. Riscos e Limites
+## 5.3 Mapeamento de tipo local -> issuetype Jira
 
-- Dependência de mapeamento correto de transições Jira.
-- Projeto `Next-Gen` reduz utilidade de board/sprint clássico.
-- Mudanças diretas no Jira podem gerar divergência sem reconciliação.
-- Update automático demais pode poluir o histórico.
-- Exclusão remota via API deve ser tratada como operação administrativa, não padrão.
+O projeto `STVIA` não expõe `Bug` como issue type válido.
 
-## 11. Recomendação Final
+Tipos realmente observados no Jira:
 
-A recomendação é adotar o Jira como camada externa opcional de gestão, com este desenho:
+- `História`
+- `Tarefa`
+- `Subtask`
+- `Epic`
 
-1. DOC2.5 continua local e canônico.
-2. A Cindy opera a integração.
-3. O `Dev_Tracking_SX.md` dispara a sincronização.
-4. O Jira recebe reflexo do backlog, status, prioridade e evidências.
-5. A conclusão oficial continua dependendo do tracking local.
+Por isso, o mapeamento local implementado ficou:
 
-## 12. Próximas Ações Recomendadas
+| Tipo local | Issue Type Jira |
+|---|---|
+| `ST` | `História` |
+| `BUG` | `Tarefa` |
+| `CR` | `Tarefa` |
+| `TEST` | `Tarefa` |
 
-1. Aprovar o modelo de precedência `DOC2.5 > Jira`.
-2. Aprovar a criação do módulo `mgmt_layer_jira`.
-3. Definir se a sincronização será `manual`, `prompt` ou `auto`.
-4. Validar o mapeamento real de status e issue types do projeto `STVIA`.
-5. Implementar primeiro `status` e `dry-run`.
-6. Implementar `sync` somente após validação de leitura e reconciliação.
+### Importante
+
+O tipo de negócio é preservado pelos labels da Cindy, mesmo quando o Jira não oferece o issuetype ideal.
+
+---
+
+## 6. Status e Colunas do Board
+
+## 6.1 Colunas observadas no board
+
+Configuração relevante observada do board:
+
+| Ordem | Coluna |
+|---|---|
+| 1 | `Backlog` |
+| 2 | `Pendentes` |
+| 3 | `Em progresso` |
+| 4 | `Em Testes` |
+| 5 | `Feito` |
+
+## 6.2 Mapeamento de status local -> Jira
+
+Mapeamento implementado:
+
+| Status local | Jira |
+|---|---|
+| `To-Do` | `Pendentes` |
+| `Pending-SX` | `Pendentes` |
+| `Doing` | `Em progresso` |
+| `Done` | `Feito` |
+| `Accepted` | `Feito` |
+
+Além disso, o parser local agora aceita status nativo do Jira diretamente:
+
+- `Pendentes`
+- `Em progresso`
+- `Em Testes`
+- `Feito`
+- `Bloqueado`
+- `Backlog`
+
+### Regra importante
+
+Se o status no tracking já for um status nativo do Jira, o integrador o usa diretamente, sem remapeamento intermediário.
+
+---
+
+## 7. Comportamento Real do Workflow Jira
+
+## 7.1 Transições diretas não são suficientes
+
+Foi confirmado que o workflow do board não deve ser interpretado só por transições diretas para o alvo.
+
+Exemplo real:
+
+- um item em `Feito` pode não ter transição direta para `Pendentes`
+- mas pode voltar parcialmente por:
+  - `Feito -> Em Testes`
+  - `Em Testes -> Em progresso`
+
+## 7.2 Regra implementada no integrador
+
+O integrador foi ajustado para:
+
+- planejar o próximo passo natural conforme a ordem do board;
+- alinhar status passo a passo;
+- não assumir que só existe sync se houver transição direta para o alvo final.
+
+## 7.3 Limitação real observada
+
+Também foi observado que o Jira atual não permite, em certos casos, voltar até `Pendentes`.
+
+Caso real:
+
+- de `Em progresso`, o workflow disponível não oferecia retorno para `Pendentes`
+
+Então a regra local foi ajustada para:
+
+- usar `Em progresso` como **menor estado retornável** quando `Pendentes` não for alcançável pelo workflow real do Jira.
+
+### Resultado operacional
+
+Se o local pedir `Pendentes` e o Jira não permitir chegar lá:
+
+- o integrador usa `Em progresso` como alvo efetivo;
+- isso aparece explicitamente no dry-run;
+- a interpretação não fica escondida.
+
+---
+
+## 8. Sprints
+
+## 8.1 Regras atuais
+
+Capacidades implementadas:
+
+- listar sprints
+- abrir sprint
+- fechar sprint
+- definir datas da sprint
+- criar sprint
+- atribuir issues a sprint
+- usar `--sprint-name` ou `--sprint-id`
+
+## 8.2 Regra de duração padrão
+
+Regra local implementada:
+
+- uma sprint criada com `start-date` e sem `end-date` explícito assume:
+  - `end-date = start-date + 3 dias`
+
+Essa regra foi aplicada em:
+
+- `sprint create`
+- `sprint dates`
+
+### Exemplo
+
+Comando:
+
+```powershell
+python -m integrators.jira sprint create --sprint-name "Sprint TEST-3D" --start-date 2026-03-21 --dry-run
+```
+
+Resultado esperado:
+
+- início: `2026-03-21`
+- fim inferido: `2026-03-24`
+
+## 8.3 Regra de due date das issues da sprint
+
+Regra operacional fixada:
+
+- a `due date` das issues da sprint deve herdar por padrão a data limite da sprint
+
+Essa regra foi implementada em:
+
+- `sprint assign`
+
+Quando as issues são atribuídas a uma sprint com `endDate`, o integrador:
+
+1. adiciona as issues à sprint;
+2. alinha `duedate` das issues para a data final da sprint.
+
+### Observação
+
+Isso não impede ajuste manual posterior. A regra vale como default de criação/atribuição.
+
+---
+
+## 9. Datas de Sprint e Estórias
+
+## 9.1 Comportamento do Jira
+
+Foi validado:
+
+- a sprint aceita `startDate` e `endDate` com data e hora;
+- a issue usa `duedate` apenas com data, sem hora;
+- portanto:
+  - sprint pode terminar `2026-03-21 18:00`
+  - issues ficam com `duedate = 2026-03-21`
+
+## 9.2 Regra prática adotada
+
+Quando o PO pedir:
+
+- "a sprint termina hoje às 18h"
+
+Aplicação correta no Jira:
+
+- `endDate` da sprint em UTC equivalente a `18:00` local;
+- `duedate` das issues em `YYYY-MM-DD` do mesmo dia.
+
+## 9.3 Exemplo real aplicado
+
+Na `Sprint S2`, foi aplicado:
+
+- `endDate = 2026-03-22T02:59:59.999Z`
+
+Equivalência:
+
+- fim do dia `21/03/2026` em `America/Sao_Paulo`
+
+E as issues da sprint receberam:
+
+- `duedate = 2026-03-21`
+
+---
+
+## 10. Fechamento de Sprint
+
+## 10.1 Regra de segurança local
+
+O fechamento de sprint no integrador foi protegido por gate local.
+
+Antes de fechar, o integrador:
+
+- identifica a sprint alvo;
+- identifica a última coluna do board;
+- lista itens concluídos;
+- lista itens incompletos;
+- lista subtasks abertas;
+- exige decisão do PO quando houver ambiguidade.
+
+## 10.2 Descoberta importante sobre a API do Jira
+
+Foi confirmado experimentalmente:
+
+- a API do Jira pode aceitar fechamento de sprint mesmo com itens incompletos;
+- ao fechar via API, itens incompletos podem permanecer presos na sprint fechada;
+- isso não reproduz automaticamente o mesmo fluxo protetivo da UI.
+
+### Consequência
+
+O gate local não é perfumaria:
+
+- ele protege contra fechamento perigoso e silencioso.
+
+---
+
+## 11. Bugs, CRs e Decisões
+
+## 11.1 Bugs
+
+Os bugs da sprint são lidos de:
+
+- `tests/bugs_log.md`
+
+O parser local já consegue:
+
+- extrair bugs por sprint;
+- mapear estado para status DOC2.5;
+- criar/refletir esses bugs no Jira.
+
+## 11.2 Change Requests
+
+Os CRs presentes no backlog local entram no mesmo fluxo de sync operacional do sprint.
+
+## 11.3 Decisões
+
+Decisões:
+
+- não devem virar issues automaticamente;
+- permanecem locais;
+- podem gerar comentário Jira somente quando houver necessidade operacional explícita.
+
+---
+
+## 12. Operações Confirmadas no Integrador
+
+## 12.1 Estado e descoberta
+
+- `bootstrap`
+- `status`
+- `discover`
+- `board columns`
+
+## 12.2 Sync e reconciliação
+
+- `sync`
+- `sync --write-back`
+- `reconcile`
+
+## 12.3 Issues
+
+- `issue dates`
+- `issue progress`
+- `issue transition`
+- `issue bulk`
+
+## 12.4 Sprints
+
+- `sprint status`
+- `sprint assign`
+- `sprint open`
+- `sprint close`
+- `sprint dates`
+- `sprint create`
+
+---
+
+## 13. Workflow Local Recomendado
+
+## 13.1 Ordem operacional
+
+1. ler fontes locais obrigatórias
+2. validar integridade do integrador
+3. executar `sync --dry-run`
+4. revisar plano
+5. executar `sync --yes`
+6. executar `sprint assign --dry-run`
+7. executar `sprint assign --yes`
+8. validar `sprint status`
+9. reportar divergências
+
+## 13.2 Fontes obrigatórias
+
+1. `rules/WORKSPACE_RULES.md`
+2. `.clinerules/WORKSPACE_RULES_GLOBAL.md`
+3. `Cindy_Contract.md`
+4. `README.md`
+5. `Dev_Tracking.md`
+6. `Dev_Tracking_SX.md` ativo
+7. `tests/bugs_log.md`
+8. `KB/local-jira-sync-doc25-workflow.md`
+
+---
+
+## 14. Procedimento de Reprodução
+
+## 14.1 Validar integrador
+
+```powershell
+python -m py_compile integrators/jira/cli.py integrators/jira/client.py integrators/jira/sync_engine.py integrators/common/doc25_parser.py integrators/jira/mapper.py
+```
+
+## 14.2 Inspecionar sprint ativa
+
+```powershell
+python -m integrators.jira sprint status
+```
+
+## 14.3 Dry-run do sync da sprint ativa local
+
+```powershell
+python -m integrators.jira sync --tracking-file Dev_Tracking_S2.md --dry-run
+```
+
+## 14.4 Aplicar sync real
+
+```powershell
+python -m integrators.jira sync --tracking-file Dev_Tracking_S2.md --yes
+```
+
+## 14.5 Dry-run de atribuição ao sprint
+
+```powershell
+python -m integrators.jira sprint assign --tracking-file Dev_Tracking_S2.md --sprint-name "Sprint S2" --dry-run
+```
+
+## 14.6 Aplicar atribuição ao sprint
+
+```powershell
+python -m integrators.jira sprint assign --tracking-file Dev_Tracking_S2.md --sprint-name "Sprint S2" --yes
+```
+
+## 14.7 Ajustar datas da sprint explicitamente
+
+```powershell
+python -m integrators.jira sprint dates --sprint-name "Sprint S2" --start-date 2026-03-20 --end-date 2026-03-21 --yes
+```
+
+## 14.8 Criar sprint nova com duração padrão
+
+```powershell
+python -m integrators.jira sprint create --sprint-name "Sprint S3" --start-date 2026-03-24 --dry-run
+```
+
+---
+
+## 15. Riscos, Limites e Observações
+
+## 15.1 Limites reais do Jira
+
+- o workflow do board pode impedir retorno completo até `Pendentes`
+- a API de fechamento de sprint pode aceitar operação perigosa sem o mesmo cuidado da UI
+- o projeto pode não expor issue types ideais, como `Bug`
+
+## 15.2 Limites do modelo local atual
+
+- se o tracking migrar totalmente para usar só `Jira Key`, o tipo semântico pode ficar implícito demais
+- para uma migração total futura, o ideal é avaliar:
+  - coluna explícita `Tipo`, ou
+  - leitura do tipo direto do Jira, ou
+  - convenção formal revisada do tracking
+
+## 15.3 Ponto de atenção com bugs
+
+O parser de bugs parte do `tests/bugs_log.md`.
+
+Se um bug estiver marcado localmente como `Done`, o sync pode levá-lo a `Feito` mesmo que alguém espere mantê-lo em `Pendentes` no Jira.
+
+Ou seja:
+
+- a verdade continua sendo o estado local registrado;
+- se o comportamento parecer estranho, o primeiro lugar a verificar é o log local.
+
+---
+
+## 16. Recomendação Final
+
+O desenho atual é viável e reproduzível se estas regras forem respeitadas:
+
+1. o SoT permanece local;
+2. o Jira é camada operacional;
+3. a Cindy orquestra;
+4. o integrador local aplica o protocolo;
+5. datas da sprint e das issues seguem regra padrão clara;
+6. fallbacks de workflow ficam documentados, nunca implícitos.
+
+Recomendação prática:
+
+- manter este modelo local;
+- continuar endurecendo o integrador;
+- evitar promover regras de projeto para `.clinerules/`;
+- usar este documento como referência operacional para reprodução futura.
+
+---
+
+## 17. Resumo Executivo
+
+Este projeto já possui:
+
+- integração Jira funcional;
+- sync local -> Jira;
+- reconcile por rastreabilidade;
+- suporte a bugs/CRs;
+- controle de sprint;
+- proteção no fechamento;
+- alinhamento de datas;
+- fallback operacional quando o workflow Jira não entrega exatamente o estado local desejado.
+
+O que foi aprendido:
+
+- a API do Jira é útil, mas precisa de guardrails locais;
+- o board real manda mais que a intuição;
+- o integrador precisa interpretar o workflow de forma natural e não simplista;
+- documentação operacional rigorosa é obrigatória para manter previsibilidade.

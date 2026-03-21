@@ -232,7 +232,7 @@ knowledge/thingsboard/ce/
 
 ### Visão Geral
 
-O projeto Sentivis IAOps utiliza uma camada de integração com Jira Cloud para sincronização de artefatos de rastreabilidade DOC2.5. Esta camada permite que o backlog local (Dev_Tracking) seja refletido no Jira como issues, mantendo rastreabilidade operacional por labels e reconciliação local.
+O projeto Sentivis IAOps utiliza uma camada de integração com Jira Cloud para sincronização de artefatos de rastreabilidade DOC2.5. Esta camada permite que o backlog local (`Dev_Tracking`) seja refletido no Jira como issues e sprints, mantendo rastreabilidade operacional por labels, reconciliação local e gates de segurança antes de mutações sensíveis. Ela tambem permite refletir no Jira o objetivo de negocio da sprint local por meio do atributo nativo `goal` da entidade Sprint, sem transferir a precedencia do source of truth local.
 
 ### Arquitetura de Integração
 
@@ -258,6 +258,17 @@ A arquitetura segue um padrão provider-oriented que permite adicionar novos int
 | Provider | Local | Status |
 |----------|-------|--------|
 | Jira | `integrators/jira/` | Implementado |
+
+### Atributos de sprint refletidos no Jira
+
+Quando a sprint local e operada no Jira, o integrador pode refletir:
+
+- `name`
+- `startDate`
+- `endDate`
+- `goal`
+
+O `goal` deve nascer no tracking local como objetivo de negocio / valor para cliente e ser propagado ao Jira apenas como espelho operacional.
 | Outros providers | `integrators/<provider>/` | Padrão arquitetural preparado |
 
 **Princípios:**
@@ -297,7 +308,7 @@ doc25_parser.py (parse_sprint_backlog)
 sync_engine.py (dry_run -> calcula delta)
         |
         v
-mapper.py (create_create_payload)
+mapper.py (payloads + estrategia de status)
         |
         v
 client.py (POST /rest/api/3/issue)
@@ -329,11 +340,13 @@ O bootstrap persiste um estado observado em `.scr/mgmt_layer.jira.json`:
 
 | Decisão | Valor | Motivação |
 |---------|-------|-----------|
-| Source of Truth | Dev_Tracking_SX.md local | Jira é espelho, não origem |
+| Source of Truth | Dev_Tracking_SX.md local | Jira é espelho operacional, não origem |
 | Modo Padrão | dry-run | Segurança contra mutation acidental |
-| Labels | doc25 + sentivis | Identificação de origem |
-| Issue Type | Tarefa (padrão) | STVIA não tem Epic configurado |
-| Sincronização | Unidirecional (local -> Jira) | Não há write-back |
+| Labels Base | `doc25` + `sentivis` | Identificação de origem |
+| Labels de Tipo | `estoria`, `bug`, `change_request` | Contrato operacional da Cindy |
+| Rastreabilidade | `tracking_<ID>` | Match estável entre local e Jira |
+| Issue Type | `História` para ST; `Tarefa` para BUG/CR | Tipos válidos observados no projeto STVIA |
+| Sincronização | Unidirecional (local -> Jira) | Write-back apenas para coluna Jira quando explicitamente usado |
 
 ### Mapeamento de Datas (Issue Dates Sync)
 
@@ -342,7 +355,7 @@ O integrator sincroniza timestamps DOC2.5 com campos de data das issues Jira:
 | Campo Jira | Fonte DOC2.5 | Formato |
 |------------|--------------|---------|
 | Start Date (customfield_10015) | Timestamp `start` | YYYY-MM-DD |
-| Data Limite (duedate) | Timestamp `finish` | YYYY-MM-DD |
+| Data Limite (duedate) | Timestamp `finish` ou data da sprint | YYYY-MM-DD |
 
 #### Fluxo de Sincronização
 
@@ -371,6 +384,33 @@ Jira Cloud (campos Start Date e Due Date atualizados)
 2. **Item sem finish**: Ignora (item não concluído no tracking)
 3. **Start vazio**: Usa apenas finish para Data Limite
 4. **Decisões (D-SX-YY)**: Não sincroniza (não são issues no Jira)
+5. **Atribuição ao sprint**: por padrão, a `due date` das issues herda a data final da sprint
+
+### Regras de Sprint Nativa
+
+O integrador local suporta sprints nativas do Jira e aplica as seguintes regras:
+
+| Regra | Comportamento |
+|------|----------------|
+| Criação sem `end-date` | infere `start-date + 3 dias` |
+| Atualização sem `end-date` | infere `start-date + 3 dias` |
+| Atribuição ao sprint | replica a data final da sprint para `duedate` das issues |
+| Fechamento | passa por gate local antes de chamar a API |
+
+### Estratégia de Status
+
+O integrador não depende apenas de transições diretas.
+
+Quando o tracking local exige mudança de status, o planner:
+
+1. lê a ordem real das colunas do board;
+2. calcula o próximo passo natural do item;
+3. executa transição passo a passo quando necessário.
+
+Fallback implementado:
+
+- se o tracking pede `Pendentes`, mas o workflow do Jira não permite retorno completo a essa coluna, o alvo efetivo mínimo passa a ser `Em progresso`;
+- esse fallback é explícito no dry-run.
 
 #### Fallback e Tratamento de Erros
 

@@ -258,6 +258,10 @@ class JiraClient:
         query = urllib.parse.urlencode(params, quote_via=urllib.parse.quote)
         return self._make_request("GET", f"/rest/agile/1.0/board?{query}")
 
+    def get_board_configuration(self, board_id: int) -> dict:
+        """GET /rest/agile/1.0/board/{boardId}/configuration - Obtem colunas e configuracao do board."""
+        return self._make_request("GET", f"/rest/agile/1.0/board/{board_id}/configuration")
+
     def get_sprints(self, board_id: int, state: str = "active,future,closed", max_results: int = 100) -> dict:
         """GET /rest/agile/1.0/board/{boardId}/sprint - Lista sprints de um board."""
         params = {
@@ -267,14 +271,26 @@ class JiraClient:
         query = urllib.parse.urlencode(params, quote_via=urllib.parse.quote)
         return self._make_request("GET", f"/rest/agile/1.0/board/{board_id}/sprint?{query}")
 
-    def create_sprint(self, name: str, origin_board_id: int, goal: str = "") -> dict:
-        """POST /rest/agile/1.0/sprint - Cria um novo sprint."""
+    def create_sprint(self, name: str, origin_board_id: int, goal: str = "", start_date: str = None, end_date: str = None) -> dict:
+        """POST /rest/agile/1.0/sprint - Cria um novo sprint.
+        
+        Args:
+            name: Nome da sprint
+            origin_board_id: ID do board onde criar a sprint
+            goal: Objetivo da sprint (opcional)
+            start_date: Data de inicio no formato ISO8601 (opcional)
+            end_date: Data de fim no formato ISO8601 (opcional)
+        """
         data = {
             "name": name,
             "originBoardId": origin_board_id,
         }
         if goal:
             data["goal"] = goal
+        if start_date:
+            data["startDate"] = start_date
+        if end_date:
+            data["endDate"] = end_date
         return self._make_request("POST", "/rest/agile/1.0/sprint", data)
 
     def get_sprint_issues(self, sprint_id: int, max_results: int = 100, fields: str = "summary,labels") -> dict:
@@ -319,6 +335,38 @@ class JiraClient:
             data["endDate"] = end_date
         if state is not None:
             data["state"] = state
+        if goal is not None:
+            data["goal"] = goal
+        return self._make_request("PUT", f"/rest/agile/1.0/sprint/{sprint_id}", data)
+
+    def close_sprint(
+        self,
+        sprint_id: int,
+        name: str,
+        goal: str | None = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
+    ) -> dict:
+        """Fecha uma sprint ativa diretamente na API do Jira.
+
+        Este metodo e de baixo nivel e nao aplica gate de negocio.
+        O caller deve validar readiness, itens incompletos e decisao do PO
+        antes de invoca-lo.
+
+        Jira exige `startDate` e `endDate` no fechamento da sprint.
+        """
+        if not start_date or not end_date:
+            raise JiraClientError(
+                "close_sprint requer start_date e end_date; valide a sprint e "
+                "recupere as datas atuais antes de fechar."
+            )
+
+        data = {
+            "name": name,
+            "state": "closed",
+            "startDate": start_date,
+            "endDate": end_date,
+        }
         if goal is not None:
             data["goal"] = goal
         return self._make_request("PUT", f"/rest/agile/1.0/sprint/{sprint_id}", data)

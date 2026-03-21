@@ -83,29 +83,33 @@ Sequencia obrigatoria da documentacao canonica:
 - `Sprint/` recebe apenas sprints encerradas
 - `README.md`, `Dev_Tracking.md`, `Dev_Tracking_SX.md` e `tests/bugs_log.md` devem permanecer coerentes entre si
 
-### Regra 6: Backlog e Decisoes da Sprint
+### Regra 6: Backlog, Objetivo de Negocio e Decisoes da Sprint
+
+Toda sprint ativa deve registrar explicitamente:
+
+- o objetivo de negocio / valor para cliente da sprint
+- o texto esperado para `Sprint goal` no Jira, quando houver operacao Jira no projeto
+- o backlog da sprint em tabela simples
 
 O backlog da sprint ativa deve usar tabela simples:
 
 ```text
 | Status | SP | Jira | Estoria |
 |---|---:|---|---|
-| To-Do | 3 | STVIA-123 | ST-SX-01 - descricao |
-| Done | 2 | STVIA-124 | ST-SX-02 - descricao |
+| Pendentes | 3 | STVIA-123 | STVIA-123 - descricao |
+| Feito | 2 | STVIA-124 | STVIA-124 - descricao |
 ```
 
 Estados permitidos:
 
-- `To-Do`
-- `Doing`
-- `Done`
-- `Accepted`
-- `Pending-SX`
+- modelo DOC2.5 legado: `To-Do`, `Doing`, `Done`, `Accepted`, `Pending-SX`
+- modelo nativo Jira: `Pendentes`, `Em progresso`, `Em Testes`, `Feito`, `Bloqueado`, `Backlog`
 
 Campos adicionais do backlog (padrao local deste repositorio):
 
 - `SP`: Story Points (Fibonacci) do time.
 - `Jira`: chave completa da issue no Jira (ex: `STVIA-123`). Se nao houver, manter vazio.
+- `Estoria`: preferencialmente usar a `Jira Key` como identificador principal visivel da linha, preservando a rastreabilidade local durante a transicao.
 
 Decisoes devem ser registradas no formato:
 
@@ -366,6 +370,62 @@ Templates canonicos devem orientar a estrutura final, mas nao devem induzir copi
 - quando o dado nao existir, registrar apenas o minimo necessario como `Pendente de validacao`
 - evitar repetir as mesmas regras em `README.md`, docs canonicos, tracking e `tests/bugs_log.md`
 - em tema amplo ou escopo vago, a ausencia de detalhe e melhor que a invencao
+
+### Regra 26: Gate do PO para Fechamento de Sprint no Jira
+
+Ao tentar encerrar uma sprint no Jira, a Cindy nao pode presumir que as decisoes exigidas pelo Jira substituem a decisao do PO.
+
+Antes de concluir uma sprint Jira, o runtime deve:
+
+1. identificar e mostrar a sprint alvo
+2. verificar quais issues estao na ultima coluna do board
+3. verificar quais issues ficariam incompletas ao encerrar a sprint
+4. verificar existencia de subtasks nao concluidas, quando aplicavel
+5. explicitar o impacto em story points entregues vs carregados
+6. explicitar se houve mudanca de escopo relevante observavel
+
+Se houver qualquer issue fora da ultima coluna, issue incompleta, subtasks abertas, ambiguidade de destino ou qualquer prompt decisorio do Jira, a Cindy deve parar e perguntar ao PO o que fazer antes de continuar.
+
+Decisoes que exigem confirmacao explicita do PO:
+
+- encerrar a sprint mesmo com itens incompletos
+- destino das issues incompletas: backlog, sprint futura existente ou nova sprint
+- aceitar fechamento com subtasks abertas ou dependencias nao resolvidas
+- interpretar como concluido item que nao esteja mapeado para a ultima coluna do board
+
+Regra de precedencia:
+
+- a validacao tecnica do Jira e obrigatoria
+- a decisao operacional continua sendo do PO
+- receber erro, aviso ou prompt do Jira nao autoriza execucao automatica sem consulta ao PO
+
+Mensagem de referencia:
+
+`JIRA SPRINT CLOSE GATE: ha decisoes pendentes de fechamento; consulta explicita ao PO obrigatoria antes de concluir a sprint.`
+
+### Regra 27: Jira Como Alvo Operacional do Workflow Local
+
+No modelo DOC2.5 deste projeto, a Cindy e a orquestradora e o workflow continua sendo local.
+
+Quando houver operacao com Jira:
+
+- o source of truth continua sendo local
+- o Jira deve ser tratado como alvo operacional do workflow local
+- o Jira nao substitui `Dev_Tracking.md`, `Dev_Tracking_SX.md`, `README.md` ou `tests/bugs_log.md`
+- a Cindy nao deve se comportar como se estivesse executando um "workflow do Jira"; ela deve executar um workflow local que usa o Jira como reflexo operacional
+- o objetivo de negocio da sprint deve nascer no tracking local e, quando houver uso de sprint nativa no Jira, deve ser refletido como `Sprint goal`
+
+Para sincronizacao do source of truth local para o Jira, a Cindy deve priorizar a orientacao local documentada em:
+
+- `KB/local-jira-sync-doc25-workflow.md`
+
+Regras complementares:
+
+- `ST`, `BUG` e `CR` devem poder refletir no Jira quando fizerem parte do source of truth local
+- `D-*` permanecem locais e nao devem ser criadas no Jira
+- `To-Do` e `Pending-SX` locais devem refletir `Pendentes` no Jira
+- labels operacionais do Jira devem seguir o contrato Cindy definido pelo projeto
+- a data limite padrao das issues da sprint herda a data limite da sprint, salvo ajuste manual posterior
 
 ## Relacao com Regras Globais
 

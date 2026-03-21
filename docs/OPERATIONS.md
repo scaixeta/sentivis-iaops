@@ -121,6 +121,35 @@ Referência KB:
    - Evidência (prints, logs)
    - Impacto
 
+## Operacao de Sprint DOC2.5 + Jira
+
+### Regra operacional local
+
+Quando o projeto usar Jira para refletir uma sprint DOC2.5:
+
+- o objetivo de negocio nasce no `Dev_Tracking_SX.md`
+- esse objetivo deve ser refletido como `Sprint goal` no Jira
+- a data limite da sprint e a data limite padrao das issues da sprint
+- a sprint pode terminar antes, mas deve nascer com prazo coerente para acompanhamento
+
+### Sequencia minima recomendada
+
+1. validar o tracking local ativo
+2. executar `sync --dry-run`
+3. executar `sync --yes`
+4. executar `sprint goal --dry-run`
+5. executar `sprint goal --yes`
+6. executar `sprint assign --dry-run`
+7. executar `sprint assign --yes`
+8. validar `sprint status`
+
+### Evidencias operacionais esperadas
+
+- backlog local refletido no Jira
+- `Sprint goal` coerente com o valor para cliente
+- due date das issues alinhada ao fim da sprint por padrao
+- divergencias de workflow explicitadas no relatorio
+
 ## Como Registrar Testes e Desempenho (baseline)
 
 Objetivo: garantir rastreabilidade das iterações e viabilizar análise de desempenho por observação (SP x tempo) sem inventar dados.
@@ -270,7 +299,7 @@ Em caso de problemas com ThingsBoard:
 
 ### Visão Geral
 
-A camada Jira permite sincronizar o backlog DOC2.5 (Dev_Tracking) com o projeto STVIA no Jira Cloud. O Jira funciona como espelho, não como source of truth.
+A camada Jira permite sincronizar o backlog DOC2.5 (`Dev_Tracking`) com o projeto `STVIA` no Jira Cloud. O Jira funciona como espelho operacional, não como source of truth.
 
 ### Configuração de Credenciais
 
@@ -329,6 +358,16 @@ python scripts/mgmt_layer_jira.py discover
 
 Atualiza metadados do Jira sem sincronizar backlog.
 
+#### Board Columns (Workflow do Quadro)
+
+```bash
+python -m integrators.jira board columns --project-key STVIA
+```
+
+Lista as colunas do board (e os statuses associados) e registra essa configuracao no estado observado local (`.scr/mgmt_layer.jira.json`).
+Tambem deriva uma orientacao de status local em `local_status_guidance`, apenas como referencia para leitura e manutencao dos arquivos DOC2.5.
+Esse snapshot serve como guia para alinhar o tracking local ao workflow real do quadro, sem reescrever automaticamente o `Dev_Tracking`.
+
 #### Sync (Sincronizar Backlog)
 
 ```bash
@@ -341,11 +380,23 @@ python -m integrators.jira sync
 python scripts/mgmt_layer_jira.py sync
 ```
 
+#### Issue Transition (Issue Pontual + Comentario)
+
+```bash
+python -m integrators.jira issue transition --issue-key STVIA-123 --target-status "Bloqueado" --dry-run
+python -m integrators.jira issue transition --issue-key STVIA-123 --target-status "Bloqueado" --comment "Bloqueio temporario aguardando definicao de estado." --yes
+```
+
+Usa a issue key diretamente no Jira, monta o plano de transicao para um status alvo e opcionalmente adiciona comentario na mesma operacao.
+Esse comando e Jira-only e nao altera `Dev_Tracking`.
+
 O sync:
-1. Parseia Dev_Tracking_SX.md (padrão: Dev_Tracking_S1.md)
-2. Calcula delta entre local e Jira
-3. Cria, atualiza ou remove issues conforme necessário
-4. Labels são usadas para rastreabilidade: `doc25`, `sentivis`, `tracking_ST-S1-01`
+1. Parseia `Dev_Tracking_SX.md` ativo
+2. Carrega bugs da sprint em `tests/bugs_log.md`
+3. Calcula delta entre local e Jira
+4. Cria, atualiza ou alinha status das issues conforme necessário
+5. Usa labels para rastreabilidade: `doc25`, `sentivis`, `tracking_<ID>`
+6. Mantém labels de tipo: `estoria`, `bug`, `change_request`
 
 #### Reconcile (Analisar Divergências)
 
@@ -392,10 +443,11 @@ python -m integrators.jira reconcile
 
 ### Limitações Conhecidas
 
-1. **Sem Epic**: STVIA não tem Epic configurado, usa-se "Tarefa"
-2. **Sprint nativa**: Implementada via comando `sprint assign` (labels como fallback)
-3. **Unidirecional**: Sync local -> Jira apenas (sem write-back)
-4. **Labels fixed**: `doc25`, `sentivis`, `tracking_<id>` são fixas
+1. **Issue types do projeto**: `História`, `Tarefa`, `Subtask`, `Epic` foram observados como válidos
+2. **BUG no Jira**: o projeto não expõe `Bug` como issuetype; bugs operacionais usam `Tarefa` + label `bug`
+3. **Sprint nativa**: implementada via `sprint assign`, `sprint create`, `sprint dates`, `sprint open`, `sprint close`
+4. **Unidirecional**: sync local -> Jira apenas (write-back só quando explicitamente solicitado)
+5. **Labels fixas**: `doc25`, `sentivis`, `tracking_<id>` + labels de tipo
 
 ### Sprint Nativo (Comandos)
 
@@ -405,22 +457,19 @@ O integrator agora suporta atribuição de issues a sprints nativos do Jira Soft
 # Verificar boards e sprints
 python -m integrators.jira sprint status
 
-# Atribuir issues por label (dry-run)
-python -m integrators.jira sprint assign --label sprint_s0 --sprint-name "Sprint S0" --dry-run
+# Atribuir issues por tracking local (dry-run)
+python -m integrators.jira sprint assign --tracking-file Dev_Tracking_S2.md --sprint-name "Sprint S2" --dry-run
 
-# Atribuir issues por label (execução)
-python -m integrators.jira sprint assign --label sprint_s0 --sprint-name "Sprint S0" --yes
+# Atribuir issues por tracking local (execução)
+python -m integrators.jira sprint assign --tracking-file Dev_Tracking_S2.md --sprint-name "Sprint S2" --yes
 ```
 
 Fluxo:
 1. `sprint status` lista boards e sprints existentes com contagem de issues
-2. `sprint assign` filtra issues por label (`sprint_s0`, `sprint_s1`, etc.)
+2. `sprint assign` resolve o escopo pelo tracking local (`ST`, `BUG`, `CR`)
 3. Atribui issues ao campo Sprint nativo do Jira
-4. Labels permanecem como metadata de fallback
-
-Exemplo de mapeamento:
-- Label `sprint_s0` → Sprint nativo "Sprint S0"
-- Label `sprint_s1` → Sprint nativo "Sprint S1"
+4. Alinha a `due date` das issues para a data final da sprint
+5. Labels de rastreabilidade permanecem como metadata estável
 
 ### Sprint Dates (Comandos)
 
@@ -428,10 +477,10 @@ O integrator suporta definição de datas de início e fim para sprints nativos:
 
 ```bash
 # Verificar datas atuais (dry-run)
-python -m integrators.jira sprint dates --sprint-name "Sprint S0" --start-date 2026-03-20 --end-date 2026-04-02 --dry-run
+python -m integrators.jira sprint dates --sprint-name "Sprint S2" --start-date 2026-03-20 --dry-run
 
 # Definir datas do sprint (execução)
-python -m integrators.jira sprint dates --sprint-name "Sprint S0" --start-date 2026-03-20 --end-date 2026-04-02 --yes
+python -m integrators.jira sprint dates --sprint-name "Sprint S2" --start-date 2026-03-20 --end-date 2026-03-21 --yes
 ```
 
 Formato de datas:
@@ -441,10 +490,26 @@ Formato de datas:
   - endDate: `YYYY-MM-DDT23:59:59.999Z`
 
 Notas:
-- O comando requer `--sprint-name`, `--start-date` e `--end-date`
+- O comando requer `--sprint-name` ou `--sprint-id`, e `--start-date`
+- Se `--end-date` for omitido, o integrador infere `start-date + 3 dias`
 - O `--yes` pula a confirmação
 - O `--dry-run` mostra as datas atuais vs propostas sem mutation
 - O Jira Agile API requer `name` e `state` no payload de update
+
+### Regras de Data da Sprint e das Issues
+
+Regra local fixada para este projeto:
+
+1. a sprint tem duração padrão esperada de `3 dias`
+2. a sprint pode terminar antes se o PO decidir
+3. a data limite padrão das issues da sprint é a mesma data limite da sprint
+4. essa due date pode ser alterada manualmente depois
+
+Exemplo real aplicado:
+
+- `Sprint S2` ajustada para fim em `2026-03-22T02:59:59.999Z`
+- equivalência local: fim do dia `21/03/2026` em `America/Sao_Paulo`
+- issues da sprint com `duedate = 2026-03-21`
 
 ### Issue Dates Sync (Sincronização de Datas de Issues)
 
@@ -484,6 +549,19 @@ python -m integrators.jira issue dates --tracking-file Sprint/Dev_Tracking_S0.md
 | ST-S0-01 | STVIA-25 | 2026-03-11 | 2026-03-11 |
 | ST-S0-02 | STVIA-26 | 2026-03-12 | 2026-03-12 |
 | ST-S0-03 | STVIA-45 | 2026-03-13 | 2026-03-13 |
+
+### Status Sync e Fallback de Workflow
+
+O integrador foi ajustado para interpretar o board de forma natural:
+
+1. lê a ordem real das colunas
+2. calcula o próximo passo natural entre statuses
+3. alinha a issue passo a passo, em vez de depender de transição direta
+
+Fallback implementado:
+
+- se o tracking local pedir `Pendentes` e o workflow Jira não permitir voltar até essa coluna, o integrador usa `Em progresso` como menor estado retornável
+- esse comportamento aparece explicitamente no dry-run como `alvo efetivo`
 
 #### Fallback
 

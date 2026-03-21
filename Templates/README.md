@@ -26,6 +26,7 @@ Objetivos principais:
 - Estado da sprint: `{{SPRINT_STATUS}}`
 - Fase atual: `{{CURRENT_PHASE}}`
 - Escopo aprovado: `{{APPROVED_SCOPE}}`
+- Objetivo de negocio da sprint: `{{SPRINT_GOAL_BUSINESS}}`
 
 ## 3. Controle de sprints
 
