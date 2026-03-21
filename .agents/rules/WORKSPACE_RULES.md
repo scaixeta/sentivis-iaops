@@ -45,10 +45,10 @@ Sequência obrigatória da documentação canônica:
 O backlog em `Dev_Tracking_SX.md` deve usar tabela simples:
 
 ```
-| Status | Estória |
-|---|---|
-| To-Do | ST-SX-01 – descrição |
-| Done  | ST-SX-02 – descrição |
+| Status | SP | Jira | Estória |
+|---|---:|---|---|
+| To-Do | 3 | STVIA-123 | ST-SX-01 – descrição |
+| Done  | 2 | STVIA-124 | ST-SX-02 – descrição |
 ```
 
 Estados permitidos: To-Do, Doing, Done, Accepted, Pending-SX.
@@ -147,7 +147,7 @@ Arquivos de sprint NÃO devem conter:
 - Seção "Lições aprendidas"
 - Campos "PO AI:" ou "MLE:"
 - A palavra "Épico"
-- Tabelas complexas fora do padrão `Status | Estória`
+- Tabelas complexas fora do padrão `Status | SP | Jira | Estória`
 - Estruturas teatralizadas de papéis
 
 ### Regra 14: Arquivos Proibidos

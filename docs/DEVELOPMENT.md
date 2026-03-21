@@ -12,6 +12,26 @@ Descrever como o desenvolvimento deve ser conduzido neste projeto seguindo DOC2.
 - Plano antes de execução
 - Sem estruturas paralelas fora do modelo canônico
 
+## Estimativas (Fibonacci 1-21) - Padrao Local
+
+Este projeto adota pontuacao em Fibonacci como padrao local do time (Sentivis IAOps) para estimar tamanho/valor do trabalho.
+
+- Escala: `1, 2, 3, 5, 8, 13, 21`
+- Calibracao por observacao (fonte de evidencia): `docs/feature_requests/FR-FIBONACCI-VALOR-1-21.md`
+- Nota: nao presumir este padrao como regra global para outros workspaces ou times.
+
+Heuristica inicial (ancoras do time):
+
+| Pontos | Regra pratica (resumo) |
+|---:|---|
+| 1 | Operacao atomica, baixo risco, 1 passo |
+| 2 | Pequeno ajuste com 1 verificacao |
+| 3 | Mudanca pequena com 2+ passos/arquivos, evidencias minimas |
+| 5 | Decisao + ajuste + validacao (moderado) |
+| 8 | Integracao/fluxo com superficie maior, chance de retrabalho |
+| 13 | Coordenacao/incerteza, preferir decompor se repetivel |
+| 21 | Alto risco/abrangencia ou tende a atravessar sprint; fatiamento recomendado |
+
 ## Fluxo Geral
 
 ### 1. Ler Contexto
@@ -32,7 +52,7 @@ Antes de qualquer trabalho:
 
 ### 3. Executar
 
-- Atualizar backlog em tabela `Status | Estória`
+- Atualizar backlog em tabela `Status | SP | Jira | Estória`
 - Registrar decisões como `[D-SX-YY]`
 - Referenciar bugs e testes em `tests/bugs_log.md`
 
@@ -201,6 +221,12 @@ X-Authorization: Bearer <jwt_token>
 - Log centralizado em `tests/bugs_log.md`
 - `Timestamp UTC` nas tabelas de tracking
 - `Dev_Tracking_SX.md` recebe resumo e referências cruzadas
+- Cada iteração de validação que gere entregável consistente deve virar `TEST-SX-YY` com:
+  - escopo
+  - resultado
+  - evidências (comandos/saída relevante)
+  - entregáveis (arquivos afetados)
+- Para análises de desempenho do time (consumo), manter `SP` no backlog e registrar snapshots observados em `tests/bugs_log.md` (baseline em `docs/feature_requests/FR-FIBONACCI-VALOR-1-21.md`)
 
 ## Workflow: Sincronização de Documentação ThingsBoard
 

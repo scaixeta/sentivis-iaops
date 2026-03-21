@@ -121,6 +121,21 @@ Referência KB:
    - Evidência (prints, logs)
    - Impacto
 
+## Como Registrar Testes e Desempenho (baseline)
+
+Objetivo: garantir rastreabilidade das iterações e viabilizar análise de desempenho por observação (SP x tempo) sem inventar dados.
+
+- Registrar cada validação que gere um entregável consistente como `TEST-SX-YY` em `tests/bugs_log.md`.
+- Em cada teste, incluir explicitamente:
+  - Escopo
+  - Resultado
+  - Evidências (comandos executados e artefatos observados)
+  - Entregáveis (arquivos afetados)
+- Para desempenho, usar:
+  - `SP` no backlog do `Dev_Tracking_SX.md`
+  - `Timestamp UTC` como evidência observável
+  - Baseline de calibração: `docs/feature_requests/FR-FIBONACCI-VALOR-1-21.md`
+
 ## Segurança Operacional
 
 ### Regras

@@ -247,6 +247,32 @@ Nenhum bug registrado até o momento.
     - Mapeamento: Start Date = timestamp start (data), Data Limite = timestamp finish (data)
     - Documentação atualizada em docs/ARCHITECTURE.md e docs/OPERATIONS.md
 
+- `TEST-S2-15` – Validação de instrumentação do backlog (SP + Jira) no tracking
+  - Escopo: confirmar que os `Dev_Tracking_SX.md` suportam tabela `Status | SP | Jira | Estória` e que o parser extrai `sp` e `jira`
+  - Resultado: aprovado
+  - Evidências:
+    - `parse_sprint_backlog()` retorna `sp_filled` e `jira_filled` completos para S0/S1/S2
+    - Entregáveis: `Sprint/Dev_Tracking_S0.md`, `Sprint/Dev_Tracking_S1.md`, `Dev_Tracking_S2.md`
+
+- `TEST-S2-16` – Validação do campo Story Points no Jira (customfield_10016)
+  - Escopo: confirmar existência do campo "Story point estimate" para permitir sync de `SP` -> Jira
+  - Resultado: aprovado
+  - Evidências:
+    - `/rest/api/3/field` contém `customfield_10016 | Story point estimate | number`
+
+- `TEST-S2-17` – Validação de reconcile após migração da tabela do backlog
+  - Escopo: confirmar que `reconcile` segue operando com o tracking S2 no novo formato de tabela
+  - Resultado: aprovado
+  - Evidências:
+    - `python -m integrators.jira reconcile --tracking-file Dev_Tracking_S2.md` executa com sucesso
+
+### 6. Snapshot de Desempenho (observado)
+
+Objetivo: registrar um baseline replicável para análises de desempenho do time, baseado em `Timestamp UTC` (observação) e na calibração Fibonacci.
+
+- Baseline atual (observado): ver `docs/feature_requests/FR-FIBONACCI-VALOR-1-21.md`
+- Regra: toda nova validação relevante deve virar `TEST-SX-YY` com evidências e entregáveis (arquivos afetados).
+
 ---
 
 ## 6. Timestamp UTC
@@ -283,7 +309,10 @@ TEST-S2-10 | 2026-03-20T02:11:00-ST | 2026-03-20T02:11:30-FN | Passed
 TEST-S2-11 | 2026-03-20T02:11:30-ST | 2026-03-20T02:12:00-FN | Passed
 TEST-S2-12 | 2026-03-20T03:25:00-ST | 2026-03-20T03:26:00-FN | Passed
 TEST-S2-13 | 2026-03-20T04:10:00-ST | 2026-03-20T04:15:00-FN | Passed
-TEST-S2-14 | 2026-03-20T04:33:00-ST | 2026-03-20T00:53:30-FN | Passed
+TEST-S2-14 | 2026-03-20T04:33:00-ST | 2026-03-20T04:38:00-FN | Passed
+TEST-S2-15 | 2026-03-20T23:57:34-ST | 2026-03-20T23:57:34-FN | Passed
+TEST-S2-16 | 2026-03-20T23:57:34-ST | 2026-03-20T23:57:34-FN | Passed
+TEST-S2-17 | 2026-03-20T23:57:34-ST | 2026-03-20T23:57:34-FN | Passed
 
 ## 7. Ressalvas Técnicas
 

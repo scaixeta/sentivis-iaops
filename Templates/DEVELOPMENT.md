@@ -59,7 +59,7 @@ Este documento descreve como a evolucao do projeto deve ser conduzida seguindo D
 
 ### 4.3 Executar
 
-- atualizar backlog em tabela `Status | Estoria`
+- atualizar backlog em tabela `Status | SP | Jira | Estoria`
 - registrar decisoes como `[D-SX-YY] - descricao`
 - referenciar bugs e testes em `tests/bugs_log.md`
 - aplicar a menor mudanca necessaria para atingir o objetivo
@@ -74,7 +74,7 @@ Este documento descreve como a evolucao do projeto deve ser conduzida seguindo D
 
 ## 5. Backlog e instrumentacao da sprint
 
-- backlog da sprint em tabela `Status | Estoria`
+- backlog da sprint em tabela `Status | SP | Jira | Estoria`
 - decisoes em formato `[D-SX-YY] - descricao`
 - referencias cruzadas para bugs e testes sempre que houver impacto relevante
 - `Timestamp UTC` deve registrar eventos efetivamente executados

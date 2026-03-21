@@ -88,10 +88,10 @@ Sequencia obrigatoria da documentacao canonica:
 O backlog da sprint ativa deve usar tabela simples:
 
 ```text
-| Status | Estoria |
-|---|---|
-| To-Do | ST-SX-01 - descricao |
-| Done | ST-SX-02 - descricao |
+| Status | SP | Jira | Estoria |
+|---|---:|---|---|
+| To-Do | 3 | STVIA-123 | ST-SX-01 - descricao |
+| Done | 2 | STVIA-124 | ST-SX-02 - descricao |
 ```
 
 Estados permitidos:
@@ -102,11 +102,22 @@ Estados permitidos:
 - `Accepted`
 - `Pending-SX`
 
+Campos adicionais do backlog (padrao local deste repositorio):
+
+- `SP`: Story Points (Fibonacci) do time.
+- `Jira`: chave completa da issue no Jira (ex: `STVIA-123`). Se nao houver, manter vazio.
+
 Decisoes devem ser registradas no formato:
 
 ```text
 [D-SX-YY] - descricao da decisao
 ```
+
+Pontuacao (Fibonacci) - padrao local do time neste workspace:
+
+- A pontuacao e local (Sentivis IAOps) e nao deve ser presumida como padrao para outros times/projetos derivados.
+- Escala permitida: `1, 2, 3, 5, 8, 13, 21`.
+- Calibracao e evidencias: ver `docs/feature_requests/FR-FIBONACCI-VALOR-1-21.md`.
 
 ### Regra 7: Timestamp UTC
 

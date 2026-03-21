@@ -22,10 +22,10 @@
 
 ## 3. Backlog da Sprint (STATUS | ESTORIA)
 
-| Status | Estoria |
-|---|---|
-| To-Do | `ST-{{SPRINT_ID}}-01 - {{SPRINT_STORY_1}}` |
-| To-Do | `ST-{{SPRINT_ID}}-02 - {{SPRINT_STORY_2}}` |
+| Status | SP | Jira | Estoria |
+|---|---:|---|---|
+| To-Do |  |  | ST-{{SPRINT_ID}}-01 - {{SPRINT_STORY_1}} |
+| To-Do |  |  | ST-{{SPRINT_ID}}-02 - {{SPRINT_STORY_2}} |
 
 Estados possiveis:
 - `To-Do`, `Doing`, `Done`, `Accepted`, `Pending-SX`
