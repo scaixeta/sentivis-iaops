@@ -25,23 +25,23 @@
 
 ## 3. Backlog da Sprint (STATUS | ESTÓRIA)
 
-| Status | Estória |
-|---|---|
-| Pending-S2 | ST-S0-03 – Definir contrato de mock telemetry |
-| Pending-S2 | ST-S0-04 – Mapear device/profile modeling |
-| Pending-S2 | ST-S0-05 – Documentar configuração post-setup |
-| Pending-S2 | ST-S0-06 – Definir baseline de dashboard |
-| Pending-S2 | ST-S0-07 – Avaliar uso do Rule Engine |
-| Pending-S2 | ST-S0-08 – Validar VS Code como workstation |
-| Pending-S2 | ST-S0-09 – Documentar trilha de evidência |
-| Pending-S2 | ST-S0-10 – Preparar baseline para hardware real |
-| Done | ST-S2-01 – Transportar Sprint S0 para o Jira com todos os detalhes e rastreabilidade |
-| Done | ST-S2-02 – Transportar Sprint S1 para o Jira com todos os detalhes e rastreabilidade |
-| Done | ST-S2-03 – Executar sincronização real com reconciliação controlada (S0/S1) |
-| Done | ST-S1-08 – Validar ciclo completo de criação, transição e limpeza controlada no Jira |
-| Done | CR-S1-01 – Modelar a integração Jira sem Sprint nativa, Epic ou campos inexistentes |
-| To-Do | CR-S1-02 – Definir política de sincronização, limpeza e reexecução segura no Jira |
-| Done | ST-S2-04 – Corrigir a listagem Jira para retornar campos completos e suportar reconciliação por tracking arquivado |
+| Status | SP | Jira | Estória |
+|---|---:|---|---|
+| Pending-S2 | 8 | STVIA-45 | ST-S0-03 – Definir contrato de mock telemetry |
+| Pending-S2 | 13 | STVIA-46 | ST-S0-04 – Mapear device/profile modeling |
+| Pending-S2 | 5 | STVIA-47 | ST-S0-05 – Documentar configuração post-setup |
+| Pending-S2 | 13 | STVIA-48 | ST-S0-06 – Definir baseline de dashboard |
+| Pending-S2 | 8 | STVIA-49 | ST-S0-07 – Avaliar uso do Rule Engine |
+| Pending-S2 | 3 | STVIA-50 | ST-S0-08 – Validar VS Code como workstation |
+| Pending-S2 | 5 | STVIA-51 | ST-S0-09 – Documentar trilha de evidência |
+| Pending-S2 | 13 | STVIA-52 | ST-S0-10 – Preparar baseline para hardware real |
+| Done | 2 | STVIA-54 | ST-S2-01 – Transportar Sprint S0 para o Jira com todos os detalhes e rastreabilidade |
+| Done | 1 | STVIA-55 | ST-S2-02 – Transportar Sprint S1 para o Jira com todos os detalhes e rastreabilidade |
+| Done | 1 | STVIA-56 | ST-S2-03 – Executar sincronização real com reconciliação controlada (S0/S1) |
+| Done | 21 | STVIA-42 | ST-S1-08 – Validar ciclo completo de criação, transição e limpeza controlada no Jira |
+| Done | 21 | STVIA-43 | CR-S1-01 – Modelar a integração Jira sem Sprint nativa, Epic ou campos inexistentes |
+| To-Do | 13 | STVIA-44 | CR-S1-02 – Definir política de sincronização, limpeza e reexecução segura no Jira |
+| Done | 2 | STVIA-57 | ST-S2-04 – Corrigir a listagem Jira para retornar campos completos e suportar reconciliação por tracking arquivado |
 
 ---
 
@@ -98,6 +98,9 @@ Aqui devem constar apenas resumos e referências cruzadas, por exemplo:
 - BUG-S2-01 – Bug herdado da S1 para triagem e qualificação – ver `tests/bugs_log.md`
 - CR-S1-01 – Modelagem da integração Jira no escopo DOC2.5 – ver backlog desta sprint
 - CR-S1-02 – Política de sincronização e limpeza segura no Jira – ver backlog desta sprint
+- TEST-S2-15 – Instrumentação do backlog (SP + Jira) no tracking – ver `tests/bugs_log.md`
+- TEST-S2-16 – Campo Story Points no Jira (customfield_10016) validado – ver `tests/bugs_log.md`
+- TEST-S2-17 – Reconcile validado após migração da tabela do backlog – ver `tests/bugs_log.md`
 
 ---
 

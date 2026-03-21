@@ -33,26 +33,26 @@
 
 ## 3. Backlog da Sprint (STATUS | ESTÓRIA)
 
-| Status | Estória |
-|--------|---------|
-| Done | ST-S0-01 – Validar estrutura DOC2.5 do projeto |
-| Done | ST-S0-02 – Consolidar documentação ThingsBoard CE |
-| Pending-S1 | ST-S0-03 – Definir contrato de mock telemetry |
-| Pending-S1 | ST-S0-04 – Mapear device/profile modeling |
-| Pending-S1 | ST-S0-05 – Documentar configuração post-setup |
-| Pending-S1 | ST-S0-06 – Definir baseline de dashboard |
-| Pending-S1 | ST-S0-07 – Avaliar uso do Rule Engine |
-| Pending-S1 | ST-S0-08 – Validar VS Code como workstation |
-| Pending-S1 | ST-S0-09 – Documentar trilha de evidência |
-| Pending-S1 | ST-S0-10 – Preparar baseline para hardware real |
-| Done | ST-S0-11 – Normalizar estrutura base do ThingsBoard Knowledge Layer (MVP-1) |
-| Done | ST-S0-12 – Criar navegação low-token (topic index + reading priority) |
-| Done | ST-S0-13 – Criar runbooks operacionais curtos para tarefas críticas |
-| Done | ST-S0-14 – Normalizar script de sync seguro sem ingestão real |
-| Done | ST-S0-15 – Atualizar docs canônicos e rastreabilidade DOC2.5 do MVP-1 |
-| Done | ST-S0-16 – Documentar triagem N1 para estação offline em talhão |
-| Done | ST-S0-17 – Normalizar nomenclatura oficial para Sentivis IAOps |
-| Done | ST-S0-18 – Produzir estudo operacional da camada Jira Cloud integrada ao DOC2.5 |
+| Status | SP | Jira | Estória |
+|--------|---:|---|---------|
+| Done | 2 | STVIA-25 | ST-S0-01 – Validar estrutura DOC2.5 do projeto |
+| Done | 8 | STVIA-26 | ST-S0-02 – Consolidar documentação ThingsBoard CE |
+| Pending-S1 | 8 | STVIA-45 | ST-S0-03 – Definir contrato de mock telemetry |
+| Pending-S1 | 13 | STVIA-46 | ST-S0-04 – Mapear device/profile modeling |
+| Pending-S1 | 5 | STVIA-47 | ST-S0-05 – Documentar configuração post-setup |
+| Pending-S1 | 13 | STVIA-48 | ST-S0-06 – Definir baseline de dashboard |
+| Pending-S1 | 8 | STVIA-49 | ST-S0-07 – Avaliar uso do Rule Engine |
+| Pending-S1 | 3 | STVIA-50 | ST-S0-08 – Validar VS Code como workstation |
+| Pending-S1 | 5 | STVIA-51 | ST-S0-09 – Documentar trilha de evidência |
+| Pending-S1 | 13 | STVIA-52 | ST-S0-10 – Preparar baseline para hardware real |
+| Done | 8 | STVIA-27 | ST-S0-11 – Normalizar estrutura base do ThingsBoard Knowledge Layer (MVP-1) |
+| Done | 5 | STVIA-28 | ST-S0-12 – Criar navegação low-token (topic index + reading priority) |
+| Done | 8 | STVIA-29 | ST-S0-13 – Criar runbooks operacionais curtos para tarefas críticas |
+| Done | 5 | STVIA-30 | ST-S0-14 – Normalizar script de sync seguro sem ingestão real |
+| Done | 5 | STVIA-31 | ST-S0-15 – Atualizar docs canônicos e rastreabilidade DOC2.5 do MVP-1 |
+| Done | 3 | STVIA-32 | ST-S0-16 – Documentar triagem N1 para estação offline em talhão |
+| Done | 3 | STVIA-33 | ST-S0-17 – Normalizar nomenclatura oficial para Sentivis IAOps |
+| Done | 8 | STVIA-34 | ST-S0-18 – Produzir estudo operacional da camada Jira Cloud integrada ao DOC2.5 |
 
 ---
 

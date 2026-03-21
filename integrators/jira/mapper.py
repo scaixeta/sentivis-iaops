@@ -129,15 +129,19 @@ def create_create_payload(item: Doc25Item, project_key: str, state: JiraState) -
     labels = build_labels(item, state)
     description = build_description(item)
 
-    return {
-        "fields": {
-            "project": {"key": project_key},
-            "summary": f"[{item.id}] {item.title}",
-            "issuetype": {"name": issue_type},
-            "description": description,
-            "labels": labels,
-        }
+    fields = {
+        "project": {"key": project_key},
+        "summary": f"[{item.id}] {item.title}",
+        "issuetype": {"name": issue_type},
+        "description": description,
+        "labels": labels,
     }
+
+    # Adiciona Story Points se presente
+    if item.sp is not None:
+        fields[STORY_POINTS_FIELD] = item.sp
+
+    return {"fields": fields}
 
 
 def create_update_payload(item: Doc25Item, current_issue: dict, state: JiraState) -> dict | None:
@@ -159,8 +163,10 @@ def create_update_payload(item: Doc25Item, current_issue: dict, state: JiraState
     if set(expected_labels) != set(current_labels):
         changes["labels"] = expected_labels
 
-    # Verifica descricao (simplificado - nao compara conteudo)
-    # Para uma comparacao real, precisaria parsear o ADF
+    # Verifica Story Points
+    current_sp = current_issue.get("fields", {}).get(STORY_POINTS_FIELD)
+    if item.sp is not None and current_sp != item.sp:
+        changes[STORY_POINTS_FIELD] = item.sp
 
     if not changes:
         return None
@@ -202,6 +208,10 @@ def find_transition_id(current_status: str, target_status: str, transitions: lis
     return None
 
 
+# Campo Story Points no Jira
+STORY_POINTS_FIELD = "customfield_10016"
+
+
 def build_sync_plan(
     local_items: list[Doc25Item],
     jira_issues: list[dict],
@@ -217,7 +227,12 @@ def build_sync_plan(
 
     # Indexa issues Jira por label de tracking
     jira_by_tracking = {}
+    # Indexa issues Jira por chave (STVIA-123)
+    jira_by_key = {}
     for issue in jira_issues:
+        key = issue.get("key")
+        if key:
+            jira_by_key[key.upper()] = issue
         labels = issue.get("fields", {}).get("labels", [])
         for label in labels:
             if label.startswith("tracking_"):
@@ -225,18 +240,43 @@ def build_sync_plan(
 
     # Processa cada item local
     for item in local_items:
-        tracking_label = f"tracking_{item.id}"
+        # PRIORIDADE 1: Se item.jira existe, usa como chave direta
+        resolved_key = None
+        if item.jira:
+            resolved_key = item.jira.upper()
+            if resolved_key in jira_by_key:
+                jira_issue = jira_by_key[resolved_key]
+            else:
+                # Jira key fornecido mas issue nao existe no Jira
+                # Marca para criar (ou erro?)
+                jira_issue = None
+        # PRIORIDADE 2: Busca por tracking label
+        elif item.id in jira_by_tracking:
+            jira_issue = jira_by_tracking[item.id]
+            resolved_key = jira_issue.get("key")
+        else:
+            jira_issue = None
 
-        if tracking_label.replace("tracking_", "") in jira_by_tracking:
-            # Issue ja existe - verifica se precisa update
-            jira_issue = jira_by_tracking[tracking_label.replace("tracking_", "")]
+        if jira_issue:
+            # Issue ja existe - verifica se precisa update (SP ou outros campos)
             update_payload = create_update_payload(item, jira_issue, state)
 
             if update_payload:
                 plan.append(JiraPayload(
                     action="update",
-                    issue_key=jira_issue.get("key"),
+                    issue_key=resolved_key,
                     fields=update_payload.get("fields"),
+                    transition_id=None,
+                    comment=None,
+                    labels=build_labels(item, state)
+                ))
+            else:
+                # Issue existe mas sem mudancas - ainda assim adiciona ao plano
+                # para fins de write-back (precisamos saber qual key resolver)
+                plan.append(JiraPayload(
+                    action="none",
+                    issue_key=resolved_key,
+                    fields=None,
                     transition_id=None,
                     comment=None,
                     labels=build_labels(item, state)

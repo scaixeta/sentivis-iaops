@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from .client import JiraClient
-from .mapper import JiraPayload, build_sync_plan
+from .mapper import JiraPayload, build_sync_plan, STORY_POINTS_FIELD
 from .state import JiraState, get_fingerprint, load_state, save_state
 from ..common.doc25_parser import Doc25Item, parse_sprint_backlog
 
@@ -134,6 +134,10 @@ class SyncEngine:
         results = []
 
         for op in plan:
+            # Ignora operacoes "none" (itens ja em dia)
+            if op.action == "none":
+                continue
+
             result = SyncResult(
                 operation=op.action,
                 issue_key=op.issue_key,
@@ -145,12 +149,15 @@ class SyncEngine:
             try:
                 if op.action == "create":
                     print(f"[CREATE] {op.fields.get('summary', 'N/A')[:50]}...")
+                    
+                    # Usa create_issue com campos extras (incluindo SP)
                     response = self.client.create_issue(
                         project_key=self.state.project_key,
                         summary=op.fields.get("summary", ""),
                         issue_type=op.fields.get("issuetype", {}).get("name", "Task"),
                         description=op.fields.get("summary", ""),
-                        labels=op.fields.get("labels", [])
+                        labels=op.fields.get("labels", []),
+                        extra_fields=op.fields  # Passa campos extras (SP)
                     )
                     result.issue_key = response.get("key")
                     result.success = True

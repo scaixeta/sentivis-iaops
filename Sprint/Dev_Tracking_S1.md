@@ -29,26 +29,26 @@
 
 ## 3. Backlog da Sprint (STATUS | ESTÓRIA)
 
-| Status | Estória |
-|---|---|
-| Pending-S1 | ST-S0-03 – Definir contrato de mock telemetry |
-| Pending-S1 | ST-S0-04 – Mapear device/profile modeling |
-| Pending-S1 | ST-S0-05 – Documentar configuração post-setup |
-| Pending-S1 | ST-S0-06 – Definir baseline de dashboard |
-| Pending-S1 | ST-S0-07 – Avaliar uso do Rule Engine |
-| Pending-S1 | ST-S0-08 – Validar VS Code como workstation |
-| Pending-S1 | ST-S0-09 – Documentar trilha de evidência |
-| Pending-S1 | ST-S0-10 – Preparar baseline para hardware real |
-| Done | ST-S1-01 – Levantar campos, issue types e transições reais do projeto Jira STVIA |
-| Done | ST-S1-02 – Definir mapeamento DOC2.5 para labels, status e identificadores Jira |
-| Done | ST-S1-03 – Criar bootstrap local da camada `mgmt_layer_jira` com estado observado em `.scr/` |
-| Done | ST-S1-04 – Implementar comando de leitura `status/discover` para o Jira |
-| Done | ST-S1-05 – Implementar sincronização `dry-run` da sprint ativa para o Jira |
-| Done | ST-S1-06 – Refatorar código para arquitetura integrators/ com wrappers de compatibilidade |
-| Done | ST-S1-07 – Atualizar documentação canônica e KB com o fluxo definitivo de operação Jira |
-| To-Do | ST-S1-08 – Validar ciclo completo de criação, transição e limpeza controlada no Jira |
-| To-Do | CR-S1-01 – Modelar a integração Jira sem Sprint nativa, Epic ou campos inexistentes |
-| To-Do | CR-S1-02 – Definir política de sincronização, limpeza e reexecução segura no Jira |
+| Status | SP | Jira | Estória |
+|---|---:|---|---|
+| Pending-S1 | 8 | STVIA-45 | ST-S0-03 – Definir contrato de mock telemetry |
+| Pending-S1 | 13 | STVIA-46 | ST-S0-04 – Mapear device/profile modeling |
+| Pending-S1 | 5 | STVIA-47 | ST-S0-05 – Documentar configuração post-setup |
+| Pending-S1 | 13 | STVIA-48 | ST-S0-06 – Definir baseline de dashboard |
+| Pending-S1 | 8 | STVIA-49 | ST-S0-07 – Avaliar uso do Rule Engine |
+| Pending-S1 | 3 | STVIA-50 | ST-S0-08 – Validar VS Code como workstation |
+| Pending-S1 | 5 | STVIA-51 | ST-S0-09 – Documentar trilha de evidência |
+| Pending-S1 | 13 | STVIA-52 | ST-S0-10 – Preparar baseline para hardware real |
+| Done | 3 | STVIA-35 | ST-S1-01 – Levantar campos, issue types e transições reais do projeto Jira STVIA |
+| Done | 5 | STVIA-36 | ST-S1-02 – Definir mapeamento DOC2.5 para labels, status e identificadores Jira |
+| Done | 8 | STVIA-37 | ST-S1-03 – Criar bootstrap local da camada `mgmt_layer_jira` com estado observado em `.scr/` |
+| Done | 3 | STVIA-38 | ST-S1-04 – Implementar comando de leitura `status/discover` para o Jira |
+| Done | 5 | STVIA-39 | ST-S1-05 – Implementar sincronização `dry-run` da sprint ativa para o Jira |
+| Done | 5 | STVIA-40 | ST-S1-06 – Refatorar código para arquitetura integrators/ com wrappers de compatibilidade |
+| Done | 3 | STVIA-41 | ST-S1-07 – Atualizar documentação canônica e KB com o fluxo definitivo de operação Jira |
+| To-Do | 21 | STVIA-42 | ST-S1-08 – Validar ciclo completo de criação, transição e limpeza controlada no Jira |
+| To-Do | 21 | STVIA-43 | CR-S1-01 – Modelar a integração Jira sem Sprint nativa, Epic ou campos inexistentes |
+| To-Do | 13 | STVIA-44 | CR-S1-02 – Definir política de sincronização, limpeza e reexecução segura no Jira |
 
 ---
 

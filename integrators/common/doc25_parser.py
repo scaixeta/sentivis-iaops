@@ -24,6 +24,8 @@ class Doc25Item:
     title: str       # titulo/descricao
     sprint: str      # S1, S2, etc.
     raw_line: str    # linha original
+    sp: Optional[int] = None      # Story Points (Fibonacci) - opcional
+    jira: Optional[str] = None    # Chave da issue no Jira (ex: STVIA-123) - opcional
 
 
 def parse_sprint_id(filename: str) -> Optional[str]:
@@ -36,22 +38,83 @@ def extract_items(content: str, sprint: str) -> list[Doc25Item]:
     """Extrai todos os items do backlog da sprint."""
     items = []
 
-    # Padrao: | Status | Estoria |
-    # Exemplo: | To-Do | ST-S1-01 - Levantar campos, issue types... |
-    # Aceita tanto - (hifen) quanto – (travessao)
-    backlog_pattern = re.compile(
-        r"\|\s*(To-Do|Doing|Done|Accepted|Pending-S(?:\d+|X))\s*\|\s*([A-Z]+-S\d+-\d+)\s*[-–—]\s*([^\|]+)\s*\|",
-        re.IGNORECASE
-    )
+    def is_allowed_status(value: str) -> bool:
+        v = (value or "").strip()
+        if not v:
+            return False
+        if re.fullmatch(r"Pending-S(\d+|X)", v, flags=re.IGNORECASE):
+            return True
+        return v.lower() in {"to-do", "doing", "done", "accepted"}
 
-    for match in backlog_pattern.finditer(content):
-        status = match.group(1).strip()
-        item_id = match.group(2).strip()  # ID completo como ST-S1-01
-        title = match.group(3).strip()
-        
-        # Extrai tipo do ID (ST, BUG, TEST, CR, D)
+    lines = content.splitlines()
+
+    # Encontrar a primeira tabela de backlog (header: | Status | ... | Estoria |)
+    header = None
+    header_idx = None
+    for i, line in enumerate(lines):
+        if re.match(r"^\|\s*Status\s*\|", line, flags=re.IGNORECASE) and re.search(r"Est", line, flags=re.IGNORECASE):
+            header = [c.strip().lower() for c in line.strip().strip("|").split("|")]
+            header_idx = i
+            break
+
+    if header is None or header_idx is None:
+        return items
+
+    def idx_of(pred) -> Optional[int]:
+        for j, name in enumerate(header or []):
+            if pred(name):
+                return j
+        return None
+
+    status_idx = idx_of(lambda n: n == "status") or 0
+    sp_idx = idx_of(lambda n: n == "sp")
+    jira_idx = idx_of(lambda n: n == "jira")
+    story_idx = idx_of(lambda n: n.startswith("est"))  # Estoria/Estória
+    if story_idx is None:
+        story_idx = len(header) - 1
+
+    # Linhas da tabela: pula header + separador
+    for line in lines[header_idx + 2:]:
+        if not line.strip().startswith("|"):
+            break
+        if "---" in line:
+            continue
+
+        cols = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cols) <= max(status_idx, story_idx):
+            continue
+
+        status = cols[status_idx].strip()
+        if not is_allowed_status(status):
+            continue
+
+        sp_val = None
+        if sp_idx is not None and sp_idx < len(cols):
+            sp_raw = cols[sp_idx].strip()
+            if sp_raw.isdigit():
+                sp_val = int(sp_raw)
+
+        jira_key = None
+        if jira_idx is not None and jira_idx < len(cols):
+            jira_raw = cols[jira_idx].strip()
+            if jira_raw:
+                jira_key = jira_raw
+
+        story_cell = cols[story_idx].strip()
+
+        # Esperado: ST-S1-01 - Titulo (aceita -, –, —)
+        story_match = re.match(r"^([A-Z]+-S\d+-\d+)\s*[-–—]\s*(.+)$", story_cell)
+        if story_match:
+            item_id = story_match.group(1).strip()
+            title = story_match.group(2).strip()
+        else:
+            id_match = re.match(r"^([A-Z]+-S\d+-\d+)\s*(.*)$", story_cell)
+            if not id_match:
+                continue
+            item_id = id_match.group(1).strip()
+            title = id_match.group(2).lstrip(" -–—").strip()
+
         id_type = item_id.split("-")[0].upper()
-        # Extrai sprint do ID
         sprint_from_id = item_id.split("-")[1] if len(item_id.split("-")) > 1 else sprint
 
         items.append(Doc25Item(
@@ -60,7 +123,9 @@ def extract_items(content: str, sprint: str) -> list[Doc25Item]:
             status=status,
             title=title,
             sprint=sprint_from_id,
-            raw_line=match.group(0)
+            raw_line=line,
+            sp=sp_val,
+            jira=jira_key,
         ))
 
     return items

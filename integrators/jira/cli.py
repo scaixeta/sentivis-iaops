@@ -13,6 +13,7 @@ Uso:
 """
 
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 # Adiciona raiz ao path para imports relativos
@@ -23,6 +24,7 @@ from integrators.jira.state import JiraState, load_state, save_state
 from integrators.jira.sync_engine import SyncEngine
 from integrators.jira.bootstrap import run as bootstrap_run
 from integrators.common.doc25_parser import parse_sprint_backlog, timestamp_to_date
+from integrators.common.tracking_writer import write_back_jira_keys
 
 # Campos de data do Jira para issues
 JIRA_START_DATE_FIELD = "customfield_10015"  # Start date
@@ -96,7 +98,7 @@ def cmd_discover():
     return 0
 
 
-def cmd_sync(tracking_file: str = "Dev_Tracking_S2.md", dry_run: bool = False, auto_confirm: bool = False):
+def cmd_sync(tracking_file: str = "Dev_Tracking_S2.md", dry_run: bool = False, auto_confirm: bool = False, write_back: bool = False):
     """Comando sync - sincroniza tracking com Jira."""
     mode = "DRY-RUN" if dry_run else "SYNC"
     print("=" * 60)
@@ -104,6 +106,8 @@ def cmd_sync(tracking_file: str = "Dev_Tracking_S2.md", dry_run: bool = False, a
     print("=" * 60)
     print()
     print(f"Tracking: {tracking_file}")
+    if write_back:
+        print("[WRITE-BACK] Habilitado")
     print()
 
     # Carrega estado
@@ -135,33 +139,92 @@ def cmd_sync(tracking_file: str = "Dev_Tracking_S2.md", dry_run: bool = False, a
 
         if not plan:
             print("[INFO] Nenhuma operacao necessaria.")
-            return 0
+            # Mesmo sem operacoes, pode fazer write-back se houver mapping
+            pass
 
-        print()
+        # Prepara mapping para write-back
+        item_to_jira = {}
+        for item in result.get("items", []):
+            # Se item.jira existe, usa ele
+            if item.jira:
+                item_to_jira[item.id] = item.jira
+        
+        # Adiciona keys resolvidos do plano
+        for op in plan:
+            if op.issue_key:
+                # Extrai ID do item a partir do payload ou usa label
+                labels = op.labels or []
+                for label in labels:
+                    if label.startswith("tracking_"):
+                        item_id = label.replace("tracking_", "")
+                        item_to_jira[item_id] = op.issue_key
 
-        if dry_run:
-            print(f"[DRY-RUN] {len(plan)} operacoes pendentes.")
-            print("Execute sem --dry-run para aplicar.")
-        else:
-            # Confirma antes de mutation
-            print(f"[ATENCAO] {len(plan)} operacoes serao executadas.")
-            if auto_confirm:
-                resp = "s"
-                print("[AUTO] Confirmacao automatica ativada.")
-            else:
-                resp = input("Continuar? [s/N]: ").strip().lower()
-            if resp != "s":
-                print("[INFO] Operacao cancelada.")
-                return 0
-
-            # Executa sync
-            results = engine.sync(plan, dry_run=False)
-
-            # Resume
-            success = sum(1 for r in results if r.success)
-            failed = sum(1 for r in results if not r.success)
+        # Se write-back habilitado, mostra plano
+        if write_back and item_to_jira:
+            print("\n=== WRITE-BACK PLANEJADO ===")
+            wb_result = write_back_jira_keys(tracking_file, item_to_jira, dry_run=True)
             print()
-            print(f"[OK] Sincronizacao concluida: {success} sucesso, {failed} falhas")
+
+        # Se tem operacoes, processa
+        if plan:
+            print()
+
+            if dry_run:
+                print(f"[DRY-RUN] {len(plan)} operacoes pendentes.")
+                if write_back:
+                    print("[WRITE-BACK] Execute com --yes para aplicar.")
+                else:
+                    print("Execute sem --dry-run para aplicar.")
+            else:
+                # Confirma antes de mutation Jira
+                print(f"[ATENCAO] {len(plan)} operacoes Jira serao executadas.")
+                if auto_confirm:
+                    resp_jira = "s"
+                    print("[AUTO] Confirmacao automatica ativada.")
+                else:
+                    resp_jira = input("Continuar? [s/N]: ").strip().lower()
+                
+                if resp_jira != "s":
+                    print("[INFO] Operacao cancelada.")
+                    return 0
+
+                # Executa sync
+                results = engine.sync(plan, dry_run=False)
+
+                # Resume Jira
+                success = sum(1 for r in results if r.success)
+                failed = sum(1 for r in results if not r.success)
+                print()
+                print(f"[OK] Sincronizacao Jira concluida: {success} sucesso, {failed} falhas")
+
+                # Atualiza mapping com chaves criadas
+                for r in results:
+                    if r.success and r.issue_key:
+                        # Tenta encontrar o item_id
+                        for item in result.get("items", []):
+                            # Se o item nao tinha jira, agora tem
+                            if not item.jira:
+                                # Procura na lista de operacoes
+                                pass
+
+        # Processa write-back se habilitado
+        if write_back and item_to_jira:
+            print("\n=== WRITE-BACK ===")
+            if dry_run:
+                print("[DRY-RUN] Nenhuma escrita foi feita.")
+            else:
+                # Confirma write-back
+                if auto_confirm:
+                    resp_wb = "s"
+                else:
+                    resp_wb = input("Escrever chaves Jira no Dev_Tracking? [s/N]: ").strip().lower()
+                
+                if resp_wb != "s":
+                    print("[INFO] Write-back cancelado.")
+                    return 0
+                
+                wb_result = write_back_jira_keys(tracking_file, item_to_jira, dry_run=False)
+                print(f"[OK] Write-back concluido: {wb_result.get('updated', 0)} linhas atualizadas")
 
     except Exception as e:
         print(f"[ERRO] {e}")
@@ -525,6 +588,128 @@ def cmd_sprint_dates(
         return 1
 
 
+def _parse_iso_date(date_str: str):
+    if not date_str:
+        return None
+    try:
+        return datetime.fromisoformat(date_str.replace("Z", "+00:00")).date()
+    except ValueError:
+        return None
+
+
+def cmd_sprint_open(
+    project_key: str = "STVIA",
+    dry_run: bool = False,
+    auto_confirm: bool = False,
+):
+    """Comando sprint open - abre sprint com base no Start Date (UTC)."""
+    mode = "DRY-RUN" if dry_run else "OPEN"
+    print("=" * 60)
+    print(f" {mode} - Abrir Sprint (condicao: Start Date)")
+    print("=" * 60)
+    print()
+    print(f"Projeto:    {project_key}")
+    print()
+
+    try:
+        client = JiraClient()
+
+        boards_resp = client.get_boards(project_key)
+        boards = boards_resp.get("values", [])
+        if not boards:
+            print(f"[ERRO] Nenhum board encontrado")
+            return 1
+
+        board = boards[0]
+        board_id = board["id"]
+        print(f"Board:      {board.get('name')} (ID: {board_id})")
+        print()
+
+        sprints_resp = client.get_sprints(board_id)
+        sprints = sprints_resp.get("values", [])
+        if not sprints:
+            print("[INFO] Nenhum sprint encontrado.")
+            return 0
+
+        active = [s for s in sprints if s.get("state") == "active"]
+        if active:
+            active_names = ", ".join([s.get("name") for s in active if s.get("name")]) or "(desconhecido)"
+            print("[INFO] Ja existe sprint ativa. Nenhuma abertura executada.")
+            print(f"Ativa(s): {active_names}")
+            return 0
+
+        today_utc = datetime.now(timezone.utc).date()
+        candidates = []
+        for s in sprints:
+            if s.get("state") != "future":
+                continue
+            sprint_id = s.get("id")
+            details = client.get_sprint(sprint_id)
+            start = details.get("startDate")
+            start_date = _parse_iso_date(start)
+            if start_date is None:
+                continue
+            if start_date == today_utc:
+                candidates.append((start_date, details))
+
+        if not candidates:
+            print("[INFO] Nenhuma sprint futura com Start Date igual ao dia de hoje (UTC).")
+            print(f"Hoje (UTC): {today_utc.isoformat()}")
+            return 0
+
+        candidates.sort(key=lambda x: x[0])
+        selected = candidates[0][1]
+
+        sprint_id = selected.get("id")
+        sprint_name = selected.get("name")
+        start_date = selected.get("startDate")
+        end_date = selected.get("endDate")
+        goal = selected.get("goal")
+
+        print("Sprint candidata:")
+        print(f"  ID:       {sprint_id}")
+        print(f"  Nome:     {sprint_name}")
+        print(f"  Estado:   {selected.get('state')}")
+        print(f"  Inicio:   {start_date}")
+        print(f"  Fim:      {end_date}")
+        print(f"  Objetivo: {goal or '(nao definido)'}")
+        print()
+
+        if dry_run:
+            print("[DRY-RUN] Execute sem --dry-run para abrir a sprint.")
+            return 0
+
+        print("[ATENCAO] A sprint sera aberta (state=active).")
+        if auto_confirm:
+            resp = "s"
+            print("[AUTO] Confirmacao automatica ativada.")
+        else:
+            resp = input("Continuar? [s/N]: ").strip().lower()
+        if resp != "s":
+            print("[INFO] Operacao cancelada.")
+            return 0
+
+        result = client.update_sprint(
+            sprint_id=sprint_id,
+            name=sprint_name,
+            start_date=start_date,
+            end_date=end_date,
+            state="active",
+            goal=goal,
+        )
+
+        print(f"[OK] Sprint '{result.get('name')}' aberta com sucesso!")
+        print(f"     ID:     {result.get('id')}")
+        print(f"     Estado: {result.get('state')}")
+        print(f"     Inicio: {result.get('startDate')}")
+        print(f"     Fim:    {result.get('endDate')}")
+        return 0
+
+    except Exception as e:
+        print(f"[ERRO] {e}")
+        return 1
+
+
 def cmd_sprint(subcommand: str, argv: list):
     """Roteador de comandos sprint."""
     if subcommand == "status":
@@ -541,6 +726,10 @@ def cmd_sprint(subcommand: str, argv: list):
             if arg == "--sprint-name" and i + 1 < len(argv):
                 sprint_name = argv[i + 1]
         return cmd_sprint_assign(label=label, sprint_name=sprint_name, dry_run=dry_run, auto_confirm=auto_confirm)
+    elif subcommand == "open":
+        dry_run = "--dry-run" in argv
+        auto_confirm = "--yes" in argv or "-y" in argv
+        return cmd_sprint_open(dry_run=dry_run, auto_confirm=auto_confirm)
     elif subcommand == "dates":
         # Parse args
         sprint_name = None
@@ -744,6 +933,7 @@ def main():
         print("  reconcile        - Analisa divergencias")
         print("  sprint status    - Lista boards e sprints")
         print("  sprint assign    - Atribui issues a sprint nativo")
+        print("  sprint open      - Abre sprint com base no Start Date (UTC)")
         print("  issue dates      - Sincroniza datas de issues com timestamps")
         return 1
 
@@ -753,7 +943,7 @@ def main():
     if command == "sprint":
         if len(sys.argv) < 3:
             print("[ERRO] Faltando subcomando")
-            print("Use: sprint status ou sprint assign ...")
+            print("Use: sprint status | sprint assign | sprint open | sprint dates ...")
             return 1
         subcommand = sys.argv[2]
         return cmd_sprint(subcommand, sys.argv[3:])
@@ -767,10 +957,11 @@ def main():
         # Parse --tracking-file argument
         tracking_file = "Dev_Tracking_S2.md"  # default - S2 is the active sprint
         auto_confirm = "--yes" in sys.argv or "-y" in sys.argv
+        write_back = "--write-back" in sys.argv
         for i, arg in enumerate(sys.argv):
             if arg == "--tracking-file" and i + 1 < len(sys.argv):
                 tracking_file = sys.argv[i + 1]
-        return cmd_sync(tracking_file=tracking_file, dry_run=dry_run, auto_confirm=auto_confirm)
+        return cmd_sync(tracking_file=tracking_file, dry_run=dry_run, auto_confirm=auto_confirm, write_back=write_back)
     elif command == "reconcile":
         tracking_file = "Dev_Tracking_S2.md"
         for i, arg in enumerate(sys.argv):

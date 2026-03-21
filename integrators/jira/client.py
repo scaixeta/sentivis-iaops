@@ -168,8 +168,17 @@ class JiraClient:
         """GET /rest/api/3/issue/{key} - Obtem issue especifica."""
         return self._make_request("GET", f"{self.API_BASE}/issue/{issue_key}")
 
-    def create_issue(self, project_key: str, summary: str, issue_type: str, description: str = "", labels: list = None) -> dict:
-        """POST /rest/api/3/issue - Cria nova issue."""
+    def create_issue(self, project_key: str, summary: str, issue_type: str, description: str = "", labels: list = None, extra_fields: dict = None) -> dict:
+        """POST /rest/api/3/issue - Cria nova issue.
+        
+        Args:
+            project_key: Chave do projeto Jira
+            summary: Titulo da issue
+            issue_type: Tipo de issue (Task, Bug, etc)
+            description: Descricao da issue
+            labels: Lista de labels
+            extra_fields: Campos extras a incluir no payload (ex: customfield_10016 para Story Points)
+        """
         data = {
             "fields": {
                 "project": {"key": project_key},
@@ -191,6 +200,13 @@ class JiraClient:
         }
         if labels:
             data["fields"]["labels"] = labels
+        
+        # Adiciona campos extras (SP, etc)
+        if extra_fields:
+            for key, value in extra_fields.items():
+                if key not in data["fields"]:
+                    data["fields"][key] = value
+        
         return self._make_request("POST", f"{self.API_BASE}/issue", data)
 
     def update_issue(self, issue_key: str, fields: dict) -> dict:
