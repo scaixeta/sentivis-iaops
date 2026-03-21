@@ -13,6 +13,7 @@
 # Sistema
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Logs
 *.log
