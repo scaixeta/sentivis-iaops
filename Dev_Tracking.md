@@ -7,9 +7,8 @@
 
 ## Sprint Ativa
 
-- **S3** - Em andamento no source of truth local
-- Objetivo de negocio atual: `Retomar a base funcional do projeto com o backlog Mock ThingsBoard, consolidando contrato, modelagem, dashboard e trilha operacional para a próxima etapa de produto.`
-- Jira remoto: `S0`, `S1` e `S2` encerradas; `S3` ativa
+- **Nenhuma sprint ativa** — todas encerradas
+- Ultima sprint: S3 encerrada localmente em 2026-04-11
 
 ## Lista de Sprints
 
@@ -18,7 +17,7 @@
 | S0 | 2026-03-10 - 2026-03-13 | Encerrada | `Sprint/Dev_Tracking_S0.md` |
 | S1 | 2026-03-13 - 2026-03-20 | Encerrada | `Sprint/Dev_Tracking_S1.md` |
 | S2 | 2026-03-20 - 2026-03-21 18:00 | Encerrada (local) | `Sprint/Dev_Tracking_S2.md` |
-| S3 | 2026-03-22 - 2026-03-25 | Em andamento (local) | `Dev_Tracking_S3.md` |
+| S3 | 2026-03-22 - 2026-04-11 | Encerrada (local) | `Sprint/Dev_Tracking_S3.md` |
 
 ## Observações
 
@@ -36,4 +35,4 @@ Event | Start | Finish | Status
 S0 | 2026-03-10T10:30:00-ST | 2026-03-13T00:40:18-FN | Encerrada
 S1 | 2026-03-13T00:40:18-ST | 2026-03-20T01:31:05-FN | Encerrada
 S2 | 2026-03-20T01:31:05-ST | 2026-03-21T16:59:36-FN | Encerrada
-S3 | 2026-03-21T16:59:36-ST | - | Em andamento
+S3 | 2026-03-21T16:59:36-ST | 2026-04-11T11:25:00-FN | Encerrada

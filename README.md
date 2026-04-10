@@ -6,7 +6,7 @@
 |------|-----------|
 | **Nome do Projeto** | Sentivis IAOps |
 | **Plataforma IoT** | ThingsBoard Community Edition |
-| **Fase Atual** | Sprint S3 local ativa e refletida no Jira |
+| **Fase Atual** | Sprint S3 encerrada localmente (2026-04-11) |
 | **Versão** | 1.0.0-S3 |
 
 ## Escopo do Projeto
@@ -68,7 +68,7 @@ Sentivis SIM/
 | S0 | Validar data backbone ThingsBoard CE | Encerrada | `Sprint/Dev_Tracking_S0.md` |
 | S1 | Estruturar integração Jira Cloud subordinada ao DOC2.5 | Encerrada | `Sprint/Dev_Tracking_S1.md` |
 | S2 | Consolidar a visibilidade executiva da entrega com rastreabilidade entre o SoT local e o Jira | Encerrada (local) | `Sprint/Dev_Tracking_S2.md` |
-| S3 | Retomar a base funcional do projeto com o backlog Mock ThingsBoard | Em andamento (local) | `Dev_Tracking_S3.md` |
+| S3 | Retomar a base funcional do projeto com o backlog Mock ThingsBoard | Encerrada (local) | `Sprint/Dev_Tracking_S3.md` |
 
 ## Camada Jira DOC2.5
 
@@ -142,13 +142,13 @@ Regras operacionais locais:
 
 ## ThingsBoard CE
 
-- **URL**: `http://95.217.16.195:8080`
+- **URL**: `http://204.168.202.5:8080`
 - **Usuário**: `scaixeta@gmail.com` (Tenant Administrator)
 - **Dispositivo existente**: `Sentivis | 0001` (default profile, Inactive)
 
 ## Notas Importantes
 
-- Este projeto esta em **Sprint S3** no plano local - fase de retomada do backlog base do Mock ThingsBoard apos a consolidacao da camada Jira
+- Este projeto esta em **Sprint S3 encerrada** - fase de retomada do backlog base do Mock ThingsBoard apos a consolidacao da camada Jira
 - A integração Jira já possui arquitetura provider-oriented em `integrators/` com compatibilidade preservada em `scripts/`
 - Telemetria é gerada por **mock**, não por hardware real
 - O objetivo é estabelecer a base para futura integração com ESP32/LoRa
