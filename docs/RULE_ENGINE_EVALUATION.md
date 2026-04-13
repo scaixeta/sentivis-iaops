@@ -27,5 +27,5 @@ Manter n8n como orquestrador principal. Rule Engine para alarmes nativos do TB d
 ## 5. Proximos Passos
 
 1. Criar Rule Chain minima com alarme de temperatura
-2. Testar via telemetria do device `Sentivis | 0001`
+2. Testar via telemetria do device `Sentivis | CIRRUS-NIMBUS-AERO`
 3. Validar visualizacao de alarmes no dashboard

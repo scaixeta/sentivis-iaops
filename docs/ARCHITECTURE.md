@@ -238,7 +238,7 @@ knowledge/thingsboard/ce/
 
 ### Visão Geral
 
-A partir da Sprint 5, o projeto adopta Redis como memória operacional para suportar recall de estado entre execuções, store de histórico de conversa e persistência de preferências do utilizador e contexto do projeto.
+A partir da Sprint 5, o projeto adota Redis como memória operacional para suportar recall de estado entre execuções, store de histórico de conversa e persistência de preferências do usuário e contexto do projeto.
 
 Redis é memória operacional, não é source of truth. O source of truth permanece nos arquivos locais e artefatos DOC2.5.
 
@@ -286,7 +286,7 @@ python3 scripts/hermes_memory.py --op store_user_pref --key lingua --value "pt-B
 
 || Decisão | Valor | Motivação |
 |---|---|---|---|
-| Source of Truth | Dev_Tracking + artefactos locais | Redis é operacional, não canónico |
+| Source of Truth | Dev_Tracking + artefatos locais | Redis é operacional, não canônico |
 | TTL sessão | 30 min | Sessão activa renovável |
 | TTL memória projeto | 1 dia | Contexto persistente entre sessões |
 | TTL histórico conversa | 7 dias | Recuperação de contexto cross-session |
@@ -354,7 +354,7 @@ scripts/s5_microclimate.py
 
 ### Visão Geral
 
-O projeto Sentivis IAOps utiliza uma camada de integração com Jira Cloud para sincronização de artefatos de rastreabilidade DOC2.5. Esta camada permite que o backlog local (`Dev_Tracking`) seja refletido no Jira como issues e sprints, mantendo rastreabilidade operacional por labels, reconciliação local e gates de segurança antes de mutações sensíveis. Ela tambem permite refletir no Jira o objetivo de negocio da sprint local por meio do atributo nativo `goal` da entidade Sprint, sem transferir a precedencia do source of truth local.
+O projeto Sentivis IAOps utiliza uma camada de integração com Jira Cloud para sincronização de artefatos de rastreabilidade DOC2.5. Esta camada permite que o backlog local (`Dev_Tracking`) seja refletido no Jira como issues e sprints, mantendo rastreabilidade operacional por labels, reconciliação local e gates de segurança antes de mutações sensíveis. Ela também permite refletir no Jira o objetivo de negócio da sprint local por meio do atributo nativo `goal` da entidade Sprint, sem transferir a precedência do source of truth local.
 
 ### Arquitetura de Integração
 

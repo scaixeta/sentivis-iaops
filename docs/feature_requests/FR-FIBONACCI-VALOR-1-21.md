@@ -15,7 +15,7 @@ Este documento define:
 - O que medir nos `Dev_Tracking`
 - Como medir (processo reprodutível)
 - Uma primeira calibração de escala Fibonacci 1–21 para o time
-- Como aplicar na prática, com ancoras observadas
+- Como aplicar na prática, com ancoragems observadas
 
 ## 2) O Que Foi Entendido (Contexto do PO)
 
@@ -220,7 +220,7 @@ Maiores itens (âncoras reais):
 Observacao importante:
 
 - Estes itens de ~6h aconteceram antes da padronizacao formal de pontuacao Fibonacci no backlog (`SP`).
-- Eles entram como ancora empirica para calibracao inicial (21), nao como exemplo de instrumentacao perfeita de backlog.
+- Eles entram como ancoragem empirica para calibração inicial (21), não como exemplo de instrumentação perfeita de backlog.
 
 3) Escala Fibonacci (1, 2, 3, 5, 8, 13, 21) calibrada para este time
 

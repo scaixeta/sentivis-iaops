@@ -46,4 +46,4 @@
 
 ## 5. Baseline Actual
 
-Device `Sentivis | 0001` existente. Dashboard operacional pendente de implementacao.
+Device `Sentivis | CIRRUS-NIMBUS-AERO` existente. Dashboard operacional pendente de implementacao.

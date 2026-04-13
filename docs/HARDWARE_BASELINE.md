@@ -9,7 +9,7 @@ Portal: `https://portal.cirrus-lab.com/`
 | Campo | Valor |
 |---|---|
 | Tipo | CUSTOMER_USER |
-| Utilizador | contateste@cirruslab.com |
+| Usuário | contateste@cirruslab.com |
 | Issuer | thingsboard.cloud |
 | Tenant ID | 2a75a5c0-ba4f-11ee-a124-0d00bef77fcc |
 | Customer ID | f23b9a70-1d8e-11f1-88f8-7daa5068de06 |

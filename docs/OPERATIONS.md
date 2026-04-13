@@ -1,3 +1,9 @@
+---
+author: Sergio Caixeta / Cindy IA
+version: 1.2.0
+date: 2026-04-10
+---
+
 # OPERATIONS - Sentivis IAOps
 
 ## Propósito
@@ -11,13 +17,13 @@ Orientar como operar, validar e manter o projeto Sentivis IAOps.
 | Item | Valor |
 |------|-------|
 | Plataforma | ThingsBoard CE |
-| URL | http://95.217.16.195:8080 |
+| URL | http://204.168.202.5:8080 |
 | Porta HTTP | 8080 |
-| Usuário Admin | scaixeta@gmail.com |
+| Usuário Admin | tenant@thingsboard.org |
 
 ### Artefatos que Precisam Permanecer Saudáveis
 
-1. **Dispositivos**: `Sentivis | 0001` (existente), novos devices
+1. **Dispositivos**: `Sentivis | CIRRUS-NIMBUS-AERO` (existente), novos devices
 2. **Device Profiles**: default e profiles customizados
 3. **Dashboards**: Visualizações operacionais
 4. **Telemetry**: Dados time-series armazenados
@@ -28,12 +34,12 @@ Orientar como operar, validar e manter o projeto Sentivis IAOps.
 ### Testes Manuais Mínimos
 
 1. **Validar acesso ThingsBoard**
-   - URL: http://95.217.16.195:8080
+   - URL: http://204.168.202.5:8080
    - Login com credenciais
 
 2. **Validar dispositivos**
    - Menu: Entidades > Dispositivos
-   - Verificar device "Sentivis | 0001"
+   - Verificar device "Sentivis | CIRRUS-NIMBUS-AERO"
 
 3. **Validar telemetria**
    - Selecionar device
@@ -47,12 +53,12 @@ Orientar como operar, validar e manter o projeto Sentivis IAOps.
 
 ```bash
 # Testar API de autenticação
-curl -X POST http://95.217.16.195:8080/api/auth/login \
+curl -X POST http://204.168.202.5:8080/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"scaixeta@gmail.com","password":"<senha>"}'
+  -d '{"username":"tenant@thingsboard.org","password":"<senha>"}'
 
 # Testar listagem de dispositivos
-curl -X GET http://95.217.16.195:8080/api/devices \
+curl -X GET http://204.168.202.5:8080/api/devices \
   -H "X-Authorization: Bearer <jwt_token>"
 ```
 
@@ -94,16 +100,16 @@ Comandos de confirmação:
 
 ```bash
 # Autenticação administrativa
-curl -X POST http://95.217.16.195:8080/api/auth/login \
+curl -X POST http://204.168.202.5:8080/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"scaixeta@gmail.com","password":"<senha>"}'
+  -d '{"username":"tenant@thingsboard.org","password":"<senha>"}'
 
 # Busca do device por nome
-curl -X GET "http://95.217.16.195:8080/api/tenant/devices?pageSize=100&page=0&textSearch=<nome-da-estacao>" \
+curl -X GET "http://204.168.202.5:8080/api/tenant/devices?pageSize=100&page=0&textSearch=<nome-da-estacao>" \
   -H "X-Authorization: Bearer <jwt_token>"
 
 # Telemetria mínima de validação
-curl -X POST "http://95.217.16.195:8080/api/v1/<device_token>/telemetry" \
+curl -X POST "http://204.168.202.5:8080/api/v1/<device_token>/telemetry" \
   -H "Content-Type: application/json" \
   -d '{"ts": 1741824300000, "values": {"soil_moisture": 45.2, "soil_temperature": 23.1}}'
 ```
@@ -121,7 +127,7 @@ Referência KB:
    - Evidência (prints, logs)
    - Impacto
 
-## Operacao de Sprint DOC2.5 + Jira
+## Operação de Sprint DOC2.5 + Jira
 
 ### Regra operacional local
 
@@ -129,7 +135,7 @@ Quando o projeto usar Jira para refletir uma sprint DOC2.5:
 
 - o objetivo de negocio nasce no `Dev_Tracking_SX.md`
 - esse objetivo deve ser refletido como `Sprint goal` no Jira
-- a data limite da sprint e a data limite padrao das issues da sprint
+- a data limite da sprint e a data limite padrão das issues da sprint
 - a sprint pode terminar antes, mas deve nascer com prazo coerente para acompanhamento
 
 ### Sequencia minima recomendada
@@ -147,8 +153,8 @@ Quando o projeto usar Jira para refletir uma sprint DOC2.5:
 
 - backlog local refletido no Jira
 - `Sprint goal` coerente com o valor para cliente
-- due date das issues alinhada ao fim da sprint por padrao
-- divergencias de workflow explicitadas no relatorio
+- due date das issues alinhada ao fim da sprint por padrão
+- divergencias de workflow explicitadas no relatório
 
 ## Como Registrar Testes e Desempenho (baseline)
 
@@ -178,10 +184,10 @@ Objetivo: garantir rastreabilidade das iterações e viabilizar análise de dese
 
 ```bash
 # ThingsBoard
-TB_HOST=95.217.16.195
+TB_HOST=204.168.202.5
 TB_PORT=8080
-TB_URL=http://95.217.16.195:8080
-TB_USERNAME=scaixeta@gmail.com
+TB_URL=http://204.168.202.5:8080
+TB_USERNAME=tenant@thingsboard.org
 TB_PASSWORD=<obter_do_arquivo_local>
 ```
 
@@ -301,13 +307,13 @@ Em caso de problemas com ThingsBoard:
 
 A camada Jira permite sincronizar o backlog DOC2.5 (`Dev_Tracking`) com o projeto `STVIA` no Jira Cloud. O Jira funciona como espelho operacional, não como source of truth.
 
-Regra operacional: o estado local deve refletir no Jira. Isso inclui backlog, bugs e testes, com criacao da issue quando necessario. Se um item local estiver `Em Testes`, o espelho operacional no Jira tambem deve estar `Em Testes`.
+Regra operacional: o estado local deve refletir no Jira. Isso inclui backlog, bugs e testes, com criação da issue quando necessário. Se um item local estiver `Em Testes`, o espelho operacional no Jira também deve estar `Em Testes`.
 
 ### Configuração de Credenciais
 
 1. Criar arquivo `.scr/.env` na raiz do projeto:
 ```bash
-JIRA_EMAIL=scaixeta@gmail.com
+JIRA_EMAIL=tenant@thingsboard.org
 JIRA_API_TOKEN=<token_api_jira>
 JIRA_PROJECT_KEY=STVIA
 ```
@@ -366,8 +372,8 @@ Atualiza metadados do Jira sem sincronizar backlog.
 python -m integrators.jira board columns --project-key STVIA
 ```
 
-Lista as colunas do board (e os statuses associados) e registra essa configuracao no estado observado local (`.scr/mgmt_layer.jira.json`).
-Tambem deriva uma orientacao de status local em `local_status_guidance`, apenas como referencia para leitura e manutencao dos arquivos DOC2.5.
+Lista as colunas do board (e os statuses associados) e registra essa configuração no estado observado local (`.scr/mgmt_layer.jira.json`).
+Também deriva uma orientação de status local em `local_status_guidance`, apenas como referência para leitura e manutenção dos arquivos DOC2.5.
 Esse snapshot serve como guia para alinhar o tracking local ao workflow real do quadro, sem reescrever automaticamente o `Dev_Tracking`.
 
 #### Sync (Sincronizar Backlog)
@@ -389,8 +395,8 @@ python -m integrators.jira issue transition --issue-key STVIA-123 --target-statu
 python -m integrators.jira issue transition --issue-key STVIA-123 --target-status "Bloqueado" --comment "Bloqueio temporario aguardando definicao de estado." --yes
 ```
 
-Usa a issue key diretamente no Jira, monta o plano de transicao para um status alvo e opcionalmente adiciona comentario na mesma operacao.
-Esse comando e Jira-only e nao altera `Dev_Tracking`.
+Usa a issue key diretamente no Jira, monta o plano de transicao para um status alvo e opcionalmente adiciona comentario na mesma operação.
+Esse comando e Jira-only e não altera `Dev_Tracking`.
 
 O sync:
 1. Parseia `Dev_Tracking_SX.md` ativo

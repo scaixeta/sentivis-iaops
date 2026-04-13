@@ -1,3 +1,9 @@
+---
+author: Sergio Caixeta / Cindy IA
+version: 1.2.0
+date: 2026-04-10
+---
+
 # DEVELOPMENT - Sentivis IAOps
 
 ## Propósito
@@ -12,22 +18,22 @@ Descrever como o desenvolvimento deve ser conduzido neste projeto seguindo DOC2.
 - Plano antes de execução
 - Sem estruturas paralelas fora do modelo canônico
 
-## Estimativas (Fibonacci 1-21) - Padrao Local
+## Estimativas (Fibonacci 1-21) - Padrão Local
 
-Este projeto adota pontuacao em Fibonacci como padrao local do time (Sentivis IAOps) para estimar tamanho/valor do trabalho.
+Este projeto adota pontuacao em Fibonacci como padrão local do time (Sentivis IAOps) para estimar tamanho/valor do trabalho.
 
 - Escala: `1, 2, 3, 5, 8, 13, 21`
-- Calibracao por observacao (fonte de evidencia): `docs/feature_requests/FR-FIBONACCI-VALOR-1-21.md`
-- Nota: nao presumir este padrao como regra global para outros workspaces ou times.
+- Calibração por observacao (fonte de evidencia): `docs/feature_requests/FR-FIBONACCI-VALOR-1-21.md`
+- Nota: não presumir este padrão como regra global para outros workspaces ou times.
 
 Heuristica inicial (ancoras do time):
 
-| Pontos | Regra pratica (resumo) |
+| Pontos | Regra prática (resumo) |
 |---:|---|
-| 1 | Operacao atomica, baixo risco, 1 passo |
+| 1 | Operação atomica, baixo risco, 1 passo |
 | 2 | Pequeno ajuste com 1 verificacao |
 | 3 | Mudanca pequena com 2+ passos/arquivos, evidencias minimas |
-| 5 | Decisao + ajuste + validacao (moderado) |
+| 5 | Decisao + ajuste + validação (moderado) |
 | 8 | Integracao/fluxo com superficie maior, chance de retrabalho |
 | 13 | Coordenacao/incerteza, preferir decompor se repetivel |
 | 21 | Alto risco/abrangencia ou tende a atravessar sprint; fatiamento recomendado |
@@ -76,7 +82,7 @@ Antes de qualquer trabalho:
 
 ```javascript
 // scripts/mock-telemetry.js
-const TB_URL = process.env.TB_URL || 'http://95.217.16.195:8080';
+const TB_URL = process.env.TB_URL || 'http://204.168.202.5:8080';
 const DEVICE_TOKEN = process.env.DEVICE_TOKEN;
 
 function generateSoilData() {
@@ -128,7 +134,7 @@ setInterval(async () => {
 ```bash
 # Definir variável de ambiente
 export DEVICE_TOKEN="<device_access_token>"
-export TB_URL="http://95.217.16.195:8080"
+export TB_URL="http://204.168.202.5:8080"
 
 # Executar
 node scripts/mock-telemetry.js
@@ -140,16 +146,16 @@ node scripts/mock-telemetry.js
 
 ```bash
 # 1. Autenticar (obter token JWT)
-curl -X POST http://95.217.16.195:8080/api/auth/login \
+curl -X POST http://204.168.202.5:8080/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"scaixeta@gmail.com","password":"<senha>"}'
+  -d '{"username":"tenant@thingsboard.org","password":"<senha>"}'
 
 # 2. Consultar dispositivos
-curl -X GET http://95.217.16.195:8080/api/devices \
+curl -X GET http://204.168.202.5:8080/api/devices \
   -H "X-Authorization: Bearer <jwt_token>"
 
 # 3. Enviar telemetria (com access token do device)
-curl -X POST http://95.217.16.195:8080/api/v1/<device_token>/telemetry \
+curl -X POST http://204.168.202.5:8080/api/v1/<device_token>/telemetry \
   -H "Content-Type: application/json" \
   -d '{"ts":1646925123000,"values":{"temperature":25.5,"humidity":60.0}}'
 ```
@@ -160,8 +166,8 @@ Criar arquivo `.http`:
 
 ```http
 # authentication.http
-@host = http://95.217.16.195:8080
-@username = scaixeta@gmail.com
+@host = http://204.168.202.5:8080
+@username = tenant@thingsboard.org
 @password = <senha>
 
 ### Login

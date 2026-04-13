@@ -1,3 +1,9 @@
+---
+author: Sergio Caixeta / Cindy IA
+version: 1.2.0
+date: 2026-04-10
+---
+
 # SETUP - Sentivis IAOps
 
 ## Propósito
@@ -28,8 +34,8 @@ Orientar como preparar o ambiente local para trabalhar com o projeto Sentivis IA
 
 | Configuração | Valor |
 |-------------|-------|
-| URL | `http://95.217.16.195:8080` |
-| Usuário | `scaixeta@gmail.com` |
+| URL | `http://204.168.202.5:8080` |
+| Usuário | `tenant@thingsboard.org` |
 | Perfil | Tenant Administrator |
 | Credenciais | Arquivo `.scr/.env` |
 
@@ -39,10 +45,10 @@ O arquivo `.scr/.env` contém as configurações sensíveis do projeto:
 
 ```bash
 # ThingsBoard
-TB_HOST=95.217.16.195
+TB_HOST=204.168.202.5
 TB_PORT=8080
-TB_URL=http://95.217.16.195:8080
-TB_USERNAME=scaixeta@gmail.com
+TB_URL=http://204.168.202.5:8080
+TB_USERNAME=tenant@thingsboard.org
 TB_PASSWORD=<obter_de_.scr/.env>
 ```
 
@@ -73,7 +79,7 @@ Sentivis SIM/
 ### 1. Acessar a UI
 
 ```
-http://95.217.16.195:8080
+http://204.168.202.5:8080
 ```
 
 Fazer login com as credenciais fornecidas.
@@ -83,7 +89,7 @@ Fazer login com as credenciais fornecidas.
 Navegar para: **Entidades > Dispositivos**
 
 Deve existir um dispositivo:
-- Nome: `Sentivis | 0001`
+- Nome: `Sentivis | CIRRUS-NIMBUS-AERO`
 - Profile: `default`
 - Estado: `Inactive`
 
@@ -91,9 +97,9 @@ Deve existir um dispositivo:
 
 ```bash
 # Autenticar (obter JWT token)
-curl -X POST http://95.217.16.195:8080/api/auth/login \
+curl -X POST http://204.168.202.5:8080/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"scaixeta@gmail.com","password":"<senha>"}'
+  -d '{"username":"tenant@thingsboard.org","password":"<senha>"}'
 ```
 
 ## Ferramentas Recomendadas no VS Code
